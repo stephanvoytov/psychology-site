@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: lyceum23-psychologist
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn lyceum23.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
