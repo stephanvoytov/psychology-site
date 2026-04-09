@@ -1,0 +1,50 @@
+{% extends 'booking/base.html' %}
+{% block title %}Контакты | Психолог Лицея №23{% endblock %}
+{% block content %}
+
+<h1 style="margin-bottom: 0.25rem;">Контакты</h1>
+<p style="color: var(--text-soft); margin-bottom: 2rem;">Вы всегда можете обратиться напрямую</p>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
+
+    <div class="card">
+        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">👩‍💼</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Психолог</h2>
+        <!-- ЗАМЕНИТЕ на настоящее имя -->
+        <p style="color: var(--text-soft);">Иванова Мария Сергеевна</p>
+    </div>
+
+    <div class="card">
+        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">🚪</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Кабинет</h2>
+        <!-- ЗАМЕНИТЕ на настоящий кабинет -->
+        <p style="color: var(--text-soft);">Кабинет №214, 2 этаж</p>
+    </div>
+
+    <div class="card">
+        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">🕐</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Приёмные часы</h2>
+        <!-- ЗАМЕНИТЕ на настоящее расписание -->
+        <p style="color: var(--text-soft); line-height: 1.8;">
+            Пн, Ср, Пт: 9:00 – 15:00<br>
+            Вт, Чт: 12:00 – 17:00
+        </p>
+    </div>
+
+    <div class="card">
+        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">📞</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Телефон</h2>
+        <!-- ЗАМЕНИТЕ на настоящий телефон -->
+        <p style="color: var(--text-soft);">+7 (999) 123-45-67</p>
+    </div>
+
+</div>
+
+<div class="card" style="margin-top: 1rem; background: var(--green-pale);">
+    <p style="color: var(--text-soft); line-height: 1.7;">
+        💬 <strong>Всё сказанное остаётся конфиденциальным.</strong><br>
+        Обращайтесь по любому вопросу — нет слишком маленьких или несерьёзных проблем.
+    </p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'booking/base.html' %}
+{% block title %}Запись подтверждена | Психолог Лицея №23{% endblock %}
+{% block content %}
+<div class="card" style="text-align: center; padding: 3rem 2rem; max-width: 500px; margin: 0 auto;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+    <h1 style="margin-bottom: 0.75rem;">Вы записаны!</h1>
+    <p style="color: var(--text-soft); line-height: 1.7; margin-bottom: 2rem;">
+        Ваша запись успешно создана. Если вы не сможете прийти — пожалуйста, предупредите заранее.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="{% url 'home' %}" class="btn btn-primary">На главную</a>
+        <a href="{% url 'contacts' %}" class="btn btn-outline">Контакты</a>
+    </div>
+</div>
+{% endblock %}
