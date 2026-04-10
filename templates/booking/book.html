@@ -1,72 +1,95 @@
 {% extends 'booking/base.html' %}
-
-{% block title %}Запись | Психолог Лицея №23{% endblock %}
+{% load static %}
+{% block title %}Психолог Лицея №23{% endblock %}
 
 {% block content %}
 
-<!-- Выбранное время -->
-<div style="display: inline-flex; align-items: center; gap: 0.75rem; background: var(--green-pale); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem;">
-    <span style="font-size: 1.3rem;">🗓</span>
-    <div>
-        <div style="font-size: 0.8rem; color: var(--text-soft);">Вы выбрали:</div>
-        <div style="font-weight: 700; color: var(--green);">
-            {{ slot.date|date:"d F Y г." }}, {{ slot.time|time:"H:i" }}
-        </div>
+
+<!-- Приветственный блок -->
+<div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
+    <div style="flex: 1;">
+        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+            Лицей №23</p>
+        <h1>Запись на психологическое собеседование для дошкольников</h1>
+        <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
+            Психолог оценивает развитие мышление, памяти, внимания,<br>
+            речи, мелкой моторики, социальную осведомленность.
+        </p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
+    </div>
+    <!-- Иллюстрация (можно заменить на фото психолога) -->
+    <div style="flex: 0 0 auto; text-align: center;">
+        <img src="{% static 'booking/images/sobesedovanie.jpg' %}"
+             alt="Психолог"
+             style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
     </div>
 </div>
 
-<div class="card" style="max-width: 560px;">
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.4rem;">Заполните форму</h1>
-    <p style="color: var(--text-soft); margin-bottom: 1.75rem; font-size: 0.92rem;">Ваши данные нигде не публикуются и хранятся конфиденциально.</p>
+<!-- Приветственный блок -->
+<div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
+    <div style="flex: 1;">
+        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+            Лицей №23</p>
+        <h1>Кабинет школьного психолога</h1>
+        <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
+            Я здесь, чтобы помочь ученикам, родителям и педагогам.<br>
+            Всё, что вы расскажете — останется между нами.
+        </p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
+    </div>
+    <!-- Иллюстрация (можно заменить на фото психолога) -->
+    <div style="flex: 0 0 auto; text-align: center;">
+        <img src="{% static 'booking/images/psychologist.jpg' %}"
+             alt="Школьный психолог"
+             style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+    </div>
+</div>
 
-    <form method="post" novalidate>
-        {% csrf_token %}
 
-        <div class="form-group">
-            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }} *</label>
-            {{ form.full_name }}
-            {% if form.full_name.errors %}
-                <div class="form-error">{{ form.full_name.errors|join:", " }}</div>
-            {% endif %}
+<!-- Блоки "Чем могу помочь" -->
+<h2 style="margin-bottom: 1rem;">Чем я могу помочь</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+
+    <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">👩‍🎓</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Ученикам</h2>
+        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+            Трудности в учёбе, конфликты с одноклассниками, тревога, выбор профессии, отношения с родителями.
+        </p>
+    </div>
+
+    <div class="card" style="padding: 1.5rem;">
+        <div style="text-align: center; margin-bottom: 0.75rem;">
+            <img src="{% static 'booking/images/for_parents.png' %}"
+                 alt="Родителям"
+                 style="width: 48px; height: 48px;">
         </div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Родителям</h2>
+        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+            Понимание ребёнка, трудности в общении, советы по воспитанию, поддержка в кризисные моменты.
+        </p>
+    </div>
 
-        <div class="form-group">
-            <label for="{{ form.who.id_for_label }}">{{ form.who.label }} *</label>
-            {{ form.who }}
-            {% if form.who.errors %}
-                <div class="form-error">{{ form.who.errors|join:", " }}</div>
-            {% endif %}
-        </div>
+    <div class="card" style="padding: 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">📋</div>
+        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Педагогам</h2>
+        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+            Работа с трудными учениками, профессиональное выгорание, построение доверительных отношений в классе.
+        </p>
+    </div>
 
-        <div class="form-group">
-            <label for="{{ form.grade.id_for_label }}">{{ form.grade.label }}</label>
-            {{ form.grade }}
-            <div style="font-size: 0.8rem; color: var(--text-soft); margin-top: 0.25rem;">Укажите, если вы ученик или родитель ученика</div>
-        </div>
+</div>
 
-        <div class="form-group">
-            <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }} *</label>
-            {{ form.phone }}
-            {% if form.phone.errors %}
-                <div class="form-error">{{ form.phone.errors|join:", " }}</div>
-            {% endif %}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-            {{ form.email }}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
-            {{ form.message }}
-        </div>
-
-        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem;">
-            <button type="submit" class="btn btn-primary">Записаться ✓</button>
-            <a href="{% url 'schedule' %}" style="color: var(--text-soft); font-size: 0.9rem;">← Назад к расписанию</a>
-        </div>
-    </form>
+<!-- Блок "Как записаться" -->
+<div class="card" style="background: var(--green-pale); border-color: var(--border);">
+    <h2 style="margin-bottom: 0.75rem;">Как записаться?</h2>
+    <ol style="color: var(--text-soft); line-height: 2; padding-left: 1.25rem;">
+        <li>Перейдите на страницу <a href="{% url 'schedule' %}" style="color: var(--green); font-weight: 700;">«Записаться»</a>
+        </li>
+        <li>Выберите удобную дату и время</li>
+        <li>Заполните короткую форму</li>
+        <li>Всё — ждём вас в кабинете!</li>
+    </ol>
 </div>
 
 {% endblock %}
