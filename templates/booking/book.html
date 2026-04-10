@@ -1,5 +1,5 @@
 {% extends 'booking/base.html' %}
-
+{% load static %}
 {% block title %}Психолог Лицея №23{% endblock %}
 
 {% block content %}
@@ -18,7 +18,11 @@
         <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
     </div>
     <!-- Иллюстрация (можно заменить на фото психолога) -->
-    <div style="font-size: 6rem; text-align: center; padding: 1rem;">🧸</div>
+    <div style="flex: 0 0 auto; text-align: center;">
+        <img src="{% static 'booking/images/sobesedovanie.jpg' %}"
+             alt="Психолог"
+             style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+    </div>
 </div>
 
 <!-- Приветственный блок -->
@@ -34,7 +38,11 @@
         <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
     </div>
     <!-- Иллюстрация (можно заменить на фото психолога) -->
-   <div style="font-size: 6rem; text-align: center; padding: 1rem;">🌿</div>
+    <div style="flex: 0 0 auto; text-align: center;">
+        <img src="{% static 'booking/images/psychologist.jpg' %}"
+             alt="Школьный психолог"
+             style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+    </div>
 </div>
 
 
@@ -51,7 +59,11 @@
     </div>
 
     <div class="card" style="padding: 1.5rem;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">👨‍👩‍👧</div>
+        <div style="text-align: center; margin-bottom: 0.75rem;">
+            <img src="{% static 'booking/images/for_parents.png' %}"
+                 alt="Родителям"
+                 style="width: 48px; height: 48px;">
+        </div>
         <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Родителям</h2>
         <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
             Понимание ребёнка, трудности в общении, советы по воспитанию, поддержка в кризисные моменты.
