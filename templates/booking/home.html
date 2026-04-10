@@ -4,11 +4,13 @@
 
 {% block content %}
 
+
 <!-- Приветственный блок -->
 <div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
     <div style="flex: 1;">
-        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">Лицей №23</p>
-        <h1>Кабинет школьного психолога</h1>
+        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+            Лицей №23</p>
+        <h1>Запись на психологическое обследование для дошкольников</h1>
         <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
             Я здесь, чтобы помочь ученикам, родителям и педагогам.<br>
             Всё, что вы расскажете — останется между нами.
@@ -18,6 +20,23 @@
     <!-- Иллюстрация (можно заменить на фото психолога) -->
     <div style="font-size: 6rem; text-align: center; padding: 1rem;">🌿</div>
 </div>
+
+<!-- Приветственный блок -->
+<div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
+    <div style="flex: 1;">
+        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
+            Лицей №23</p>
+        <h1>Кабинет школьного психолога</h1>
+        <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
+            Я здесь, чтобы помочь ученикам, родителям и педагогам.<br>
+            Всё, что вы расскажете — останется между нами.
+        </p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
+    </div>
+    <!-- Иллюстрация (можно заменить на фото психолога) -->
+    <img src="https://maoulic23.gosuslugi.ru/persony/sotrudniki_17.html">
+</div>
+
 
 <!-- Блоки "Чем могу помочь" -->
 <h2 style="margin-bottom: 1rem;">Чем я могу помочь</h2>
@@ -53,7 +72,8 @@
 <div class="card" style="background: var(--green-pale); border-color: var(--border);">
     <h2 style="margin-bottom: 0.75rem;">Как записаться?</h2>
     <ol style="color: var(--text-soft); line-height: 2; padding-left: 1.25rem;">
-        <li>Перейдите на страницу <a href="{% url 'schedule' %}" style="color: var(--green); font-weight: 700;">«Записаться»</a></li>
+        <li>Перейдите на страницу <a href="{% url 'schedule' %}" style="color: var(--green); font-weight: 700;">«Записаться»</a>
+        </li>
         <li>Выберите удобную дату и время</li>
         <li>Заполните короткую форму</li>
         <li>Всё — ждём вас в кабинете!</li>
