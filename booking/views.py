@@ -1,75 +1,77 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from .models import TimeSlot, Appointment
+from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
 
 
 def home(request):
-    """Главная страница — информация о психологе и кнопка записи."""
     return render(request, 'booking/home.html')
 
 
 def schedule(request):
-    """
-    Страница расписания — показывает все доступные слоты.
-    Группирует слоты по дате для удобного отображения.
-    """
     today = timezone.now().date()
 
-    # Берём только будущие свободные слоты
-    available_slots = TimeSlot.objects.filter(
-        is_available=True,
-        date__gte=today
-    ).select_related('appointment')
+    psychologists    = Psychologist.objects.all()
+    appointment_types = AppointmentType.objects.all()
 
-    # Группируем по датам: {дата: [слоты]}
-    slots_by_date = {}
-    for slot in available_slots:
-        if slot.date not in slots_by_date:
-            slots_by_date[slot.date] = []
-        slots_by_date[slot.date].append(slot)
+    # Фильтры из GET-параметров
+    psych_id = request.GET.get('psychologist')
+    type_id  = request.GET.get('type')
+
+    slots = TimeSlot.objects.filter(
+        is_available=True, date__gte=today
+    ).select_related('psychologist', 'appointment_type')
+
+    if psych_id:
+        slots = slots.filter(psychologist_id=psych_id)
+    if type_id:
+        slots = slots.filter(appointment_type_id=type_id)
+
+    # Группировка: {психолог: {дата: [слоты]}}
+    grouped = {}
+    for slot in slots:
+        p = slot.psychologist
+        d = slot.date
+        if p not in grouped:
+            grouped[p] = {}
+        if d not in grouped[p]:
+            grouped[p][d] = []
+        grouped[p][d].append(slot)
 
     return render(request, 'booking/schedule.html', {
-        'slots_by_date': slots_by_date
+        'grouped':            grouped,
+        'psychologists':      psychologists,
+        'appointment_types':  appointment_types,
+        'selected_psych':     psych_id,
+        'selected_type':      type_id,
     })
 
 
 def book(request, slot_id):
-    """
-    Страница записи на конкретный слот.
-    GET — показывает форму.
-    POST — сохраняет запись.
-    """
     slot = get_object_or_404(TimeSlot, id=slot_id, is_available=True)
 
     if request.method == 'POST':
-        form = AppointmentForm(request.POST)
+        form = AppointmentForm(request.POST, slot=slot)
         if form.is_valid():
             appointment = form.save(commit=False)
-            appointment.slot = slot
+            appointment.slot             = slot
+            appointment.appointment_type = slot.appointment_type
             appointment.save()
-
-            # Помечаем слот как занятый
             slot.is_available = False
             slot.save()
-
             messages.success(request, 'Вы успешно записались! Ждём вас.')
             return redirect('success')
     else:
-        form = AppointmentForm()
+        form = AppointmentForm(slot=slot)
 
-    return render(request, 'booking/book.html', {
-        'slot': slot,
-        'form': form
-    })
+    return render(request, 'booking/book.html', {'slot': slot, 'form': form})
 
 
 def success(request):
-    """Страница подтверждения успешной записи."""
     return render(request, 'booking/success.html')
 
 
 def contacts(request):
-    """Страница с контактами психолога."""
-    return render(request, 'booking/contacts.html')
+    psychologists = Psychologist.objects.all()
+    return render(request, 'booking/contacts.html', {'psychologists': psychologists})
