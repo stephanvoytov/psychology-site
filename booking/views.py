@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
-from .models import TimeSlot, Appointment
 from .forms import AppointmentForm
 
 
@@ -35,12 +34,9 @@ def schedule(request):
     })
 
 
+from .models import TimeSlot, Appointment, Psychologist, AppointmentType
+
 def book(request, slot_id):
-    """
-    Страница записи на конкретный слот.
-    GET — показывает форму.
-    POST — сохраняет запись.
-    """
     slot = get_object_or_404(TimeSlot, id=slot_id, is_available=True)
 
     if request.method == 'POST':
@@ -49,21 +45,18 @@ def book(request, slot_id):
             appointment = form.save(commit=False)
             appointment.slot = slot
             appointment.save()
-
-            # Помечаем слот как занятый
             slot.is_available = False
             slot.save()
-
-            messages.success(request, 'Вы успешно записались! Ждём вас.')
+            messages.success(request, 'Вы успешно записались!')
             return redirect('success')
     else:
         form = AppointmentForm()
 
     return render(request, 'booking/book.html', {
         'slot': slot,
-        'form': form
+        'form': form,
+        'appointment_types': AppointmentType.objects.all(),  # ← для JS
     })
-
 
 def success(request):
     """Страница подтверждения успешной записи."""

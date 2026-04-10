@@ -1,72 +1,136 @@
 {% extends 'booking/base.html' %}
-
 {% block title %}Запись | Психолог Лицея №23{% endblock %}
 
 {% block content %}
 
-<!-- Выбранное время -->
-<div style="display: inline-flex; align-items: center; gap: 0.75rem; background: var(--green-pale); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1.25rem; margin-bottom: 1.5rem;">
-    <span style="font-size: 1.3rem;">🗓</span>
+<div style="display:inline-flex;align-items:center;gap:10px;background:var(--green-pale);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:1.5rem;">
+    <div style="width:36px;height:36px;border-radius:8px;background:var(--green-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;">🗓</div>
     <div>
-        <div style="font-size: 0.8rem; color: var(--text-soft);">Вы выбрали:</div>
-        <div style="font-weight: 700; color: var(--green);">
-            {{ slot.date|date:"d F Y г." }}, {{ slot.time|time:"H:i" }}
+        <div style="font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Вы выбрали</div>
+        <div style="font-size:15px;font-weight:700;color:var(--green);">
+            {{ slot.date|date:"l, d F Y" }} — {{ slot.time|time:"H:i" }}
         </div>
     </div>
 </div>
 
-<div class="card" style="max-width: 560px;">
-    <h1 style="font-size: 1.5rem; margin-bottom: 0.4rem;">Заполните форму</h1>
-    <p style="color: var(--text-soft); margin-bottom: 1.75rem; font-size: 0.92rem;">Ваши данные нигде не публикуются и хранятся конфиденциально.</p>
+<div class="card" style="max-width:580px;">
+    <h1 style="font-size:1.4rem;margin-bottom:4px;">Запись на приём</h1>
+    <p style="color:var(--text-soft);margin-bottom:1.5rem;font-size:.9rem;">Укажите ваши данные</p>
 
     <form method="post" novalidate>
         {% csrf_token %}
 
+        {{/* Выбор типа приёма */}}
         <div class="form-group">
-            <label for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }} *</label>
-            {{ form.full_name }}
-            {% if form.full_name.errors %}
-                <div class="form-error">{{ form.full_name.errors|join:", " }}</div>
+            <label for="id_appointment_type">Цель обращения *</label>
+            {{ form.appointment_type }}
+            {% if form.appointment_type.errors %}
+                <div class="form-error">{{ form.appointment_type.errors|join:", " }}</div>
             {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.who.id_for_label }}">{{ form.who.label }} *</label>
-            {{ form.who }}
-            {% if form.who.errors %}
-                <div class="form-error">{{ form.who.errors|join:", " }}</div>
-            {% endif %}
+        {{/* Блок: обычная консультация */}}
+        <div id="block-consultation" style="display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>ФИО *</label>
+                    {{ form.full_name }}
+                    {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Кто записывается *</label>
+                    {{ form.who }}
+                    {% if form.who.errors %}<div class="form-error">{{ form.who.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Класс</label>
+                    {{ form.grade }}
+                </div>
+                <div class="form-group">
+                    <label>Телефон *</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>Примечание</label>
+                    {{ form.message }}
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.grade.id_for_label }}">{{ form.grade.label }}</label>
-            {{ form.grade }}
-            <div style="font-size: 0.8rem; color: var(--text-soft); margin-top: 0.25rem;">Укажите, если вы ученик или родитель ученика</div>
+        {{/* Блок: обследование дошкольника */}}
+        <div id="block-preschool" style="display:none;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>ФИО ребёнка *</label>
+                    {{ form.child_name }}
+                    {% if form.child_name.errors %}<div class="form-error">{{ form.child_name.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Дата рождения ребёнка *</label>
+                    {{ form.child_birthdate }}
+                    {% if form.child_birthdate.errors %}<div class="form-error">{{ form.child_birthdate.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Номер детского сада *</label>
+                    {{ form.kindergarten }}
+                    {% if form.kindergarten.errors %}<div class="form-error">{{ form.kindergarten.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>Место проживания *</label>
+                    {{ form.address }}
+                    {% if form.address.errors %}<div class="form-error">{{ form.address.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label>ФИО родителя *</label>
+                    {{ form.parent_name }}
+                    {% if form.parent_name.errors %}<div class="form-error">{{ form.parent_name.errors|join:", " }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label>Телефон родителя *</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors|join:", " }}</div>{% endif %}
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.phone.id_for_label }}">{{ form.phone.label }} *</label>
-            {{ form.phone }}
-            {% if form.phone.errors %}
-                <div class="form-error">{{ form.phone.errors|join:", " }}</div>
-            {% endif %}
+        <div style="display:flex;align-items:center;gap:8px;background:var(--green-pale);border-radius:8px;padding:10px 12px;margin-bottom:1.25rem;font-size:.8rem;color:var(--text-soft);">
+            🔒 Ваши данные хранятся конфиденциально
         </div>
 
-        <div class="form-group">
-            <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
-            {{ form.email }}
-        </div>
-
-        <div class="form-group">
-            <label for="{{ form.message.id_for_label }}">{{ form.message.label }}</label>
-            {{ form.message }}
-        </div>
-
-        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem;">
+        <div style="display:flex;align-items:center;gap:1rem;">
             <button type="submit" class="btn btn-primary">Записаться ✓</button>
-            <a href="{% url 'schedule' %}" style="color: var(--text-soft); font-size: 0.9rem;">← Назад к расписанию</a>
+            <a href="{% url 'schedule' %}" style="color:var(--text-soft);font-size:.9rem;">← Назад</a>
         </div>
     </form>
 </div>
 
+{{/* Данные о form_type для каждого типа приёма — передаём в JS */}}
+<script>
+// Словарь: id типа приёма → form_type из базы
+const typeMap = {
+    {% for apt in appointment_types %}"{{ apt.id }}": "{{ apt.form_type }}"{% if not forloop.last %},{% endif %}{% endfor %}
+};
+
+const select = document.getElementById('id_appointment_type');
+const blocks = {
+    'consultation':   document.getElementById('block-consultation'),
+    'preschool_exam': document.getElementById('block-preschool'),
+};
+
+function showBlock() {
+    const formType = typeMap[select.value] || null;
+    Object.values(blocks).forEach(b => b.style.display = 'none');
+    if (formType && blocks[formType]) {
+        blocks[formType].style.display = 'block';
+    }
+}
+
+select.addEventListener('change', showBlock);
+showBlock(); // При загрузке если форма вернулась с ошибкой
+</script>
 {% endblock %}
