@@ -13,10 +13,6 @@ class PsychologistAdmin(admin.ModelAdmin):
     list_display = ('name', 'grades', 'cabinet', 'phone')
 
 
-@admin.register(AppointmentType)
-class AppointmentTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
-
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):

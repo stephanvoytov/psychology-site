@@ -13,7 +13,6 @@ def schedule(request):
     today = timezone.now().date()
 
     psychologists    = Psychologist.objects.all()
-    appointment_types = AppointmentType.objects.all()
 
     # Фильтры из GET-параметров
     psych_id = request.GET.get('psychologist')
@@ -42,7 +41,6 @@ def schedule(request):
     return render(request, 'booking/schedule.html', {
         'grouped':            grouped,
         'psychologists':      psychologists,
-        'appointment_types':  appointment_types,
         'selected_psych':     psych_id,
         'selected_type':      type_id,
     })
