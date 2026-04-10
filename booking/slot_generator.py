@@ -11,12 +11,6 @@ INTERVAL_CHOICES = [
 ]
 
 class SlotGeneratorForm(forms.Form):
-    appointment_type = forms.ModelChoiceField(
-        queryset=AppointmentType.objects.all(),
-        label='Тип приёма',
-        required=False,
-        empty_label='— Любой (не указывать) —',
-    )
     psychologist = forms.ModelChoiceField(
         queryset=Psychologist.objects.all(),
         label='Психолог',
