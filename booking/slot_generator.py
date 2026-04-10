@@ -1,6 +1,6 @@
 from django import forms
 from datetime import date, timedelta
-from .models import Psychologist, AppointmentType
+from .models import Psychologist
 
 WEEKDAY_CHOICES = [
     (0, 'Понедельник'), (1, 'Вторник'), (2, 'Среда'),
