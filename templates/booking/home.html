@@ -5,38 +5,44 @@
 {% block content %}
 
 
-<!-- Приветственный блок -->
-<div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
-    <div style="flex: 1;">
-        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
-            Лицей №23</p>
-        <h1>Запись на психологическое обследование для дошкольников</h1>
-        <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
-            Я здесь, чтобы помочь ученикам, родителям и педагогам.<br>
-            Всё, что вы расскажете — останется между нами.
-        </p>
-        <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
+<div class="cards-container">
+    <!-- Блок 1: Для дошкольников -->
+    <div class="card welcome-card">
+        <div class="card-content">
+            <div class="card-tag">Лицей №23</div>
+            <h2 class="card-title">Запись на психологическое обследование для дошкольников</h2>
+            <p class="card-description">
+                Психолог оценивает развитие мышления, памяти, внимания, речи, мелкой моторики,
+                социальную осведомленность и готовность к школьному обучению.
+            </p>
+            <a href="{% url 'schedule' %}" class="btn btn-primary">
+                Записаться на приём <span class="btn-arrow">→</span>
+            </a>
+        </div>
+        <div class="card-illustration">
+            🧸  <!-- Иконка для дошкольников (можно заменить на фото) -->
+        </div>
     </div>
-    <!-- Иллюстрация (можно заменить на фото психолога) -->
-    <div style="font-size: 6rem; text-align: center; padding: 1rem;">🌿</div>
-</div>
 
-<!-- Приветственный блок -->
-<div class="card" style="margin-bottom: 1.5rem; display: flex; gap: 2rem; align-items: center;">
-    <div style="flex: 1;">
-        <p style="color: var(--green-light); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.5rem;">
-            Лицей №23</p>
-        <h1>Кабинет школьного психолога</h1>
-        <p style="color: var(--text-soft); margin: 1rem 0 1.5rem; line-height: 1.7; font-size: 1.05rem;">
-            Я здесь, чтобы помочь ученикам, родителям и педагогам.<br>
-            Всё, что вы расскажете — останется между нами.
-        </p>
-        <a href="{% url 'schedule' %}" class="btn btn-primary">Записаться на приём →</a>
+    <!-- Блок 2: Для школьников и родителей -->
+    <div class="card welcome-card">
+        <div class="card-content">
+            <div class="card-tag">Лицей №23</div>
+            <h2 class="card-title">Кабинет школьного психолога</h2>
+            <p class="card-description">
+                Я здесь, чтобы помочь ученикам, родителям и педагогам.
+                Всё, что вы расскажете — останется между нами.
+                Доверие и конфиденциальность — основа нашей работы.
+            </p>
+            <a href="{% url 'schedule' %}" class="btn btn-primary">
+                Записаться на приём <span class="btn-arrow">→</span>
+            </a>
+        </div>
+        <div class="card-illustration">
+            🧠  <!-- Иконка для школьного психолога (можно заменить на фото) -->
+        </div>
     </div>
-    <!-- Иллюстрация (можно заменить на фото психолога) -->
-    <img src="https://maoulic23.gosuslugi.ru/persony/sotrudniki_17.html">
 </div>
-
 
 <!-- Блоки "Чем могу помочь" -->
 <h2 style="margin-bottom: 1rem;">Чем я могу помочь</h2>
