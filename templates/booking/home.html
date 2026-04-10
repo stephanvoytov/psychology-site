@@ -20,7 +20,7 @@
             </a>
         </div>
         <div style="flex: 0 0 auto; text-align: center;">
-            <img src="{% static 'booking/images/sobesedovanie.png' %}"
+            <img src="{% static '/images/sobesedovanie.png' %}"
                  alt="Психолог"
                  style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
         </div>
@@ -41,7 +41,7 @@
             </a>
         </div>
         <div style="flex: 0 0 auto; text-align: center;">
-            <img src="{% static 'booking/images/psychologist.png' %}"
+            <img src="{% static '/images/psychologist.png' %}"
                  alt="Школьный психолог"
                  style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
         </div>
@@ -53,11 +53,7 @@
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
 
     <div class="card" style="padding: 1.5rem;">
-        <div style="text-align: center; margin-bottom: 0.75rem;">
-            <img src="{% static 'booking/images/parents.png' %}"
-                 alt="Родителям"
-                 style="width: 48px; height: 48px;">
-        </div>
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">👨‍🎓</div>
         <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Ученикам</h2>
         <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
             Трудности в учёбе, конфликты с одноклассниками, тревога, выбор профессии, отношения с родителями.
@@ -65,7 +61,11 @@
     </div>
 
     <div class="card" style="padding: 1.5rem;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">👨‍👩‍👧</div>
+        <div style="text-align: center; margin-bottom: 0.75rem;">
+            <img src="{% static '/images/parents.png' %}"
+                 alt="Родителям"
+                 style="width: 48px; height: 48px;">
+        </div>
         <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Родителям</h2>
         <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
             Понимание ребёнка, трудности в общении, советы по воспитанию, поддержка в кризисные моменты.
