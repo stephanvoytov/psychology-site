@@ -39,7 +39,7 @@ class AppointmentType(models.Model):
 class TimeSlot(models.Model):
     psychologist = models.ForeignKey(
         Psychologist, on_delete=models.CASCADE,
-        related_name='slots', verbose_name='Психолог'
+        related_name='slots', verbose_name='Психолог', default=1
     )
     date         = models.DateField(verbose_name='Дата')
     time         = models.TimeField(verbose_name='Время')
