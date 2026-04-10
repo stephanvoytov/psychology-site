@@ -4,7 +4,7 @@ from django.urls import path
 from django.contrib import messages
 from datetime import datetime, timedelta
 
-from .models import TimeSlot, Appointment, Psychologist, AppointmentType
+from .models import TimeSlot, Appointment, Psychologist
 from .slot_generator import SlotGeneratorForm
 
 
