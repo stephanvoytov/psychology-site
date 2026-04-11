@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.shortcuts import render, redirect
-from django.urls import path
+from django.urls import path, reverse
 from django.contrib import messages
 from datetime import datetime, timedelta
+
+from django.utils.html import format_html
 
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .slot_generator import SlotGeneratorForm
@@ -86,40 +88,42 @@ class TimeSlotAdmin(admin.ModelAdmin):
 
     def get_who_booked(self, obj):
         try:
-            return obj.appointment.full_name or obj.appointment.parent_name or '—'
+            app = obj.appointment
+            name = app.full_name or app.parent_name or '—'
+            url = reverse('admin:booking_appointment_change', args=[app.id])
+            return format_html('<a href="{}">{}</a>', url, name)
         except Appointment.DoesNotExist:
             return '—'
+
     get_who_booked.short_description = 'Кто записан'
 
     def get_appointment_type(self, obj):
-        if hasattr(obj, 'appointment') and obj.appointment.appointment_type:
-            return obj.appointment.appointment_type.name
-        return '—'
+        try:
+            return obj.appointment.appointment_type.name if obj.appointment.appointment_type else '—'
+        except Appointment.DoesNotExist:
+            return '—'
+
     get_appointment_type.short_description = 'Цель обращения'
 
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display  = ('full_name', 'who', 'grade', 'phone', 'appointment_type', 'slot', 'created_at')
+    list_display  = ('get_name', 'get_who', 'grade', 'phone', 'appointment_type', 'slot', 'created_at')
     list_filter   = ('appointment_type', 'who', 'slot__psychologist', 'slot__date')
-    search_fields = ('full_name', 'phone', 'grade')
+    search_fields = ('full_name', 'parent_name', 'child_name', 'phone')
     readonly_fields = ('created_at',)
 
     def get_name(self, obj):
-        # Для дошкольников показываем ФИО родителя + ребёнка
         if obj.parent_name:
             return f'{obj.parent_name} (ребёнок: {obj.child_name})'
         return obj.full_name or '—'
-
     get_name.short_description = 'ФИО'
 
     def get_who(self, obj):
         if obj.who:
             return obj.get_who_display()
         return 'Родитель дошкольника'
-
     get_who.short_description = 'Кто записывается'
-
 
 admin.site.site_header = 'Лицей №23 — Кабинет психолога'
 admin.site.site_title  = 'Психолог Лицей №23'
