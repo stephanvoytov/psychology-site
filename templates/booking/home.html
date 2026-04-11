@@ -4,7 +4,6 @@
 
 {% block content %}
 
-
 <div class="cards-container">
     <!-- Блок 1: Для дошкольников -->
     <div class="card welcome-card">
@@ -15,14 +14,14 @@
                 Психолог оценивает развитие мышления, памяти, внимания, речи, мелкой моторики,
                 социальную осведомленность и готовность к школьному обучению.
             </p>
-            <a href="{% url 'schedule' %}" class="btn btn-primary">
+            <a href="{% url 'psychologist_schedule' 1 %}" class="btn btn-primary">
                 Записаться на приём <span class="btn-arrow">→</span>
             </a>
         </div>
-        <div style="flex: 0 0 auto; text-align: center;">
-            <img src="{% static '/images/sobesedovanie.png' %}"
-                 alt="Психолог"
-                 style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+        <div style="flex:0 0 150px;">
+            <img src="{% static 'images/sobesedovanie.png' %}"
+                 alt="Обследование дошкольников"
+                 style="width:150px;height:150px;object-fit:cover;object-position:center;border-radius:12px;display:block;">
         </div>
     </div>
 
@@ -40,42 +39,42 @@
                 Записаться на приём <span class="btn-arrow">→</span>
             </a>
         </div>
-        <div style="flex: 0 0 auto; text-align: center;">
-            <img src="{% static '/images/psychologist.png' %}"
+        <div style="flex:0 0 150px;">
+            <img src="{% static 'images/psychologist.png' %}"
                  alt="Школьный психолог"
-                 style="width: 150px; height: 150px; object-fit: cover; border-radius: 50%;">
+                 style="width:150px;height:150px;object-fit:cover;object-position:top center;border-radius:12px;display:block;">
         </div>
     </div>
 </div>
 
 <!-- Блоки "Чем могу помочь" -->
-<h2 style="margin-bottom: 1rem;">Чем я могу помочь</h2>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+<h2 style="margin-bottom:1rem;">Чем я могу помочь</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:1.5rem;">
 
-    <div class="card" style="padding: 1.5rem;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">👨‍🎓</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Ученикам</h2>
-        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+    <div class="card" style="padding:1.5rem;">
+        <div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:0.75rem;">👨‍🎓</div>
+        <h2 style="font-size:1.1rem;margin-bottom:0.5rem;">Ученикам</h2>
+        <p style="color:var(--text-soft);font-size:0.92rem;line-height:1.6;">
             Трудности в учёбе, конфликты с одноклассниками, тревога, выбор профессии, отношения с родителями.
         </p>
     </div>
 
-    <div class="card" style="padding: 1.5rem;">
-        <div style="text-align: center; margin-bottom: 0.75rem;">
-            <img src="{% static '/images/parents.png' %}"
+    <div class="card" style="padding:1.5rem;">
+        <div style="width:48px;height:48px;margin-bottom:0.75rem;">
+            <img src="{% static 'images/parents.png' %}"
                  alt="Родителям"
-                 style="width: 48px; height: 48px;">
+                 style="width:48px;height:48px;object-fit:contain;display:block;">
         </div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Родителям</h2>
-        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+        <h2 style="font-size:1.1rem;margin-bottom:0.5rem;">Родителям</h2>
+        <p style="color:var(--text-soft);font-size:0.92rem;line-height:1.6;">
             Понимание ребёнка, трудности в общении, советы по воспитанию, поддержка в кризисные моменты.
         </p>
     </div>
 
-    <div class="card" style="padding: 1.5rem;">
-        <div style="font-size: 2rem; margin-bottom: 0.75rem;">📋</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Педагогам</h2>
-        <p style="color: var(--text-soft); font-size: 0.92rem; line-height: 1.6;">
+    <div class="card" style="padding:1.5rem;">
+        <div style="width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:0.75rem;">📋</div>
+        <h2 style="font-size:1.1rem;margin-bottom:0.5rem;">Педагогам</h2>
+        <p style="color:var(--text-soft);font-size:0.92rem;line-height:1.6;">
             Работа с трудными учениками, профессиональное выгорание, построение доверительных отношений в классе.
         </p>
     </div>
@@ -83,11 +82,10 @@
 </div>
 
 <!-- Блок "Как записаться" -->
-<div class="card" style="background: var(--green-pale); border-color: var(--border);">
-    <h2 style="margin-bottom: 0.75rem;">Как записаться?</h2>
-    <ol style="color: var(--text-soft); line-height: 2; padding-left: 1.25rem;">
-        <li>Перейдите на страницу <a href="{% url 'schedule' %}" style="color: var(--green); font-weight: 700;">«Записаться»</a>
-        </li>
+<div class="card" style="background:var(--green-pale);border-color:var(--border);">
+    <h2 style="margin-bottom:0.75rem;">Как записаться?</h2>
+    <ol style="color:var(--text-soft);line-height:2;padding-left:1.25rem;">
+        <li>Перейдите на страницу <a href="{% url 'schedule' %}" style="color:var(--green);font-weight:700;">«Записаться»</a></li>
         <li>Выберите удобную дату и время</li>
         <li>Заполните короткую форму</li>
         <li>Всё — ждём вас в кабинете!</li>
