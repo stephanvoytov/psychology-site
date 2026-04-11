@@ -98,7 +98,7 @@
                 <div class="form-group">
                     <label>Телефон родителя *</label>
                     {{ form.parent_phone  }}
-                    {% if form.parent_phone .errors %}<div class="form-error">{{ form.parent_phone .errors|join:", " }}</div>{% endif %}
+                    {% if form.parent_phone.errors %}<div class="form-error">{{ form.parent_phone.errors|join:", " }}</div>{% endif %}
                 </div>
             </div>
         </div>
