@@ -1,0 +1,35 @@
+{% extends 'booking/base.html' %}
+{% block title %}Выбор психолога | Лицей №23{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:.25rem;">Запись на приём</h1>
+<p style="color:var(--text-soft);margin-bottom:2rem;">Выберите психолога</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;">
+    {% for psychologist in psychologists %}
+    <div class="card" style="padding:1.5rem;">
+        <div style="font-size:2rem;margin-bottom:.75rem;">👩‍💼</div>
+        <h2 style="font-size:1.1rem;margin-bottom:.25rem;">{{ psychologist.name }}</h2>
+        <p style="color:var(--green);font-size:.85rem;font-weight:700;margin-bottom:.5rem;">{{ psychologist.grades }}</p>
+        {% if psychologist.cabinet %}
+        <p style="color:var(--text-soft);font-size:.85rem;margin-bottom:1rem;">Кабинет {{ psychologist.cabinet }}</p>
+        {% endif %}
+
+        {# Типы приёмов у этого психолога #}
+        {% with types=psychologist.appointment_types.all %}
+        {% if types %}
+        <div style="margin-bottom:1rem;">
+            {% for apt_type in types %}
+            <div style="font-size:.8rem;color:var(--text-soft);padding:2px 0;">• {{ apt_type.name }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <a href="{% url 'psychologist_schedule' psychologist.id %}" class="btn btn-primary" style="width:100%;text-align:center;">
+            Выбрать время →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

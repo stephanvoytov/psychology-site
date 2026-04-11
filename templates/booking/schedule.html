@@ -4,6 +4,14 @@
 
 {% block content %}
 
+<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    <a href="{% url 'schedule' %}" style="color:var(--text-soft);font-size:.9rem;">← Назад</a>
+    <div>
+        <h1 style="margin-bottom:.1rem;">{{ psychologist.name }}</h1>
+        <p style="color:var(--green);font-size:.9rem;font-weight:700;">{{ psychologist.grades }}</p>
+    </div>
+</div>
+
 <h1 style="margin-bottom: 0.25rem;">Свободные места для записи</h1>
 <p style="color: var(--text-soft); margin-bottom: 2rem;">Выберите удобное время и нажмите «Записаться»</p>
 

@@ -17,7 +17,8 @@ class PsychologistAdmin(admin.ModelAdmin):
 
 @admin.register(AppointmentType)
 class AppointmentTypeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'form_type', 'description')
+    filter_horizontal = ('psychologists',)
 
 
 @admin.register(TimeSlot)

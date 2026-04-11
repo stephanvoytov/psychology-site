@@ -17,16 +17,17 @@ class Psychologist(models.Model):
 
 class AppointmentType(models.Model):
     FORM_CHOICES = [
-        ('consultation',  'Обычная консультация'),   # поля: ФИО, кто, класс, телефон
-        ('preschool_exam', 'Обследование дошкольника'),  # поля: ФИО ребёнка, дата рождения, сад, адрес, ФИО родителя, телефон
+        ('consultation',   'Обычная консультация'),
+        ('preschool_exam', 'Обследование дошкольника'),
     ]
-    name      = models.CharField(max_length=200, verbose_name='Название')
-    form_type = models.CharField(
-        max_length=20, choices=FORM_CHOICES,
-        verbose_name='Тип формы',
-        help_text='Определяет какие поля показываются при записи'
+    name        = models.CharField(max_length=200, verbose_name='Название')
+    form_type   = models.CharField(max_length=20, choices=FORM_CHOICES, verbose_name='Тип формы')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    psychologists = models.ManyToManyField(
+        'Psychologist', blank=True,
+        related_name='appointment_types',
+        verbose_name='Доступно у психологов'
     )
-    description = models.TextField(blank=True, verbose_name='Описание для пользователя')
 
     class Meta:
         verbose_name = 'Тип приёма'

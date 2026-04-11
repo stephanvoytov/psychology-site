@@ -1,68 +1,76 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
+from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
 
 
 def home(request):
-    """Главная страница — информация о психологе и кнопка записи."""
     return render(request, 'booking/home.html')
 
 
-def schedule(request):
-    """
-    Страница расписания — показывает все доступные слоты.
-    Группирует слоты по дате для удобного отображения.
-    """
-    today = timezone.now().date()
+def choose_psychologist(request):
+    """Страница выбора психолога — показывается перед расписанием."""
+    psychologists = Psychologist.objects.prefetch_related('appointment_types').all()
+    return render(request, 'booking/choose_psychologist.html', {
+        'psychologists': psychologists,
+    })
 
-    # Берём только будущие свободные слоты
-    available_slots = TimeSlot.objects.filter(
+
+def schedule(request, psychologist_id):
+    """Расписание конкретного психолога."""
+    today = timezone.now().date()
+    psychologist = get_object_or_404(Psychologist, id=psychologist_id)
+
+    slots = TimeSlot.objects.filter(
+        psychologist=psychologist,
         is_available=True,
         date__gte=today
-    ).select_related('appointment')
+    )
 
-    # Группируем по датам: {дата: [слоты]}
     slots_by_date = {}
-    for slot in available_slots:
+    for slot in slots:
         if slot.date not in slots_by_date:
             slots_by_date[slot.date] = []
         slots_by_date[slot.date].append(slot)
 
     return render(request, 'booking/schedule.html', {
-        'slots_by_date': slots_by_date
+        'psychologist': psychologist,
+        'slots_by_date': slots_by_date,
     })
 
 
-from .models import TimeSlot, Appointment, Psychologist, AppointmentType
-
 def book(request, slot_id):
     slot = get_object_or_404(TimeSlot, id=slot_id, is_available=True)
+    psychologist = slot.psychologist
+    # Только типы приёмов доступные у этого психолога
+    appointment_types = AppointmentType.objects.filter(psychologists=psychologist)
 
     if request.method == 'POST':
-        form = AppointmentForm(request.POST)
+        form = AppointmentForm(request.POST, appointment_types=appointment_types)
         if form.is_valid():
             appointment = form.save(commit=False)
             appointment.slot = slot
             appointment.save()
             slot.is_available = False
             slot.save()
-            messages.success(request, 'Вы успешно записались!')
+            messages.success(request, 'Вы успешно записались! Ждём вас.')
             return redirect('success')
     else:
-        form = AppointmentForm()
+        form = AppointmentForm(appointment_types=appointment_types)
 
     return render(request, 'booking/book.html', {
         'slot': slot,
+        'psychologist': psychologist,
         'form': form,
-        'appointment_types': AppointmentType.objects.all(),  # ← для JS
+        'appointment_types': appointment_types,
     })
 
+
 def success(request):
-    """Страница подтверждения успешной записи."""
     return render(request, 'booking/success.html')
 
 
 def contacts(request):
-    """Страница с контактами психолога."""
-    return render(request, 'booking/contacts.html')
+    psychologists = Psychologist.objects.all()
+    return render(request, 'booking/contacts.html', {'psychologists': psychologists})
