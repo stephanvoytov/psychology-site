@@ -6,27 +6,26 @@
 <p style="color:var(--text-soft);margin-bottom:2rem;">Выберите психолога</p>
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;">
-    {% for psychologist in psychologists %}
-    <div class="card" style="padding:1.5rem;">
-        <div style="font-size:2rem;margin-bottom:.75rem;">👩‍💼</div>
-        <h2 style="font-size:1.1rem;margin-bottom:.25rem;">{{ psychologist.name }}</h2>
-        <p style="color:var(--green);font-size:.85rem;font-weight:700;margin-bottom:.5rem;">{{ psychologist.grades }}</p>
-        {% if psychologist.cabinet %}
-        <p style="color:var(--text-soft);font-size:.85rem;margin-bottom:1rem;">Кабинет {{ psychologist.cabinet }}</p>
+    {% for p in psychologists %}
+    <div class="card" style="padding:1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.75rem;">
+        {% if p.photo %}
+            <img src="{{ p.photo.url }}" alt="{{ p.name }}"
+                 style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--border);">
+        {% else %}
+            <div style="width:100px;height:100px;border-radius:50%;background:var(--green-pale);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">👩‍💼</div>
         {% endif %}
-
-        {# Типы приёмов у этого психолога #}
-        {% with types=psychologist.appointment_types.all %}
-        {% if types %}
-        <div style="margin-bottom:1rem;">
-            {% for apt_type in types %}
-            <div style="font-size:.8rem;color:var(--text-soft);padding:2px 0;">• {{ apt_type.name }}</div>
-            {% endfor %}
+        <div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:.25rem;">{{ p.name }}</div>
+            <div style="color:var(--green);font-size:.85rem;font-weight:700;margin-bottom:.5rem;">{{ p.grades }}</div>
+            {% with types=p.appointment_types.all %}
+            {% if types %}
+                {% for apt in types %}
+                <div style="font-size:.8rem;color:var(--text-soft);">• {{ apt.name }}</div>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
-        {% endif %}
-        {% endwith %}
-
-        <a href="{% url 'psychologist_schedule' psychologist.id %}" class="btn btn-primary" style="width:100%;text-align:center;">
+        <a href="{% url 'psychologist_schedule' p.id %}" class="btn btn-primary" style="width:100%;text-align:center;margin-top:.5rem;">
             Выбрать время →
         </a>
     </div>

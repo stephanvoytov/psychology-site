@@ -2,46 +2,37 @@
 {% block title %}Контакты | Психолог Лицея №23{% endblock %}
 {% block content %}
 
-<h1 style="margin-bottom: 0.25rem;">Контакты</h1>
-<p style="color: var(--text-soft); margin-bottom: 2rem;">Вы всегда можете обратиться напрямую</p>
+<h1 style="margin-bottom:.25rem;">Контакты</h1>
+<p style="color:var(--text-soft);margin-bottom:2rem;">Наши специалисты</p>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem;">
-
-    <div class="card">
-        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">👩‍💼</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Психолог</h2>
-        <!-- ЗАМЕНИТЕ на настоящее имя -->
-        <p style="color: var(--text-soft);">Иванова Мария Сергеевна</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    {% for p in psychologists %}
+    <div class="card" style="padding:1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.75rem;">
+        {% if p.photo %}
+            <img src="{{ p.photo.url }}" alt="{{ p.name }}"
+                 style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--border);">
+        {% else %}
+            <div style="width:100px;height:100px;border-radius:50%;background:var(--green-pale);border:3px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.5rem;">👩‍💼</div>
+        {% endif %}
+        <div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:.25rem;">{{ p.name }}</div>
+            <div style="color:var(--green);font-size:.85rem;font-weight:700;margin-bottom:.25rem;">{{ p.grades }}</div>
+            {% if p.cabinet %}
+            <div style="color:var(--text-soft);font-size:.85rem;">Кабинет {{ p.cabinet }}</div>
+            {% endif %}
+            {% if p.phone %}
+            <div style="color:var(--text-soft);font-size:.85rem;margin-top:.25rem;">{{ p.phone }}</div>
+            {% endif %}
+        </div>
+        <a href="{% url 'psychologist_schedule' p.id %}" class="btn btn-outline" style="width:100%;text-align:center;margin-top:.5rem;">
+            Записаться →
+        </a>
     </div>
-
-    <div class="card">
-        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">🚪</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Кабинет</h2>
-        <!-- ЗАМЕНИТЕ на настоящий кабинет -->
-        <p style="color: var(--text-soft);">Кабинет №214, 2 этаж</p>
-    </div>
-
-    <div class="card">
-        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">🕐</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Приёмные часы</h2>
-        <!-- ЗАМЕНИТЕ на настоящее расписание -->
-        <p style="color: var(--text-soft); line-height: 1.8;">
-            Пн, Ср, Пт: 9:00 – 15:00<br>
-            Вт, Чт: 12:00 – 17:00
-        </p>
-    </div>
-
-    <div class="card">
-        <div style="font-size: 1.75rem; margin-bottom: 0.75rem;">📞</div>
-        <h2 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Телефон</h2>
-        <!-- ЗАМЕНИТЕ на настоящий телефон -->
-        <p style="color: var(--text-soft);">+7 (999) 123-45-67</p>
-    </div>
-
+    {% endfor %}
 </div>
 
-<div class="card" style="margin-top: 1rem; background: var(--green-pale);">
-    <p style="color: var(--text-soft); line-height: 1.7;">
+<div class="card" style="background:var(--green-pale);">
+    <p style="color:var(--text-soft);line-height:1.7;">
         💬 <strong>Всё сказанное остаётся конфиденциальным.</strong><br>
         Обращайтесь по любому вопросу — нет слишком маленьких или несерьёзных проблем.
     </p>
