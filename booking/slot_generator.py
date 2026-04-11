@@ -1,6 +1,8 @@
 from django import forms
 from datetime import date, timedelta
 
+from booking.models import Psychologist
+
 # Дни недели для мультивыбора
 WEEKDAY_CHOICES = [
     (0, 'Понедельник'),
@@ -24,6 +26,11 @@ class SlotGeneratorForm(forms.Form):
     Форма генератора слотов.
     Психолог выбирает период, дни недели, время начала/конца и интервал.
     """
+    psychologist = forms.ModelChoiceField(
+        queryset=Psychologist.objects.all(),
+        label='Психолог',
+        empty_label='— Выберите психолога —',
+    )
     date_from = forms.DateField(
         label='Начало периода',
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'vDateField form-control'}),
