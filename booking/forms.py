@@ -23,13 +23,14 @@ class AppointmentForm(forms.ModelForm):
             # консультация
             'full_name', 'who', 'grade', 'phone', 'email', 'message',
             # дошкольник
-            'child_name', 'child_birthdate', 'kindergarten', 'address', 'parent_name',
+            'child_name', 'child_birthdate', 'kindergarten', 'address', 'parent_name','parent_phone',
         ]
         widgets = {
             'full_name':   forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Иванова Мария Сергеевна'}),
             'who':         forms.Select(attrs={'class': 'form-input'}),
             'grade':       forms.TextInput(attrs={'class': 'form-input', 'placeholder': '9А'}),
             'phone':       forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (999) 123-45-67'}),
+            'parent_phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+7 (999) 123-45-67'}),
             'email':       forms.EmailInput(attrs={'class': 'form-input', 'placeholder': 'email@example.com'}),
             'message':     forms.Textarea(attrs={'class': 'form-input', 'rows': 3}),
             'child_name':  forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Иванов Иван Иванович'}),
@@ -52,16 +53,12 @@ class AppointmentForm(forms.ModelForm):
             if not cleaned.get('phone'):
                 self.add_error('phone', 'Обязательное поле')
 
+
         elif apt.form_type == 'preschool_exam':
-            for field, label in [
-                ('child_name',      'Обязательное поле'),
-                ('child_birthdate', 'Обязательное поле'),
-                ('kindergarten',    'Обязательное поле'),
-                ('address',         'Обязательное поле'),
-                ('parent_name',     'Обязательное поле'),
-                ('phone',           'Обязательное поле'),
-            ]:
+
+            for field in ['child_name', 'child_birthdate', 'kindergarten', 'address', 'parent_name', 'parent_phone']:
+
                 if not cleaned.get(field):
-                    self.add_error(field, label)
+                    self.add_error(field, 'Обязательное поле')
 
         return cleaned

@@ -60,7 +60,6 @@ class Appointment(models.Model):
     WHO_CHOICES = [
         ('student',     'Ученик'),
         ('parent',      'Родитель'),
-        ('preschooler', 'Родитель дошкольника'),
         ('teacher',     'Учитель'),
     ]
 
@@ -85,6 +84,7 @@ class Appointment(models.Model):
     # --- Поля для обследования дошкольника ---
     child_name      = models.CharField(max_length=200, blank=True, verbose_name='ФИО ребёнка')
     child_birthdate = models.DateField(null=True, blank=True, verbose_name='Дата рождения ребёнка')
+    parent_phone = models.CharField(max_length=20, blank=True, verbose_name='Телефон родителя')
     kindergarten    = models.CharField(max_length=200, blank=True, verbose_name='Номер детского сада')
     address         = models.CharField(max_length=300, blank=True, verbose_name='Место проживания')
     parent_name     = models.CharField(max_length=200, blank=True, verbose_name='ФИО родителя')
