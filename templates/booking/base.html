@@ -258,13 +258,11 @@
             <span>Лицей №23</span>
         </a>
         <nav>
-            <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif
-            %}>Главная</a>
-            <a href="{% url 'schedule' %}" {% if request.resolver_match.url_name == 'schedule' %}class="active"{% endif
-            %}>Записаться</a>
-            <a href="{% url 'contacts' %}" {% if request.resolver_match.url_name == 'contacts' %}class="active"{% endif
-            %}>Контакты</a>
+            <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Главная</a>
+            <a href="{% url 'schedule' %}" {% if request.resolver_match.url_name == 'schedule' %}class="active"{% endif %}>Записаться</a>
+            <a href="{% url 'contacts' %}" {% if request.resolver_match.url_name == 'contacts' %}class="active"{% endif %}>Контакты</a>
         </nav>
+    </div>
 </header>
 
 <main>
