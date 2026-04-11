@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Психолог | Лицей №23{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap"
+          rel="stylesheet">
     <style>
         /* ===== ПЕРЕМЕННЫЕ ЦВЕТОВ — меняйте здесь ===== */
         :root {
@@ -193,37 +194,94 @@
             nav { flex-wrap: wrap; justify-content: center; }
             h1 { font-size: 1.5rem; }
         }
+        /* ===== КАРТОЧКИ ГЛАВНОЙ СТРАНИЦЫ ===== */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .welcome-card {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-tag {
+            color: var(--green-light);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-family: 'Lora', serif;
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-description {
+            color: var(--text-soft);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+        }
+
+        .btn-arrow { margin-left: 0.25rem; }
+
+        @media (max-width: 600px) {
+            .welcome-card {
+                flex-direction: column;
+            }
+            .welcome-card img {
+                width: 100% !important;
+                height: 180px !important;
+            }
+        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-inner">
-            <a href="{% url 'home' %}" class="logo">
-                Кабинет психолога
-                <span>Лицей №23</span>
-            </a>
-            <nav>
-                <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Главная</a>
-                <a href="{% url 'schedule' %}" {% if request.resolver_match.url_name == 'schedule' %}class="active"{% endif %}>Записаться</a>
-                <a href="{% url 'contacts' %}" {% if request.resolver_match.url_name == 'contacts' %}class="active"{% endif %}>Контакты</a>
-            </nav>
-        </div>
-    </header>
+<header>
+    <div class="header-inner">
+        <a href="{% url 'home' %}" class="logo">
+            Кабинет психолога
+            <span>Лицей №23</span>
+        </a>
+        <nav>
+            <a href="{% url 'home' %}" {% if request.resolver_match.url_name== 'home' %}class="active"{% endif
+            %}>Главная</a>
+            <a href="{% url 'schedule' %}" {% if request.resolver_match.url_name== 'schedule' %}class="active"{% endif
+            %}>Записаться</a>
+            <a href="{% url 'contacts' %}" {% if request.resolver_match.url_name== 'contacts' %}class="active"{% endif
+            %}>Контакты</a>
+        </nav>
+    </div>
+</header>
 
-    <main>
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <div class="message-{{ message.tags }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
+<main>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
+</main>
 
-    <footer>
-        © 2024 Лицей №23 · Кабинет психолога
-    </footer>
+<footer>
+    © 2024 Лицей №23 · Кабинет психолога
+</footer>
 </body>
 </html>
