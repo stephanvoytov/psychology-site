@@ -85,9 +85,10 @@ class TimeSlotAdmin(admin.ModelAdmin):
         return created, skipped
 
     def get_who_booked(self, obj):
-        if hasattr(obj, 'appointment'):
-            return obj.appointment.full_name
-        return '—'
+        try:
+            return obj.appointment.full_name or obj.appointment.parent_name or '—'
+        except Appointment.DoesNotExist:
+            return '—'
     get_who_booked.short_description = 'Кто записан'
 
     def get_appointment_type(self, obj):
@@ -103,6 +104,21 @@ class AppointmentAdmin(admin.ModelAdmin):
     list_filter   = ('appointment_type', 'who', 'slot__psychologist', 'slot__date')
     search_fields = ('full_name', 'phone', 'grade')
     readonly_fields = ('created_at',)
+
+    def get_name(self, obj):
+        # Для дошкольников показываем ФИО родителя + ребёнка
+        if obj.parent_name:
+            return f'{obj.parent_name} (ребёнок: {obj.child_name})'
+        return obj.full_name or '—'
+
+    get_name.short_description = 'ФИО'
+
+    def get_who(self, obj):
+        if obj.who:
+            return obj.get_who_display()
+        return 'Родитель дошкольника'
+
+    get_who.short_description = 'Кто записывается'
 
 
 admin.site.site_header = 'Лицей №23 — Кабинет психолога'
