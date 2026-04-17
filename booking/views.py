@@ -1,7 +1,10 @@
+from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 
+from lyceum23 import settings
 from .email_utils import send_appointment_notification
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
@@ -87,3 +90,17 @@ def success(request):
 def contacts(request):
     psychologists = Psychologist.objects.all()
     return render(request, 'booking/contacts.html', {'psychologists': psychologists})
+
+
+def test_email(request):
+    try:
+        result = send_mail(
+            subject='Тестовое письмо от сайта',
+            message='Если вы читаете это, уведомления работают!',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=['voytov.st.vi@gmail.com'],
+            fail_silently=False,
+        )
+        return HttpResponse(f"Письмо отправлено! Результат: {result}")
+    except Exception as e:
+        return HttpResponse(f"Ошибка: {str(e)}")
