@@ -1,10 +1,8 @@
-from django.core.mail import send_mail
-from django.http import HttpResponse
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 
-from lyceum23 import settings
 from .email_utils import send_appointment_notification
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
