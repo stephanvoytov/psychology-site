@@ -9,5 +9,4 @@ urlpatterns = [
     path('book/<int:slot_id>/', views.book, name='book'),
     path('success/', views.success, name='success'),
     path('contacts/', views.contacts, name='contacts'),
-    path('test-email/', test_email),
 ]

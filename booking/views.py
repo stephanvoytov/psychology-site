@@ -91,16 +91,3 @@ def contacts(request):
     psychologists = Psychologist.objects.all()
     return render(request, 'booking/contacts.html', {'psychologists': psychologists})
 
-
-def test_email(request):
-    try:
-        result = send_mail(
-            subject='Тестовое письмо от сайта',
-            message='Если вы читаете это, уведомления работают!',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['voytov.st.vi@gmail.com'],
-            fail_silently=False,
-        )
-        return HttpResponse(f"Письмо отправлено! Результат: {result}")
-    except Exception as e:
-        return HttpResponse(f"Ошибка: {str(e)}")
