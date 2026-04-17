@@ -10,6 +10,8 @@
     {% for p in psychologists %}
     <div class="card" style="padding:1.5rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:.75rem;">
         {% if p.photo %}
+
+
             <img src="{% static p.photo %}" alt="{{ p.name }}"
                  style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--border);">
         {% else %}

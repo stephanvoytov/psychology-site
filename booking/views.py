@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
+
+from .email_utils import send_appointment_notification
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
 
@@ -54,8 +56,14 @@ def book(request, slot_id):
             appointment.save()
             slot.is_available = False
             slot.save()
+            try:
+                send_appointment_notification(appointment)
+            except Exception as e:
+                print(f'Ошибка отправки email: {e}')
+
             messages.success(request, 'Вы успешно записались! Ждём вас.')
             return redirect('success')
+
     else:
         form = AppointmentForm(appointment_types=appointment_types)
 

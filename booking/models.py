@@ -8,6 +8,7 @@ class Psychologist(models.Model):
     phone   = models.CharField(max_length=20, blank=True, verbose_name='Телефон')
     photo = models.CharField(max_length=200, blank=True, verbose_name='Путь к фото в файлах сайта',
                              help_text='Например: images/psychologists/photo1.jpg')
+    email = models.EmailField(blank=True, verbose_name='Email для уведомлений')
 
     class Meta:
         verbose_name = 'Психолог'
