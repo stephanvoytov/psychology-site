@@ -56,11 +56,15 @@ def book(request, slot_id):
             appointment.save()
             slot.is_available = False
             slot.save()
+            apt_type = appointment.appointment_type
             try:
                 send_appointment_notification(appointment)
             except Exception as e:
                 print(f'Ошибка отправки email: {e}')
-
+            if apt_type and apt_type.form_type == 'preschool_exam':
+                messages.success(request, '''Cобеседование проходит в кабинете психолога на I этаже.
+Ребенка приводят только родители (законные представители). Длительность собеседования 30-40 мин.
+Просим приходить заблаговременно - за 3-5 мин до начала встречи.''')
             messages.success(request, 'Вы успешно записались! Ждём вас.')
             return redirect('success')
 
