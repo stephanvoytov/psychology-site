@@ -135,4 +135,30 @@ function showBlock() {
 select.addEventListener('change', showBlock);
 showBlock(); // При загрузке если форма вернулась с ошибкой
 </script>
+<script>
+    // Диагностика формы
+    const form = document.querySelector('form');
+    console.log('=== ФОРМА НА СТРАНИЦЕ ===');
+    console.log('Action:', form.action);
+    console.log('Method:', form.method);
+    console.log('Current URL:', window.location.href);
+    
+    form.addEventListener('submit', function(e) {
+        console.log('=== ОТПРАВКА ФОРМЫ ===');
+        console.log('Submit event - action:', this.action);
+        console.log('Target URL:', this.getAttribute('action'));
+    });
+    
+    // Проверяем, не меняет ли кто-то action
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'action') {
+                console.warn('!!! ACTION ФОРМЫ БЫЛ ИЗМЕНЁН !!!');
+                console.warn('Новое значение:', form.action);
+                console.trace();
+            }
+        });
+    });
+    observer.observe(form, {attributes: true});
+</script>
 {% endblock %}
