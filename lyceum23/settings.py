@@ -7,24 +7,6 @@ import dj_database_url
 
 import sys
 
-# Fix for Python 3.14 compatibility
-# if sys.version_info >= (3, 14):
-#     import django.template.context
-#     if not hasattr(django.template.context, 'dicts'):
-#         django.template.context.dicts = property(lambda self: {})
-#
-#     # Monkey patch the Context class
-#     original_copy = django.template.context.Context.__copy__
-#     def patched_copy(self):
-#         try:
-#             return original_copy(self)
-#         except AttributeError:
-#             # Create a new instance without using dicts
-#             new = django.template.context.Context(self)
-#             new.dicts = self.dicts if hasattr(self, 'dicts') else []
-#             return new
-#     django.template.context.Context.__copy__ = patched_copy
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # СЕКРЕТНЫЙ КЛЮЧ — берите из переменной окружения
@@ -101,11 +83,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'stepanvoytov@yandex.ru'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'stepanvoytov@yandex.ru')
 EMAIL_HOST_PASSWORD = os.getenv('YA_PASSWORD')
-DEFAULT_FROM_EMAIL = 'stepanvoytov@yandex.ru'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'stepanvoytov@yandex.ru')
 
-# Временно для диагностики (потом удалить!)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
