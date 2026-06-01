@@ -1,4 +1,6 @@
 # 🌿 Сайт психолога — Лицей №23
+[![Django](https://img.shields.io/badge/Django-092E20?logo=django)](https://www.djangoproject.com/) [![Stars](https://img.shields.io/github/stars/stephanvoytov/psychology-site)](https://github.com/stephanvoytov/psychology-site/stargazers)
+
 
 Django-сайт для записи к школьному психологу.
 
