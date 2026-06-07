@@ -1,11 +1,15 @@
 
+import logging
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 
-from .email_utils import send_appointment_notification
+from .email_utils import send_appointment_notification, send_cancellation_notification
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .forms import AppointmentForm
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -61,7 +65,27 @@ def book(request, slot_id):
             try:
                 send_appointment_notification(appointment)
             except Exception as e:
-                print(f'Ошибка отправки email: {e}')
+                logger.error('Ошибка отправки email: %s', e, exc_info=True)
+
+            # Store in session for success page
+            apt_data = {
+                'id': appointment.id,
+                'psychologist': psychologist.name,
+                'psychologist_cabinet': psychologist.cabinet,
+                'date': str(slot.date),
+                'time': str(slot.time),
+                'appointment_type': apt_type.name if apt_type else '',
+                'form_type': apt_type.form_type if apt_type else '',
+                'phone': appointment.phone or appointment.parent_phone or '',
+                'child_name': appointment.child_name or '',
+                'full_name': appointment.full_name or '',
+                'kindergarten': appointment.kindergarten or '',
+                'address': appointment.address or '',
+                'parent_name': appointment.parent_name or '',
+                'parent_phone': appointment.parent_phone or '',
+            }
+            request.session['last_appointment'] = apt_data
+
             if apt_type and apt_type.form_type == 'preschool_exam':
                 messages.success(request, '''Cобеседование проходит в кабинете психолога на I этаже.
 Ребенка приводят только родители (законные представители). Длительность собеседования 30-40 мин.
@@ -82,10 +106,47 @@ def book(request, slot_id):
 
 
 def success(request):
-    return render(request, 'booking/success.html')
+    last_appointment = request.session.pop('last_appointment', '{}')
+    return render(request, 'booking/success.html', {
+        'last_appointment': last_appointment,
+    })
+
+
+def my_appointment(request):
+    """Страница «Моя запись» — информация из localStorage."""
+    return render(request, 'booking/my_appointment.html')
+
+
+def cancel_appointment_direct(request):
+    """Отмена записи в один шаг — по ID записи (POST)."""
+    if request.method == 'POST':
+        app_id = request.POST.get('app_id', '').strip()
+        if app_id:
+            try:
+                app = Appointment.objects.select_related(
+                    'slot__psychologist', 'appointment_type'
+                ).get(id=app_id, slot__date__gte=timezone.now().date())
+                slot = app.slot
+                try:
+                    send_cancellation_notification(app)
+                except Exception as e:
+                    logger.error('Ошибка отправки уведомления об отмене: %s', e, exc_info=True)
+                app.delete()
+                slot.is_available = True
+                slot.save()
+                messages.success(request, 'Запись успешно отменена.')
+                redirect_url = redirect('my_appointment')
+                redirect_url['Location'] += '?cancelled=1'
+                return redirect_url
+            except Appointment.DoesNotExist:
+                messages.warning(request, 'Запись не найдена. Возможно, она уже отменена.')
+        return redirect('my_appointment')
+
+    return redirect('my_appointment')
 
 
 def contacts(request):
     psychologists = Psychologist.objects.all()
     return render(request, 'booking/contacts.html', {'psychologists': psychologists})
+
 

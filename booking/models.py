@@ -6,8 +6,7 @@ class Psychologist(models.Model):
     grades  = models.CharField(max_length=100, verbose_name='Классы/категория')
     cabinet = models.CharField(max_length=50, blank=True, verbose_name='Кабинет')
     phone   = models.CharField(max_length=20, blank=True, verbose_name='Телефон')
-    photo = models.CharField(max_length=200, blank=True, verbose_name='Путь к фото в файлах сайта',
-                             help_text='Например: images/psychologists/photo1.jpg')
+    photo = models.ImageField(upload_to='psychologists/', blank=True, verbose_name='Фото')
     email = models.EmailField(blank=True, verbose_name='Email для уведомлений')
 
     class Meta:
@@ -43,7 +42,7 @@ class AppointmentType(models.Model):
 class TimeSlot(models.Model):
     psychologist = models.ForeignKey(
         Psychologist, on_delete=models.CASCADE,
-        related_name='slots', verbose_name='Психолог', default=1
+        related_name='slots', verbose_name='Психолог'
     )
     date         = models.DateField(verbose_name='Дата')
     time         = models.TimeField(verbose_name='Время')
@@ -72,7 +71,7 @@ class Appointment(models.Model):
         related_name='appointment', verbose_name='Слот'
     )
     appointment_type = models.ForeignKey(
-        AppointmentType, on_delete=models.SET_NULL,
+        AppointmentType, on_delete=models.PROTECT,
         null=True, verbose_name='Тип приёма'
     )
 

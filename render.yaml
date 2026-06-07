@@ -3,7 +3,7 @@ services:
     name: lyceum23-psychologist
     runtime: python
     buildCommand: ./build.sh
-    startCommand: gunicorn lyceum23.wsgi:application
+    startCommand: gunicorn lyceum23.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
         generateValue: true

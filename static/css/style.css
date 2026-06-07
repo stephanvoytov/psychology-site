@@ -1,0 +1,268 @@
+/* ===== ПЕРЕМЕННЫЕ ЦВЕТОВ — меняйте здесь ===== */
+:root {
+    --green:       #4a7c6f;
+    --green-light: #6aaa98;
+    --green-pale:  #e8f4f1;
+    --cream:       #faf8f3;
+    --text:        #2d3532;
+    --text-soft:   #667068;
+    --border:      #d4e6e1;
+    --white:       #ffffff;
+    --shadow:      0 2px 16px rgba(74,124,111,0.10);
+}
+
+/* ===== ТЁМНАЯ ТЕМА ===== */
+[data-theme="dark"] {
+    --green:       #6aaa98;
+    --green-light: #8bc5b5;
+    --green-pale:  #1a2e2a;
+    --cream:       #181d1b;
+    --text:        #d9e3df;
+    --text-soft:   #8a9b95;
+    --border:      #2a3a35;
+    --white:       #1f2623;
+    --shadow:      0 2px 16px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== ШАПКА ===== */
+header {
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+.header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+}
+.logo {
+    font-family: 'Lora', serif;
+    font-size: 1.2rem;
+    color: var(--green);
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 1.2;
+}
+.logo span {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+}
+nav { display: flex; gap: 0.25rem; }
+nav a {
+    color: var(--text-soft);
+    text-decoration: none;
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+nav a:hover, nav a.active {
+    background: var(--green-pale);
+    color: var(--green);
+}
+
+/* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+main {
+    flex: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    width: 100%;
+}
+
+/* ===== КАРТОЧКИ ===== */
+.card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+/* ===== КНОПКИ ===== */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: 'Nunito', sans-serif;
+}
+.btn-primary {
+    background: var(--green);
+    color: var(--white);
+}
+.btn-primary:hover {
+    background: var(--green-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(74,124,111,0.3);
+}
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--green);
+    color: var(--green);
+}
+.btn-outline:hover {
+    background: var(--green-pale);
+}
+
+/* ===== ЗАГОЛОВКИ ===== */
+h1 { font-family: 'Lora', serif; font-size: 2rem; color: var(--green); margin-bottom: 0.5rem; }
+h2 { font-family: 'Lora', serif; font-size: 1.4rem; color: var(--text); margin-bottom: 1rem; }
+
+/* ===== СООБЩЕНИЯ (успех/ошибка) ===== */
+.messages { margin-bottom: 1.5rem; }
+.message-success {
+    background: var(--green-pale);
+    border: 1px solid var(--green-light);
+    color: var(--green);
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+}
+.message-error {
+    background: #fdf0f0;
+    border: 1px solid #e8a0a0;
+    color: #c0392b;
+    padding: 1rem 1.25rem;
+    border-radius: 10px;
+}
+
+/* ===== ФОРМА ===== */
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--text-soft);
+}
+.form-input {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: 'Nunito', sans-serif;
+    color: var(--text);
+    background: var(--cream);
+    transition: border-color 0.2s;
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--green-light);
+    background: var(--white);
+}
+.form-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.3rem; }
+
+/* ===== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ===== */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+    line-height: 1;
+}
+.theme-toggle:hover {
+    background: var(--green-pale);
+}
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--green-light);
+    outline-offset: 2px;
+}
+
+/* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ТЕМАМИ ===== */
+body, header, footer, .card, .btn, .form-input, nav a, .message-success, .message-error {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ===== ПОДВАЛ ===== */
+footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    text-align: center;
+    padding: 1.25rem;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+@media (max-width: 600px) {
+    .header-inner { flex-direction: column; height: auto; padding: 0.75rem 0; gap: 0.5rem; }
+    nav { flex-wrap: wrap; justify-content: center; }
+    h1 { font-size: 1.5rem; }
+}
+
+/* ===== КАРТОЧКИ ГЛАВНОЙ СТРАНИЦЫ ===== */
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+.welcome-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+}
+.card-content { flex: 1; }
+.card-tag {
+    color: var(--green-light);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.card-title {
+    font-family: 'Lora', serif;
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+}
+.card-description {
+    color: var(--text-soft);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+.btn-arrow { margin-left: 0.25rem; }
+
+@media (max-width: 600px) {
+    .welcome-card { flex-direction: column; }
+    .welcome-card img {
+        width: 100% !important;
+        height: 180px !important;
+    }
+}

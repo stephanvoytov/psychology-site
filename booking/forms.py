@@ -36,8 +36,8 @@ class AppointmentForm(forms.ModelForm):
         if appointment_types is not None:
             self.fields['appointment_type'].queryset = appointment_types
 
-        for field in self.fields:
-            self.fields[field].required = False
+        self.fields['phone'].required = False
+        self.fields['appointment_type'].required = False
 
     def clean(self):
         cleaned = super().clean()

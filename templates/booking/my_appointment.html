@@ -1,0 +1,151 @@
+{% extends 'booking/base.html' %}
+{% load static %}
+
+{% block title %}Моя запись | Психолог Лицея №23{% endblock %}
+
+{% block content %}
+<h1>Моя запись</h1>
+
+<div id="no-appointment" style="display: none;">
+    <div class="card" style="text-align: center; padding: 3rem 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
+        <p style="color: var(--text-soft); font-size: 1.1rem;">
+            У вас нет активных записей.
+        </p>
+        <a href="{% url 'schedule' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Записаться</a>
+    </div>
+</div>
+
+<div id="appointment-card" style="display: none;">
+    <div class="card" style="padding: 2rem;">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="font-size: 2.5rem;">📋</div>
+            <div>
+                <div style="font-size: 0.85rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.05em;">Ваша запись</div>
+                <div id="app-display" style="font-size: 1.2rem; font-weight: 700; color: var(--green);"></div>
+            </div>
+        </div>
+
+        <div id="app-details" style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;"></div>
+
+        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #856404;">
+            ⚠️ Данные о записи хранятся в вашем браузере. Если вы почистите кэш или
+            зайдёте с другого устройства — запись здесь не появится.
+            Запишите номер телефона, который вы указали при записи.
+        </div>
+
+        <div id="cancel-section">
+            <div id="cancel-urgent" style="display: none; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #721c24;">
+                ❗ Запись на ближайшее время. Для отмены позвоните по телефону
+                <strong>+7 (999) 123-45-67</strong> или напишите на почту
+                <strong>psychologist@school.ru</strong>.
+            </div>
+            <form id="cancel-form" method="post" action="{% url 'cancel_appointment_direct' %}"
+                  onsubmit="return confirm('Вы уверены, что хотите отменить запись?');">
+                {% csrf_token %}
+                <input type="hidden" name="app_id" id="cancel-app-id" value="">
+                <button type="submit" id="cancel-btn" class="btn btn-outline">Отменить запись</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // Если запись отменена — проверяем какие записи ещё остались в БД
+    // (удаляем из localStorage те, что уже отменены — они не покажутся,
+    // потому что не будут найдены в БД, но чтоб не мозолили глаза)
+    if (window.location.search.indexOf('cancelled=1') !== -1) {
+        try {
+            var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
+            // Удаляем первую будущую запись (ту, что только что отменили)
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+            for (var i = 0; i < list.length; i++) {
+                var d = new Date(list[i].date);
+                if (d >= today) {
+                    list.splice(i, 1);
+                    break;
+                }
+            }
+            localStorage.setItem('psychology_appointments', JSON.stringify(list));
+        } catch(e) {}
+    }
+
+    var noApp = document.getElementById('no-appointment');
+    var card = document.getElementById('appointment-card');
+    var display = document.getElementById('app-display');
+    var details = document.getElementById('app-details');
+    var cancelUrgent = document.getElementById('cancel-urgent');
+
+    try {
+        var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
+        if (list.length === 0) { noApp.style.display = 'block'; return; }
+
+        // Находим ближайшую будущую запись
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var upcoming = null;
+        for (var i = 0; i < list.length; i++) {
+            var d = new Date(list[i].date);
+            if (d >= today) {
+                if (!upcoming || d < new Date(upcoming.date)) {
+                    upcoming = list[i];
+                }
+            }
+        }
+        if (!upcoming) { noApp.style.display = 'block'; return; }
+
+        card.style.display = 'block';
+        display.textContent = upcoming.psychologist ? 'К «' + upcoming.psychologist + '»' : '';
+
+        var months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        var days = ['воскресенье', 'понедельник', 'вторник', 'среда',
+                    'четверг', 'пятница', 'суббота'];
+        var dt = new Date(upcoming.date);
+        var dateStr = days[dt.getDay()] + ', ' + dt.getDate() + ' ' + months[dt.getMonth()] + ' ' + dt.getFullYear();
+
+        var rows = [
+            { icon: '📅', label: 'Дата', value: dateStr },
+            { icon: '⏰', label: 'Время', value: upcoming.time },
+        ];
+        if (upcoming.psychologist) {
+            rows.push({ icon: '🧑‍🏫', label: 'Психолог', value: upcoming.psychologist });
+        }
+        if (upcoming.appointment_type) {
+            rows.push({ icon: '📋', label: 'Тип приёма', value: upcoming.appointment_type });
+        }
+        if (upcoming.cabinet) {
+            rows.push({ icon: '🚪', label: 'Кабинет', value: upcoming.cabinet });
+        }
+
+        details.innerHTML = rows.map(function(r) {
+            return '<div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">' +
+                '<span style="min-width:28px;">' + r.icon + '</span>' +
+                '<span style="min-width:80px;color:var(--text-soft);font-weight:600;">' + r.label + '</span>' +
+                '<span style="font-weight:700;">' + r.value + '</span>' +
+                '</div>';
+        }).join('');
+
+        // Подставляем ID записи в форму отмены
+        var appIdInput = document.getElementById('cancel-app-id');
+        if (appIdInput && upcoming.app_id) {
+            appIdInput.value = upcoming.app_id;
+        }
+
+        // Проверка: если запись в ближайшие 24 часа — звонить для отмены
+        var appointmentDate = new Date(upcoming.date + 'T' + (upcoming.time || '00:00'));
+        var now = new Date();
+        var diffHours = (appointmentDate - now) / (1000 * 60 * 60);
+        if (diffHours < 24) {
+            cancelUrgent.style.display = 'block';
+            var cancelForm = document.getElementById('cancel-form');
+            if (cancelForm) cancelForm.style.display = 'none';
+        }
+    } catch(e) {
+        noApp.style.display = 'block';
+    }
+})();
+</script>
+{% endblock %}

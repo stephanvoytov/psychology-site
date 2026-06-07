@@ -4,6 +4,13 @@
 
 {% block content %}
 
+<div id="existing-warning" style="display:none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; color: #856404;">
+    <strong>⚠️ У вас уже есть запись.</strong>
+    У вас уже есть запись на приём. Пожалуйста, проверьте её на странице
+    <a href="{% url 'my_appointment' %}" style="color: #856404; font-weight: 700;">«Моя запись»</a>
+    перед созданием новой.
+</div>
+
 <div style="display:inline-flex;align-items:center;gap:10px;background:var(--green-pale);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:1.5rem;">
     <div style="width:36px;height:36px;border-radius:8px;background:var(--green-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;">🗓</div>
     <div>
@@ -113,6 +120,7 @@
 </div>
 
 <script>
+{% if appointment_types %}
 // Словарь: id типа приёма → form_type из базы
 const typeMap = {
     {% for apt in appointment_types %}"{{ apt.id }}": "{{ apt.form_type }}"{% if not forloop.last %},{% endif %}{% endfor %}
@@ -133,32 +141,65 @@ function showBlock() {
 }
 
 select.addEventListener('change', showBlock);
-showBlock(); // При загрузке если форма вернулась с ошибкой
+showBlock();
+{% else %}
+<p style="color:var(--text-soft);">Для этого психолога пока нет доступных типов приёма.</p>
+{% endif %}
 </script>
+
 <script>
-    // Диагностика формы
-    const form = document.querySelector('form');
-    console.log('=== ФОРМА НА СТРАНИЦЕ ===');
-    console.log('Action:', form.action);
-    console.log('Method:', form.method);
-    console.log('Current URL:', window.location.href);
-    
-    form.addEventListener('submit', function(e) {
-        console.log('=== ОТПРАВКА ФОРМЫ ===');
-        console.log('Submit event - action:', this.action);
-        console.log('Target URL:', this.getAttribute('action'));
-    });
-    
-    // Проверяем, не меняет ли кто-то action
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'action') {
-                console.warn('!!! ACTION ФОРМЫ БЫЛ ИЗМЕНЁН !!!');
-                console.warn('Новое значение:', form.action);
-                console.trace();
+// Предупреждение о существующей записи + подтверждение при отправке
+(function() {
+    var warn = document.getElementById('existing-warning');
+    var form = document.querySelector('form');
+    if (!form) return;
+
+    try {
+        var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
+        if (list.length === 0) return;
+
+        // Находим будущую запись
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var upcoming = null;
+        for (var i = 0; i < list.length; i++) {
+            var d = new Date(list[i].date);
+            if (d >= today) {
+                if (!upcoming || d < new Date(upcoming.date)) {
+                    upcoming = list[i];
+                }
+            }
+        }
+        if (!upcoming) return;
+
+        // Показываем жёлтое предупреждение сверху
+        if (warn) warn.style.display = 'block';
+
+        // При отправке формы проверяем, не совпадают ли данные
+        form.addEventListener('submit', function(e) {
+            var nameInput = form.querySelector('[name="child_name"], [name="full_name"]');
+            var phoneInput = form.querySelector('[name="phone"], [name="parent_phone"]');
+            var enteredName = nameInput ? nameInput.value.trim() : '';
+            var enteredPhone = phoneInput ? phoneInput.value.trim() : '';
+
+            // Если имя или телефон совпадают с существующей записью
+            var nameMatch = enteredName && upcoming.child_name &&
+                enteredName.toLowerCase().indexOf(upcoming.child_name.toLowerCase()) !== -1;
+            var phoneMatch = enteredPhone && upcoming.phone &&
+                enteredPhone.replace(/\s/g,'').indexOf(upcoming.phone.replace(/\s/g,'')) !== -1;
+
+            if (nameMatch || phoneMatch) {
+                var msg = 'У вас уже есть запись:\n' +
+                    '📅 ' + upcoming.date + ' в ' + upcoming.time + '\n' +
+                    '🧑‍🏫 ' + (upcoming.psychologist || '') + '\n\n' +
+                    'Вы точно хотите продолжить и создать новую запись?';
+                if (!confirm(msg)) {
+                    e.preventDefault();
+                }
             }
         });
-    });
-    observer.observe(form, {attributes: true});
+
+    } catch(e) {}
+})();
 </script>
 {% endblock %}

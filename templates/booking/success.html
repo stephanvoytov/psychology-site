@@ -2,15 +2,98 @@
 {% load static %}
 {% block title %}Запись подтверждена | Психолог Лицея №23{% endblock %}
 {% block content %}
-<div class="card" style="text-align: center; padding: 3rem 2rem; max-width: 500px; margin: 0 auto;">
-    <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
-    <h1 style="margin-bottom: 0.75rem;">Вы записаны!</h1>
-    <p style="color: var(--text-soft); line-height: 1.7; margin-bottom: 2rem;">
-        Ваша запись успешно создана. Если вы не сможете прийти — пожалуйста, предупредите заранее.
-    </p>
-    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+{% with data=last_appointment %}
+<div class="card" style="max-width: 600px; margin: 0 auto; padding: 2.5rem 2rem;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+        <div style="font-size: 3.5rem;">✅</div>
+        <h1 style="margin: 0.5rem 0;">Вы записаны!</h1>
+        <p style="color: var(--text-soft);">Запись успешно создана</p>
+    </div>
+
+    {# Карточка с деталями записи #}
+    <div style="
+        background: var(--green-pale);
+        border-radius: 14px;
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 1.5rem;
+        border: 2px solid var(--border);
+    ">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600; width: 130px;">🧑‍🏫 Психолог</td>
+                <td style="padding: 0.5rem 0; font-weight: 700;">{{ data.psychologist }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">📅 Дата</td>
+                <td style="padding: 0.5rem 0;">{{ data.date }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">⏰ Время</td>
+                <td style="padding: 0.5rem 0;">{{ data.time }}</td>
+            </tr>
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">📋 Тип приёма</td>
+                <td style="padding: 0.5rem 0;">{{ data.appointment_type }}</td>
+            </tr>
+            {% if data.child_name %}
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">👶 Ребёнок</td>
+                <td style="padding: 0.5rem 0;">{{ data.child_name }}</td>
+            </tr>
+            {% endif %}
+            {% if data.parent_name %}
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">👩 Родитель</td>
+                <td style="padding: 0.5rem 0;">{{ data.parent_name }}</td>
+            </tr>
+            {% endif %}
+            {% if data.kindergarten %}
+            <tr>
+                <td style="padding: 0.5rem 0.75rem 0.5rem 0; vertical-align: top; white-space: nowrap; color: var(--text-soft); font-weight: 600;">🏫 Детский сад</td>
+                <td style="padding: 0.5rem 0;">{{ data.kindergarten }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    {# Информационное сообщение #}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message-{{ message.tags }}" style="margin-bottom: 1.25rem;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem;">
         <a href="{% url 'home' %}" class="btn btn-primary">На главную</a>
-        <a href="{% url 'contacts' %}" class="btn btn-outline">Контакты</a>
+        <a href="{% url 'my_appointment' %}" class="btn btn-outline">Моя запись</a>
     </div>
 </div>
+
+<script>
+// Save appointment info to localStorage for quick cancel later
+(function() {
+    try {
+        var data = {{ last_appointment|safe }};
+        if (data && data.phone) {
+            var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
+            list.push({
+                app_id: data.id,
+                phone: data.phone,
+                psychologist: data.psychologist,
+                date: data.date,
+                time: data.time,
+                cabinet: data.psychologist_cabinet || '',
+                appointment_type: data.appointment_type || '',
+                savedAt: new Date().toISOString()
+            });
+            // Keep only last 5
+            if (list.length > 5) list = list.slice(-5);
+            localStorage.setItem('psychology_appointments', JSON.stringify(list));
+        }
+    } catch(e) {}
+})();
+</script>
+{% endwith %}
 {% endblock %}
