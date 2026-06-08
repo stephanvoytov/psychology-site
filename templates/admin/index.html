@@ -200,20 +200,7 @@
                         {% endif %}
                     </td>
                 </tr>
-                <tr style="background:var(--darkened-bg,#f8f9fa);">
-                    <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">SMTP-пароль</td>
-                    <td style="padding:6px 12px;">
-                        {% if email_info.smtp_configured %}
-                            {% if settings.DEBUG %}
-                                <span style="color:var(--body-quiet-color,#666);">— (консоль, не требуется)</span>
-                            {% else %}
-                                <span style="color:#28a745;">✅ задан</span>
-                            {% endif %}
-                        {% else %}
-                            <span style="color:#dc3545;">❌ не задан — уведомления НЕ БУДУТ уходить</span>
-                        {% endif %}
-                    </td>
-                </tr>
+
             </table>
             <div style="margin-top:10px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
                 {% if settings.DEBUG %}
