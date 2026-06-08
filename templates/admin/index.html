@@ -173,25 +173,16 @@
             <span class="dash-card-icon">📧</span>
             <span class="dash-card-title">Email-уведомления</span>
             <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
-                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.has_key %}✅ Ключ задан{% else %}⚠️ Ключ не задан{% endif %}
+                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.has_key %}✅ Настроено{% else %}⚠️ Не настроено{% endif %}
             </span>
         </div>
         <div class="dash-card-body">
-            <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
-                <tr>
-                    <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">Бэкенд</td>
-                    <td style="padding:6px 12px;">{{ email_info.backend }}</td>
-                </tr>
-                <tr style="background:var(--darkened-bg,#f8f9fa);">
-                    <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">Отправитель</td>
-                    <td style="padding:6px 12px;">{{ email_info.sender }}</td>
-                </tr>
-            </table>
-            <div style="margin-top:10px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
+            <div style="font-size:0.9rem;padding:6px 0;">
+                Отправитель: <strong>{{ email_info.sender }}</strong>
+            </div>
+            <div style="margin-top:6px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
                 {% if settings.DEBUG %}
-                    ⚡ Режим отладки — письма выводятся в консоль, реальная отправка отключена.
-                {% else %}
-                    🔐 Письма отправляются через SMTP (VPS relay → Яндекс).
+                    ⚡ Режим отладки — вывод в консоль.
                 {% endif %}
                 Уведомления приходят психологу на email.
             </div>

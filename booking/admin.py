@@ -251,7 +251,6 @@ def _patched_admin_index(self, request, extra_context=None):
     ]
 
     extra_context['email_info'] = {
-        'backend': '📧 SMTP (VPS relay)' if not settings.DEBUG else '🔧 Консоль (только лог)',
         'sender': settings.DEFAULT_FROM_EMAIL,
         'has_key': bool(settings.EMAIL_HOST_PASSWORD),
     }
