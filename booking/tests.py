@@ -836,6 +836,7 @@ class TimeSlotAdminCreateSlotsTest(TestCase):
 # Admin UI tests (для не-технических пользователей)
 # =============================================================================
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class AdminGeneralTest(TestCase):
     """Общие проверки админки — удобство для не-технических пользователей."""
 
