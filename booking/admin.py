@@ -253,11 +253,13 @@ def _patched_admin_index(self, request, extra_context=None):
     ]
     extra_context['any_has_email'] = any(p['has_email'] for p in extra_context['psych_email_status'])
 
-    # Проверка SMTP (таймаут 2с — не блокирует страницу)
-    if not settings.DEBUG:
+    # Проверка SMTP — без пароля не проверяем
+    if not settings.DEBUG and settings.EMAIL_HOST_PASSWORD:
         smtp_result = _check_smtp()
-    else:
+    elif settings.DEBUG:
         smtp_result = 'debug'
+    else:
+        smtp_result = 'no_password'
 
     extra_context['email_info'] = {
         'sender': settings.DEFAULT_FROM_EMAIL,
