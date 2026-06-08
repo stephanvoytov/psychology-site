@@ -1,205 +1,336 @@
 {% extends 'booking/base.html' %}
 {% load static %}
-{% block title %}Запись | Психолог Лицея №23{% endblock %}
+{% block title %}Запись на приём | Психолог Лицея №23{% endblock %}
 
 {% block content %}
 
-<div id="existing-warning" style="display:none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; font-size: 0.88rem; color: #856404;">
-    <strong>⚠️ У вас уже есть запись.</strong>
-    У вас уже есть запись на приём. Пожалуйста, проверьте её на странице
-    <a href="{% url 'my_appointment' %}" style="color: #856404; font-weight: 700;">«Моя запись»</a>
-    перед созданием новой.
-</div>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <a href="{% url 'psychologist_schedule' psychologist.id %}" class="text-body-secondary text-decoration-none small">&larr; Назад</a>
+            <div>
+                <h1 class="h4 mb-0">{{ psychologist.name }}</h1>
+                <span class="text-accent small fw-bold">{{ psychologist.grades }}</span>
+            </div>
+        </div>
 
-<div style="display:inline-flex;align-items:center;gap:10px;background:var(--green-pale);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:1.5rem;">
-    <div style="width:36px;height:36px;border-radius:8px;background:var(--green-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;">🗓</div>
-    <div>
-        <div style="font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Вы выбрали</div>
-        <div style="font-size:15px;font-weight:700;color:var(--green);">
-            {{ slot.date|date:"l, d F Y" }} — {{ slot.time|time:"H:i" }}
+        <div class="card border mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                    <div class="date-badge">{{ slot.date|date:"d" }}</div>
+                    <div>
+                        <div class="fw-bold">{{ slot.date|date:"l" }}, {{ slot.time|time:"H:i" }}</div>
+                        <div class="text-body-secondary small">{{ slot.date|date:"F Y г." }}</div>
+                    </div>
+                </div>
+
+                <form id="booking-form" method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Тип приёма — всегда виден -->
+                    <div class="mb-3">
+                        <label for="{{ form.appointment_type.id_for_label }}" class="form-label small fw-medium">
+                            {{ form.appointment_type.label }}
+                        </label>
+                        {{ form.appointment_type }}
+                        {% if form.appointment_type.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.appointment_type.errors %}{{ error }}{% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Приглашение выбрать тип -->
+                    <div id="type-hint" class="alert alert-info py-2 small">
+                        Выберите тип приёма, чтобы заполнить нужные поля.
+                    </div>
+
+                    <!-- Поля для консультации (consultation) -->
+                    <div id="fields-consultation" class="field-group" style="display:none;">
+                        <h6 class="border-bottom pb-2 mb-3 text-accent">Данные для консультации</h6>
+                        <p class="small text-body-secondary mb-3">Поля со <span class="text-danger">*</span> обязательны</p>
+                        {% with field=form.full_name %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.who %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.phone %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.email %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.grade %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.message %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                    </div>
+
+                    <!-- Поля для дошкольного обследования (preschool_exam) -->
+                    <div id="fields-preschool" class="field-group" style="display:none;">
+                        <h6 class="border-bottom pb-2 mb-3 text-accent">Данные для дошкольного обследования</h6>
+                        <p class="small text-body-secondary mb-3">Поля со <span class="text-danger">*</span> обязательны</p>
+                        {% with field=form.child_name %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.child_birthdate %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.kindergarten %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.address %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.parent_name %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                        {% with field=form.parent_phone %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label small fw-medium">{{ field.label }} <span class="text-danger">*</span></label>
+                            {{ field }}
+                            {% if field.errors %}<div class="invalid-feedback d-block">{% for error in field.errors %}{{ error }}{% endfor %}</div>{% endif %}
+                        </div>
+                        {% endwith %}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="button" id="show-confirm-btn" class="btn btn-accent btn-lg" disabled>
+                            Записаться
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-<div style="display:inline-flex;align-items:center;gap:10px;background:var(--green-pale);border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:1rem;">
-    <div style="font-size:16px;">👩‍💼</div>
-    <div>
-        <div style="font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Психолог</div>
-        <div style="font-size:15px;font-weight:700;color:var(--green);">{{ psychologist.name }}</div>
+<!-- Модальное окно подтверждения -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="confirmModalLabel">Подтверждение записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Проверьте данные:</p>
+                <dl class="row small mb-0" id="confirm-details">
+                    <dt class="col-sm-5 text-body-secondary">Психолог</dt>
+                    <dd class="col-sm-7">{{ psychologist.name }}</dd>
+
+                    <dt class="col-sm-5 text-body-secondary">Дата</dt>
+                    <dd class="col-sm-7">{{ slot.date|date:"d E Y г." }}</dd>
+
+                    <dt class="col-sm-5 text-body-secondary">Время</dt>
+                    <dd class="col-sm-7">{{ slot.time|time:"H:i" }}</dd>
+
+                    <dt class="col-sm-5 text-body-secondary">Тип приёма</dt>
+                    <dd class="col-sm-7" id="confirm-type"></dd>
+                </dl>
+                <hr>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" id="confirm-submit" class="btn btn-accent" disabled>
+                    Подтвердить
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card" style="max-width:580px;">
-    <h1 style="font-size:1.4rem;margin-bottom:4px;">Запись на приём</h1>
-    <p style="color:var(--text-soft);margin-bottom:1.5rem;font-size:.9rem;">Укажите ваши данные</p>
+{% endblock %}
 
-    <form method="post" novalidate>
-        {% csrf_token %}
-
-        <div class="form-group">
-            <label for="id_appointment_type">Цель обращения *</label>
-            {{ form.appointment_type }}
-            {% if form.appointment_type.errors %}
-                <div class="form-error">{{ form.appointment_type.errors|join:", " }}</div>
-            {% endif %}
-        </div>
-
-        <div id="block-consultation" style="display:none;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>ФИО *</label>
-                    {{ form.full_name }}
-                    {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Кто записывается *</label>
-                    {{ form.who }}
-                    {% if form.who.errors %}<div class="form-error">{{ form.who.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Класс</label>
-                    {{ form.grade }}
-                </div>
-                <div class="form-group">
-                    <label>Телефон *</label>
-                    {{ form.phone }}
-                    {% if form.phone.errors %}<div class="form-error">{{ form.phone.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>Примечание</label>
-                    {{ form.message }}
-                </div>
-            </div>
-        </div>
-
-        <div id="block-preschool" style="display:none;">
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 12px;">
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>ФИО ребёнка *</label>
-                    {{ form.child_name }}
-                    {% if form.child_name.errors %}<div class="form-error">{{ form.child_name.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Дата рождения ребёнка *</label>
-                    {{ form.child_birthdate }}
-                    {% if form.child_birthdate.errors %}<div class="form-error">{{ form.child_birthdate.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Номер детского сада *</label>
-                    {{ form.kindergarten }}
-                    {% if form.kindergarten.errors %}<div class="form-error">{{ form.kindergarten.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>Место проживания *</label>
-                    {{ form.address }}
-                    {% if form.address.errors %}<div class="form-error">{{ form.address.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group" style="grid-column:1/-1;">
-                    <label>ФИО родителя *</label>
-                    {{ form.parent_name }}
-                    {% if form.parent_name.errors %}<div class="form-error">{{ form.parent_name.errors|join:", " }}</div>{% endif %}
-                </div>
-                <div class="form-group">
-                    <label>Телефон родителя *</label>
-                    {{ form.parent_phone  }}
-                    {% if form.parent_phone.errors %}<div class="form-error">{{ form.parent_phone.errors|join:", " }}</div>{% endif %}
-                </div>
-            </div>
-        </div>
-
-
-        <div style="display:flex;align-items:center;gap:1rem;">
-            <button type="submit" class="btn btn-primary">Записаться ✓</button>
-            <a href="{% url 'schedule' %}" style="color:var(--text-soft);font-size:.9rem;">← Назад</a>
-        </div>
-    </form>
-</div>
-
+{% block extra_js %}
 <script>
-{% if appointment_types %}
-// Словарь: id типа приёма → form_type из базы
-const typeMap = {
-    {% for apt in appointment_types %}"{{ apt.id }}": "{{ apt.form_type }}"{% if not forloop.last %},{% endif %}{% endfor %}
-};
+(function () {
+    'use strict';
 
-const select = document.getElementById('id_appointment_type');
-const blocks = {
-    'consultation':   document.getElementById('block-consultation'),
-    'preschool_exam': document.getElementById('block-preschool'),
-};
+    // ---------- карта id типа приёма → form_type ----------
+    var typeMap = {};
+    {% for apt in appointment_types %}
+    typeMap['{{ apt.id }}'] = '{{ apt.form_type }}';
+    {% endfor %}
 
-function showBlock() {
-    const formType = typeMap[select.value] || null;
-    Object.values(blocks).forEach(b => b.style.display = 'none');
-    if (formType && blocks[formType]) {
-        blocks[formType].style.display = 'block';
+    var form        = document.getElementById('booking-form');
+    var typeSelect  = document.getElementById('id_appointment_type');
+    var showBtn     = document.getElementById('show-confirm-btn');
+    var modalEl     = document.getElementById('confirmModal');
+    var confirmBtn  = document.getElementById('confirm-submit');
+
+    var hint        = document.getElementById('type-hint');
+    var consGroup   = document.getElementById('fields-consultation');
+    var preGroup    = document.getElementById('fields-preschool');
+
+    var consFields  = ['full_name','who','phone','email','grade','message'];
+    var consReq     = ['full_name','who','phone'];
+    var preFields   = ['child_name','child_birthdate','kindergarten','address','parent_name','parent_phone'];
+
+    // ---------- helpers ----------
+    function fieldEl(name) { return document.getElementById('id_' + name); }
+
+    function clearRequired() {
+        consFields.concat(preFields).forEach(function (n) {
+            var el = fieldEl(n);
+            if (el) el.removeAttribute('required');
+        });
     }
-}
 
-select.addEventListener('change', showBlock);
-showBlock();
-{% else %}
-<p style="color:var(--text-soft);">Для этого психолога пока нет доступных типов приёма.</p>
-{% endif %}
-</script>
+    function setRequired(list) {
+        list.forEach(function (n) {
+            var el = fieldEl(n);
+            if (el) el.setAttribute('required', 'required');
+        });
+    }
 
-<script>
-// Предупреждение о существующей записи + подтверждение при отправке
-(function() {
-    var warn = document.getElementById('existing-warning');
-    var form = document.querySelector('form');
-    if (!form) return;
+    function removeAllInvalid() {
+        form.querySelectorAll('.is-invalid').forEach(function (el) {
+            el.classList.remove('is-invalid');
+        });
+    }
 
-    try {
-        var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
-        if (list.length === 0) return;
+    // ---------- переключение групп полей ----------
+    function switchForm(showConsultation, showPreschool) {
+        consGroup.style.display = showConsultation ? '' : 'none';
+        preGroup.style.display  = showPreschool  ? '' : 'none';
+        hint.style.display      = (!showConsultation && !showPreschool) ? '' : 'none';
+        showBtn.disabled        = (!showConsultation && !showPreschool);
+    }
 
-        // Находим будущую запись
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var upcoming = null;
-        for (var i = 0; i < list.length; i++) {
-            var d = new Date(list[i].date);
-            if (d >= today) {
-                if (!upcoming || d < new Date(upcoming.date)) {
-                    upcoming = list[i];
-                }
-            }
+    function onTypeChange() {
+        removeAllInvalid();
+        var val     = typeSelect.value;              // строка "1", "2" или ""
+        var formType = typeMap[val];                 // "consultation", "preschool_exam" или undefined
+        clearRequired();
+
+        if (formType === 'consultation') {
+            setRequired(consReq);
+            switchForm(true, false);
+        } else if (formType === 'preschool_exam') {
+            setRequired(preFields);
+            switchForm(false, true);
+        } else {
+            switchForm(false, false);
         }
-        if (!upcoming) return;
+    }
 
-        // Показываем жёлтое предупреждение сверху
-        if (warn) warn.style.display = 'block';
+    typeSelect.addEventListener('change', onTypeChange);
+    typeSelect.addEventListener('input',  onTypeChange);  // дубль для надёжности
+    onTypeChange();  // инициализация
 
-        // При отправке формы проверяем, не совпадают ли данные
-        form.addEventListener('submit', function(e) {
-            var nameInput = form.querySelector('[name="child_name"], [name="full_name"]');
-            var phoneInput = form.querySelector('[name="phone"], [name="parent_phone"]');
-            var enteredName = nameInput ? nameInput.value.trim() : '';
-            var enteredPhone = phoneInput ? phoneInput.value.trim() : '';
+    // ---------- модалка ----------
+    var confirmModal = new bootstrap.Modal(modalEl);
 
-            // Если имя или телефон совпадают с существующей записью
-            var nameMatch = enteredName && upcoming.child_name &&
-                enteredName.toLowerCase().indexOf(upcoming.child_name.toLowerCase()) !== -1;
-            var phoneMatch = enteredPhone && upcoming.phone &&
-                enteredPhone.replace(/\s/g,'').indexOf(upcoming.phone.replace(/\s/g,'')) !== -1;
+    showBtn.addEventListener('click', function () {
+        removeAllInvalid();
 
-            if (nameMatch || phoneMatch) {
-                var msg = 'У вас уже есть запись:\n' +
-                    '📅 ' + upcoming.date + ' в ' + upcoming.time + '\n' +
-                    '🧑‍🏫 ' + (upcoming.psychologist || '') + '\n\n' +
-                    'Вы точно хотите продолжить и создать новую запись?';
-                if (!confirm(msg)) {
-                    e.preventDefault();
-                }
+        // валидация required полей
+        var valid = true;
+        form.querySelectorAll('[required]').forEach(function (f) {
+            if (!f.value.trim()) { f.classList.add('is-invalid'); valid = false; }
+        });
+        if (!valid) {
+            var first = form.querySelector('.is-invalid');
+            if (first) first.focus();
+            return;
+        }
+
+        // очищаем динамические строки
+        var details = document.getElementById('confirm-details');
+        details.querySelectorAll('.extra-row').forEach(function (e) { e.remove(); });
+
+        function addRow(label, value) {
+            if (!value) return;
+            var dt = document.createElement('dt'); dt.className = 'col-sm-5 text-body-secondary extra-row'; dt.textContent = label;
+            var dd = document.createElement('dd'); dd.className = 'col-sm-7 extra-row'; dd.textContent = value;
+            details.appendChild(dt); details.appendChild(dd);
+        }
+
+        // тип приёма в модалке
+        document.getElementById('confirm-type').textContent =
+            typeSelect.options[typeSelect.selectedIndex]?.text || '';
+
+        // поля из видимой группы
+        var visible = consGroup.style.display !== 'none' ? consFields : preFields;
+        visible.forEach(function (name) {
+            var el = fieldEl(name);
+            var lb = form.querySelector('label[for="id_' + name + '"]');
+            if (el && lb && el.value.trim()) {
+                addRow(lb.textContent.replace('*', '').trim(), el.value.trim());
             }
         });
 
-    } catch(e) {}
+        confirmBtn.disabled = false;
+        confirmModal.show();
+    });
+
+    confirmBtn.addEventListener('click', function () {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Отправка...';
+        form.submit();
+    });
+
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = 'Подтвердить';
+    });
+
 })();
 </script>
 {% endblock %}

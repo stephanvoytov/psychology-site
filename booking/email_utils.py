@@ -1,5 +1,23 @@
+import logging
+import threading
 from django.core.mail import send_mail
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
+
+
+def _send_mail_async(subject, message, recipient_list):
+    """Отправка письма в отдельном потоке — не блокирует ответ пользователю."""
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=recipient_list,
+            fail_silently=False,
+        )
+    except Exception as e:
+        logger.error('Ошибка отправки email: %s', e, exc_info=True)
 
 
 def send_appointment_notification(appointment):
@@ -40,13 +58,15 @@ def send_appointment_notification(appointment):
         f"Лицей №23 · Кабинет психолога"
     )
 
-    send_mail(
-        subject=f"Новая запись: {slot.date.strftime('%d.%m.%Y')} в {slot.time.strftime('%H:%M')}",
-        message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[psychologist.email] + getattr(settings, 'NOTIFICATION_BCC_LIST', []),
-        fail_silently=False,
+    recipient_list = [psychologist.email] + getattr(settings, 'NOTIFICATION_BCC_LIST', [])
+
+    thread = threading.Thread(
+        target=_send_mail_async,
+        args=(f"Новая запись: {slot.date.strftime('%d.%m.%Y')} в {slot.time.strftime('%H:%M')}",
+              message, recipient_list),
+        daemon=True,
     )
+    thread.start()
 
 
 def send_cancellation_notification(appointment):
@@ -88,10 +108,12 @@ def send_cancellation_notification(appointment):
         f"Лицей №23 · Кабинет психолога"
     )
 
-    send_mail(
-        subject=f"Отмена записи: {slot.date.strftime('%d.%m.%Y')} в {slot.time.strftime('%H:%M')}",
-        message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[psychologist.email] + getattr(settings, 'NOTIFICATION_BCC_LIST', []),
-        fail_silently=False,
+    recipient_list = [psychologist.email] + getattr(settings, 'NOTIFICATION_BCC_LIST', [])
+
+    thread = threading.Thread(
+        target=_send_mail_async,
+        args=(f"Отмена записи: {slot.date.strftime('%d.%m.%Y')} в {slot.time.strftime('%H:%M')}",
+              message, recipient_list),
+        daemon=True,
     )
+    thread.start()

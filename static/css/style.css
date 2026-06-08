@@ -1,268 +1,149 @@
-/* ===== ПЕРЕМЕННЫЕ ЦВЕТОВ — меняйте здесь ===== */
+/* ===== Пользовательские стили поверх Bootstrap 5.3 ===== */
+
 :root {
-    --green:       #4a7c6f;
-    --green-light: #6aaa98;
-    --green-pale:  #e8f4f1;
-    --cream:       #faf8f3;
-    --text:        #2d3532;
-    --text-soft:   #667068;
-    --border:      #d4e6e1;
-    --white:       #ffffff;
-    --shadow:      0 2px 16px rgba(74,124,111,0.10);
+    --accent-green: #2b7a4b;
+    --accent-green-light: #d4edda;
 }
 
-/* ===== ТЁМНАЯ ТЕМА ===== */
-[data-theme="dark"] {
-    --green:       #6aaa98;
-    --green-light: #8bc5b5;
-    --green-pale:  #1a2e2a;
-    --cream:       #181d1b;
-    --text:        #d9e3df;
-    --text-soft:   #8a9b95;
-    --border:      #2a3a35;
-    --white:       #1f2623;
-    --shadow:      0 2px 16px rgba(0,0,0,0.35);
+[data-bs-theme="light"] {
+    --accent-green: #2b7a4b;
+    --accent-green-light: #d4edda;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--cream);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+[data-bs-theme="dark"] {
+    --accent-green: #4caf70;
+    --accent-green-light: #1a3a2a;
 }
 
-/* ===== ШАПКА ===== */
-header {
-    background: var(--white);
-    border-bottom: 2px solid var(--border);
-    padding: 0 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow);
+/* Утилиты акцентного зелёного */
+.bg-accent-subtle {
+    background-color: var(--accent-green-light);
 }
-.header-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 68px;
+.text-accent {
+    color: var(--accent-green);
 }
-.logo {
-    font-family: 'Lora', serif;
-    font-size: 1.2rem;
-    color: var(--green);
-    text-decoration: none;
-    font-weight: 600;
-    line-height: 1.2;
+
+/* Зелёная тема — кастомные кнопки */
+.btn-accent {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--accent-green);
+    --bs-btn-border-color: var(--accent-green);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #1f5e38;
+    --bs-btn-hover-border-color: #1f5e38;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #164a2a;
+    --bs-btn-active-border-color: #164a2a;
 }
-.logo span {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-soft);
-    font-family: 'Nunito', sans-serif;
-    font-weight: 400;
+
+.btn-outline-accent {
+    --bs-btn-color: var(--accent-green);
+    --bs-btn-border-color: var(--accent-green);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--accent-green);
+    --bs-btn-hover-border-color: var(--accent-green);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #1f5e38;
+    --bs-btn-active-border-color: #1f5e38;
 }
-nav { display: flex; gap: 0.25rem; }
-nav a {
-    color: var(--text-soft);
-    text-decoration: none;
-    padding: 0.5rem 0.85rem;
-    border-radius: 8px;
-    font-size: 0.92rem;
-    font-weight: 600;
+
+/* Карточка даты в расписании */
+.date-badge {
+    background: var(--accent-green);
+    color: #fff;
+    border-radius: 10px;
+    padding: 0.4rem 0.9rem;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Слот времени в расписании */
+.slot-chip {
+    background: var(--accent-green-light);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 0.6rem 1.25rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    font-size: 1rem;
     transition: all 0.2s;
-}
-nav a:hover, nav a.active {
-    background: var(--green-pale);
-    color: var(--green);
-}
-
-/* ===== ОСНОВНОЙ КОНТЕНТ ===== */
-main {
-    flex: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem;
-    width: 100%;
-}
-
-/* ===== КАРТОЧКИ ===== */
-.card {
-    background: var(--white);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
-
-/* ===== КНОПКИ ===== */
-.btn {
+    cursor: pointer;
+    text-decoration: none;
     display: inline-block;
-    padding: 0.75rem 1.75rem;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s;
-    font-family: 'Nunito', sans-serif;
-}
-.btn-primary {
-    background: var(--green);
-    color: var(--white);
-}
-.btn-primary:hover {
-    background: var(--green-light);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(74,124,111,0.3);
-}
-.btn-outline {
-    background: transparent;
-    border: 2px solid var(--green);
-    color: var(--green);
-}
-.btn-outline:hover {
-    background: var(--green-pale);
 }
 
-/* ===== ЗАГОЛОВКИ ===== */
-h1 { font-family: 'Lora', serif; font-size: 2rem; color: var(--green); margin-bottom: 0.5rem; }
-h2 { font-family: 'Lora', serif; font-size: 1.4rem; color: var(--text); margin-bottom: 1rem; }
-
-/* ===== СООБЩЕНИЯ (успех/ошибка) ===== */
-.messages { margin-bottom: 1.5rem; }
-.message-success {
-    background: var(--green-pale);
-    border: 1px solid var(--green-light);
-    color: var(--green);
-    padding: 1rem 1.25rem;
-    border-radius: 10px;
-    font-weight: 600;
-}
-.message-error {
-    background: #fdf0f0;
-    border: 1px solid #e8a0a0;
-    color: #c0392b;
-    padding: 1rem 1.25rem;
-    border-radius: 10px;
+.slot-chip:hover {
+    background: var(--accent-green);
+    color: #fff;
+    border-color: var(--accent-green);
 }
 
-/* ===== ФОРМА ===== */
-.form-group { margin-bottom: 1.25rem; }
-.form-group label {
-    display: block;
-    font-weight: 700;
-    margin-bottom: 0.4rem;
-    font-size: 0.9rem;
-    color: var(--text-soft);
-}
-.form-input {
-    width: 100%;
-    padding: 0.7rem 1rem;
-    border: 2px solid var(--border);
-    border-radius: 10px;
-    font-size: 0.95rem;
-    font-family: 'Nunito', sans-serif;
-    color: var(--text);
-    background: var(--cream);
-    transition: border-color 0.2s;
-}
-.form-input:focus {
-    outline: none;
-    border-color: var(--green-light);
-    background: var(--white);
-}
-.form-error { color: #c0392b; font-size: 0.82rem; margin-top: 0.3rem; }
-
-/* ===== ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ===== */
-.theme-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    padding: 0.4rem 0.5rem;
-    border-radius: 8px;
-    transition: all 0.2s;
-    line-height: 1;
-}
-.theme-toggle:hover {
-    background: var(--green-pale);
-}
-.theme-toggle:focus-visible {
-    outline: 2px solid var(--green-light);
-    outline-offset: 2px;
+/* Аватар психолога */
+.psychologist-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #dee2e6;
 }
 
-/* ===== ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ ТЕМАМИ ===== */
-body, header, footer, .card, .btn, .form-input, nav a, .message-success, .message-error {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+[data-bs-theme="dark"] .psychologist-avatar {
+    border-color: #495057;
 }
 
-/* ===== ПОДВАЛ ===== */
-footer {
-    background: var(--white);
-    border-top: 1px solid var(--border);
-    text-align: center;
-    padding: 1.25rem;
-    color: var(--text-soft);
-    font-size: 0.85rem;
-}
-
-/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
-@media (max-width: 600px) {
-    .header-inner { flex-direction: column; height: auto; padding: 0.75rem 0; gap: 0.5rem; }
-    nav { flex-wrap: wrap; justify-content: center; }
-    h1 { font-size: 1.5rem; }
-}
-
-/* ===== КАРТОЧКИ ГЛАВНОЙ СТРАНИЦЫ ===== */
-.cards-container {
+.psychologist-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--accent-green-light);
+    border: 3px solid #dee2e6;
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
-}
-.welcome-card {
-    display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem 2rem;
+    justify-content: center;
+    font-size: 2.5rem;
 }
-.card-content { flex: 1; }
-.card-tag {
-    color: var(--green-light);
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
+
+[data-bs-theme="dark"] .psychologist-avatar-placeholder {
+    border-color: #495057;
 }
-.card-title {
-    font-family: 'Lora', serif;
-    font-size: 1.2rem;
-    color: var(--text);
+
+/* Фото на главной */
+.home-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    display: block;
+}
+
+.home-photo-contain {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    object-position: top center;
+    border-radius: 12px;
+    display: block;
+}
+
+/* Иконка помощи */
+.help-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
     margin-bottom: 0.75rem;
 }
-.card-description {
-    color: var(--text-soft);
-    font-size: 0.92rem;
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
-}
-.btn-arrow { margin-left: 0.25rem; }
 
-@media (max-width: 600px) {
-    .welcome-card { flex-direction: column; }
-    .welcome-card img {
-        width: 100% !important;
-        height: 180px !important;
-    }
+/* Анимация появления */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }

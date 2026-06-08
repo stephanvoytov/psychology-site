@@ -4,67 +4,56 @@
 
 {% block content %}
 
-<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
-    <a href="{% url 'schedule' %}" style="color:var(--text-soft);font-size:.9rem;">← Назад</a>
+<div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'schedule' %}" class="text-body-secondary text-decoration-none small">&larr; Назад</a>
     <div>
-        <h1 style="margin-bottom:.1rem;">{{ psychologist.name }}</h1>
-        <p style="color:var(--green);font-size:.9rem;font-weight:700;">{{ psychologist.grades }}</p>
+        <h1 class="h4 mb-0">{{ psychologist.name }}</h1>
+        <span class="text-accent small fw-bold">{{ psychologist.grades }}</span>
     </div>
 </div>
 
-<h1 style="margin-bottom: 0.25rem;">Свободные места для записи</h1>
-<p style="color: var(--text-soft); margin-bottom: 2rem;">Каждую пятницу выкладывается расписание на следующую неделю.
-Выберите удобное время и нажмите «Записаться»</p>
+<h1 class="h4 mb-1">Свободные места для записи</h1>
+<p class="text-body-secondary small mb-4">
+    Каждую пятницу выкладывается расписание на следующую неделю.
+    Выберите удобное время и нажмите «Записаться».
+</p>
 
 {% if slots_by_date %}
     {% for date, slots in slots_by_date.items %}
-    <div class="card" style="margin-bottom: 1.25rem;">
-        <!-- Заголовок даты -->
-        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
-            <div style="background: var(--green); color: white; border-radius: 10px; padding: 0.4rem 0.9rem; font-weight: 700; font-size: 1rem;">
-                {{ date|date:"d" }}
-            </div>
-            <div>
-                <div style="font-weight: 700; font-size: 1rem;">{{ date|date:"l" }}</div>
-                <div style="color: var(--text-soft); font-size: 0.85rem;">{{ date|date:"F Y г." }}</div>
-            </div>
-        </div>
-
-        <!-- Слоты времени -->
-        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
-            {% for slot in slots %}
-            <a href="{% url 'book' slot.id %}" style="text-decoration: none;">
-                <div style="
-                    background: var(--green-pale);
-                    border: 2px solid var(--border);
-                    border-radius: 10px;
-                    padding: 0.6rem 1.25rem;
-                    font-weight: 700;
-                    color: var(--green);
-                    font-size: 1rem;
-                    transition: all 0.2s;
-                    cursor: pointer;
-                "
-                onmouseover="this.style.background='var(--green)';this.style.color='white';this.style.borderColor='var(--green)'"
-                onmouseout="this.style.background='var(--green-pale)';this.style.color='var(--green)';this.style.borderColor='var(--border)'"
-                >
-                    {{ slot.time|time:"H:i" }}
+    <div class="card border mb-4">
+        <div class="card-body">
+            <!-- Заголовок даты -->
+            <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="date-badge">{{ date|date:"d" }}</div>
+                <div>
+                    <div class="fw-bold">{{ date|date:"l" }}</div>
+                    <div class="text-body-secondary small">{{ date|date:"F Y г." }}</div>
                 </div>
-            </a>
-            {% endfor %}
+            </div>
+
+            <!-- Слоты времени -->
+            <div class="d-flex flex-wrap gap-2">
+                {% for slot in slots %}
+                <a href="{% url 'book' slot.id %}" class="slot-chip" aria-label="{{ slot.time|time:'H:i' }}">
+                    {{ slot.time|time:"H:i" }}
+                </a>
+                {% endfor %}
+            </div>
         </div>
     </div>
     {% endfor %}
 
 {% else %}
     <!-- Нет свободных слотов -->
-    <div class="card" style="text-align: center; padding: 3rem 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
-        <h2 style="margin-bottom: 0.5rem;">Нет свободных мест</h2>
-        <p style="color: var(--text-soft);">
-            В данный момент все записи заняты. Пожалуйста, зайдите позже<br>
-            или <a href="{% url 'contacts' %}" style="color: var(--green);">свяжитесь с психологом напрямую</a>.
-        </p>
+    <div class="card border text-center py-5">
+        <div class="card-body">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+            <h2 class="h5 mb-2">Нет свободных мест</h2>
+            <p class="text-body-secondary mb-0">
+                В данный момент все записи заняты. Пожалуйста, зайдите позже<br>
+                или <a href="{% url 'contacts' %}" class="fw-bold">свяжитесь с психологом напрямую</a>.
+            </p>
+        </div>
     </div>
 {% endif %}
 

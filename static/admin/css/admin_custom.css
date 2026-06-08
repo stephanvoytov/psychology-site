@@ -1,0 +1,140 @@
+/* ===== Кастомные стили для админки Django ===== */
+/* Переопределяем CSS-переменные Django */
+
+:root {
+    --primary: #2b7a4b;
+    --secondary: #1f5e38;
+    --accent: #4caf70;
+    --primary-fg: #fff;
+    --body-fg: #333;
+    --body-bg: #f4f6f8;
+    --body-quiet-color: #666;
+    --body-loud-color: #000;
+    --header-color: #fff;
+    --header-branding-color: #fff;
+    --header-bg: #2b7a4b;
+    --header-link-color: #d4edda;
+    --breadcrumbs-fg: #d4edda;
+    --breadcrumbs-bg: #1f5e38;
+    --link-fg: #2b7a4b;
+    --link-hover-color: #1f5e38;
+    --link-selected-fg: #4caf70;
+    --hairline-color: #dee2e6;
+    --border-color: #ced4da;
+    --error-fg: #dc3545;
+    --message-success-bg: #d4edda;
+    --message-warning-bg: #fff3cd;
+    --message-error-bg: #f8d7da;
+    --darkened-bg: #e9ecef;
+    --selected-bg: #d4edda;
+    --selected-row: #d4edda;
+    --button-bg: #2b7a4b;
+    --button-hover-bg: #1f5e38;
+    --default-button-bg: #2b7a4b;
+    --default-button-hover-bg: #1f5e38;
+    --close-button-bg: #6c757d;
+    --close-button-hover-bg: #5a6268;
+    --delete-button-bg: #dc3545;
+    --delete-button-hover-bg: #c82333;
+}
+
+/* Скругления */
+#header {
+    border-radius: 0 0 12px 12px;
+    margin-bottom: 20px;
+}
+
+.module {
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.module h2, .module caption {
+    border-radius: 10px 10px 0 0;
+}
+
+#changelist {
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.dashboard .module table th {
+    width: 100%;
+}
+
+.dashboard .module table td {
+    white-space: nowrap;
+}
+
+.object-tools a:link, .object-tools a:visited {
+    border-radius: 6px;
+}
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+/* Карточки на главной админки */
+.dashboard .module {
+    margin-bottom: 20px;
+}
+
+.dashboard .module table {
+    border-radius: 0 0 10px 10px;
+}
+
+/* Аватар пользователя */
+#user-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ховер на строках таблицы */
+#changelist table tbody tr:hover {
+    background: #e8f5e9;
+}
+
+/* Красивые фильтры */
+#changelist-filter {
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+#changelist-filter h2 {
+    border-radius: 10px 10px 0 0;
+}
+
+#changelist-filter li.selected a {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Формы */
+.aligned label {
+    color: var(--body-quiet-color);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-row {
+    padding: 12px 0;
+}
+
+/* Кнопка "На сайт" */
+a.site-link {
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 11px;
+    color: #fff;
+    transition: background 0.15s;
+}
+
+a.site-link:hover {
+    background: rgba(255,255,255,0.15);
+}

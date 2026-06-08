@@ -1,48 +1,49 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}Генератор расписания{% endblock %}
 
-{% block extrahead %}
+{% block extrastyle %}
 {{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_custom.css' %}">
 <style>
-    /* ── Обёртка страницы ── */
+    /* ── Обёртка ── */
     #generator-wrap {
         max-width: 680px;
         margin: 24px auto;
-        background: #fff;
+        background: var(--body-bg, #fff);
         border-radius: 12px;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--border-color, #e0e0e0);
         overflow: hidden;
         box-shadow: 0 2px 12px rgba(0,0,0,0.07);
     }
 
-    /* ── Шапка формы ── */
+    /* ── Шапка ── */
     .gen-header {
-        background: linear-gradient(135deg, #4a7c6f 0%, #6aaa98 100%);
-        color: white;
+        background: linear-gradient(135deg, var(--header-bg, #2b7a4b) 0%, var(--accent, #4caf70) 100%);
+        color: var(--header-color, #fff);
         padding: 24px 32px;
     }
     .gen-header h2 { margin: 0; font-size: 1.4rem; font-weight: 700; }
     .gen-header p  { margin: 6px 0 0; opacity: 0.85; font-size: 0.92rem; }
 
-    /* ── Тело формы ── */
+    /* ── Тело ── */
     .gen-body { padding: 28px 32px; }
 
-    /* ── Сетка полей 2 колонки ── */
+    /* ── Сетка ── */
     .gen-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 0 24px;
     }
 
-    /* ── Поле формы ── */
+    /* ── Поле ── */
     .gen-field { margin-bottom: 20px; }
-    .gen-field label {
+    .gen-field > label {
         display: block;
         font-weight: 600;
         font-size: 0.85rem;
-        color: #555;
+        color: var(--body-quiet-color, #555);
         margin-bottom: 6px;
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -53,21 +54,22 @@
         width: 100%;
         padding: 9px 12px;
         min-height: 42px;
-        border: 2px solid #e0e0e0;
+        border: 2px solid var(--border-color, #e0e0e0);
         border-radius: 8px;
         font-size: 0.95rem;
-        color: #333;
-        transition: border-color 0.2s;
-        background: #fafafa;
+        color: var(--body-fg, #333);
+        transition: border-color 0.2s, background 0.2s;
+        background: var(--darkened-bg, #fafafa);
+        box-sizing: border-box;
     }
     .gen-field input:focus,
     .gen-field select:focus {
         outline: none;
-        border-color: #6aaa98;
-        background: #fff;
+        border-color: var(--accent, #4caf70);
+        background: var(--body-bg, #fff);
     }
 
-    /* ── Чекбоксы дней недели ── */
+    /* ── Чекбоксы дней ── */
     .weekdays-grid {
         display: flex;
         flex-wrap: wrap;
@@ -78,43 +80,65 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        background: #f4f8f7;
-        border: 2px solid #e0e0e0;
+        background: var(--darkened-bg, #f4f8f7);
+        border: 2px solid var(--border-color, #e0e0e0);
         border-radius: 8px;
         padding: 7px 14px;
         cursor: pointer;
         font-size: 0.9rem;
         font-weight: 600;
-        color: #444;
+        color: var(--body-fg, #444);
         transition: all 0.15s;
         text-transform: none;
         letter-spacing: 0;
+        user-select: none;
     }
     .weekdays-grid input[type="checkbox"] { display: none; }
     .weekdays-grid label:has(input:checked) {
-        background: #4a7c6f;
-        border-color: #4a7c6f;
-        color: white;
+        background: var(--button-bg, #2b7a4b);
+        border-color: var(--button-bg, #2b7a4b);
+        color: #fff;
     }
-    .weekdays-grid label:hover { border-color: #6aaa98; }
+    .weekdays-grid label:hover { border-color: var(--accent, #4caf70); }
 
-    /* ── Превью (сколько слотов получится) ── */
+    /* ── Кнопки "Все / Снять" ── */
+    .weekday-actions {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+    }
+    .weekday-actions button {
+        background: none;
+        border: 1px solid var(--border-color, #ccc);
+        border-radius: 6px;
+        padding: 4px 12px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        color: var(--body-quiet-color, #666);
+        transition: all 0.15s;
+    }
+    .weekday-actions button:hover {
+        border-color: var(--accent, #4caf70);
+        color: var(--accent, #4caf70);
+    }
+
+    /* ── Превью ── */
     #preview-box {
-        background: #f0f8f5;
-        border: 1px solid #c3e0d8;
+        background: var(--message-success-bg, #f0f8f5);
+        border: 1px solid var(--accent, #c3e0d8);
         border-radius: 8px;
         padding: 12px 16px;
         margin-bottom: 20px;
         font-size: 0.9rem;
-        color: #3a6b60;
+        color: var(--body-fg, #3a6b60);
         display: none;
     }
     #preview-box strong { font-size: 1.1rem; }
 
-    /* ── Кнопка ── */
+    /* ── Кнопка отправки ── */
     .gen-submit {
-        background: #4a7c6f;
-        color: white;
+        background: var(--button-bg, #2b7a4b);
+        color: #fff;
         border: none;
         padding: 12px 32px;
         border-radius: 10px;
@@ -125,16 +149,21 @@
         width: 100%;
     }
     .gen-submit:hover {
-        background: #3a6b60;
+        background: var(--button-hover-bg, #1f5e38);
         transform: translateY(-1px);
-        box-shadow: 0 4px 16px rgba(74,124,111,0.3);
+        box-shadow: 0 4px 16px rgba(43,122,75,0.3);
+    }
+    .gen-submit:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
     }
 
     /* ── Ошибки ── */
-    .errorlist { color: #c0392b; font-size: 0.82rem; margin: 4px 0 0; padding: 0; list-style: none; }
+    .errorlist { color: var(--error-fg, #c0392b); font-size: 0.82rem; margin: 4px 0 0; padding: 0; list-style: none; }
 
     /* ── Ссылка назад ── */
-    .back-link { display: inline-block; margin-top: 16px; color: #4a7c6f; font-size: 0.9rem; text-decoration: none; }
+    .back-link { display: inline-block; margin-top: 16px; color: var(--link-fg, #2b7a4b); font-size: 0.9rem; text-decoration: none; }
     .back-link:hover { text-decoration: underline; }
 
     @media (max-width: 580px) {
@@ -165,12 +194,14 @@
         <form id="gen-form" method="post">
             {% csrf_token %}
 
-            <!-- Период -->
+            <!-- Психолог -->
             <div class="gen-field">
                 <label>{{ form.psychologist.label }}</label>
                 {{ form.psychologist }}
                 {{ form.psychologist.errors }}
             </div>
+
+            <!-- Период -->
             <div class="gen-row">
                 <div class="gen-field">
                     <label>{{ form.date_from.label }}</label>
@@ -184,7 +215,7 @@
                 </div>
             </div>
 
-            <!-- Время приёма -->
+            <!-- Время -->
             <div class="gen-row">
                 <div class="gen-field">
                     <label>{{ form.time_from.label }}</label>
@@ -198,7 +229,7 @@
                 </div>
             </div>
 
-            <!-- Длительность -->
+            <!-- Интервал -->
             <div class="gen-field">
                 <label>{{ form.interval.label }}</label>
                 {{ form.interval }}
@@ -207,6 +238,10 @@
             <!-- Дни недели -->
             <div class="gen-field">
                 <label>Рабочие дни</label>
+                <div class="weekday-actions">
+                    <button type="button" id="select-all-days">✅ Все</button>
+                    <button type="button" id="deselect-all-days">✕ Снять</button>
+                </div>
                 <div class="weekdays-grid">
                     {% for checkbox in form.weekdays %}
                     <label>
@@ -218,13 +253,14 @@
                 {{ form.weekdays.errors }}
             </div>
 
-            <!-- Живое превью -->
+            <!-- Превью -->
             <div id="preview-box">
-                Будет создано примерно <strong id="preview-count">0</strong> слотов
+                <div id="preview-per-day"></div>
+                Всего будет создано <strong id="preview-count">0</strong> слотов
             </div>
 
-            <button class="gen-submit" type="submit">
-                ✅ Создать слоты
+            <button class="gen-submit" type="submit" id="gen-submit-btn">
+                🗓️ Создать слоты
             </button>
         </form>
 
@@ -233,42 +269,79 @@
 </div>
 
 <script>
-    // Живой подсчёт количества слотов
+(function () {
+    'use strict';
+
+    var form = document.getElementById('gen-form');
+
+    // Выбрать все / снять
+    document.getElementById('select-all-days').addEventListener('click', function () {
+        form.querySelectorAll('[name=weekdays]').forEach(function (cb) { cb.checked = true; });
+        calcSlots();
+    });
+    document.getElementById('deselect-all-days').addEventListener('click', function () {
+        form.querySelectorAll('[name=weekdays]').forEach(function (cb) { cb.checked = false; });
+        calcSlots();
+    });
+
+    // Подтверждение перед отправкой
+    form.addEventListener('submit', function (e) {
+        var total = document.getElementById('preview-count').textContent;
+        var num = parseInt(total) || 0;
+        if (num > 0 && !confirm('Создать ' + num + ' слотов?')) {
+            e.preventDefault();
+        }
+    });
+
+    // Подсчёт
     function calcSlots() {
-        const dateFrom = document.querySelector('[name=date_from]').value;
-        const dateTo   = document.querySelector('[name=date_to]').value;
-        const timeFrom = document.querySelector('[name=time_from]').value;
-        const timeTo   = document.querySelector('[name=time_to]').value;
-        const interval = parseInt(document.querySelector('[name=interval]').value) || 60;
-        const days     = [...document.querySelectorAll('[name=weekdays]:checked')].map(c => parseInt(c.value));
+        var dateFrom = document.querySelector('[name=date_from]').value;
+        var dateTo   = document.querySelector('[name=date_to]').value;
+        var timeFrom = document.querySelector('[name=time_from]').value;
+        var timeTo   = document.querySelector('[name=time_to]').value;
+        var interval = parseInt(document.querySelector('[name=interval]').value) || 60;
+        var days     = Array.from(document.querySelectorAll('[name=weekdays]:checked')).map(function (c) { return parseInt(c.value); });
+        var preview  = document.getElementById('preview-box');
+        var submitBtn = document.getElementById('gen-submit-btn');
 
         if (!dateFrom || !dateTo || !timeFrom || !timeTo || days.length === 0) {
-            document.getElementById('preview-box').style.display = 'none';
+            preview.style.display = 'none';
+            submitBtn.disabled = false;
             return;
         }
 
-        // Считаем минуты приёма
-        const [fh, fm] = timeFrom.split(':').map(Number);
-        const [th, tm] = timeTo.split(':').map(Number);
-        const minsPerDay = (th * 60 + tm) - (fh * 60 + fm);
-        if (minsPerDay <= 0) { document.getElementById('preview-box').style.display = 'none'; return; }
-        const slotsPerDay = Math.floor(minsPerDay / interval);
+        var fh, fm, th, tm;
+        try {
+            fh = parseInt(timeFrom.split(':')[0]); fm = parseInt(timeFrom.split(':')[1]);
+            th = parseInt(timeTo.split(':')[0]);   tm = parseInt(timeTo.split(':')[1]);
+        } catch(e) { preview.style.display = 'none'; return; }
 
-        // Считаем подходящие дни
-        let workDays = 0;
-        const d = new Date(dateFrom);
-        const end = new Date(dateTo);
+        var minsPerDay = (th * 60 + tm) - (fh * 60 + fm);
+        if (minsPerDay <= 0) { preview.style.display = 'none'; return; }
+
+        var slotsPerDay = Math.floor(minsPerDay / interval);
+
+        var d = new Date(dateFrom);
+        var end = new Date(dateTo);
+        var workDays = 0;
         while (d <= end) {
-            if (days.includes(d.getDay() === 0 ? 6 : d.getDay() - 1)) workDays++;
+            var jsDay = d.getDay(); // 0=Sun, 1=Mon ...
+            var ourDay = jsDay === 0 ? 6 : jsDay - 1; // Sun->6, Mon->0
+            if (days.includes(ourDay)) workDays++;
             d.setDate(d.getDate() + 1);
         }
 
-        const total = workDays * slotsPerDay;
+        var total = workDays * slotsPerDay;
+
+        document.getElementById('preview-per-day').textContent =
+            '🕐 ' + slotsPerDay + ' слотов в день × ' + workDays + ' рабочих дней';
         document.getElementById('preview-count').textContent = total;
-        document.getElementById('preview-box').style.display = 'block';
+        preview.style.display = 'block';
+        submitBtn.disabled = false;
     }
 
-    document.getElementById('gen-form').addEventListener('input', calcSlots);
-    calcSlots(); // Посчитать при загрузке если есть значения
+    form.addEventListener('input', calcSlots);
+    calcSlots();
+})();
 </script>
 {% endblock %}

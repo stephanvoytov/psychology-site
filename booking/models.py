@@ -46,7 +46,8 @@ class TimeSlot(models.Model):
     )
     date         = models.DateField(verbose_name='Дата')
     time         = models.TimeField(verbose_name='Время')
-    is_available = models.BooleanField(default=True, verbose_name='Доступен')
+    is_available = models.BooleanField(default=True, verbose_name='Доступен',
+                                       help_text='Снимите галочку, чтобы закрыть это время для записи')
 
     class Meta:
         verbose_name = 'Временной слот'
@@ -68,7 +69,8 @@ class Appointment(models.Model):
 
     slot             = models.OneToOneField(
         TimeSlot, on_delete=models.CASCADE,
-        related_name='appointment', verbose_name='Слот'
+        related_name='appointment', verbose_name='Время приёма',
+        help_text='Психолог, дата и время (заполняется автоматически при записи через сайт)',
     )
     appointment_type = models.ForeignKey(
         AppointmentType, on_delete=models.PROTECT,
@@ -82,7 +84,8 @@ class Appointment(models.Model):
     grade     = models.CharField(max_length=10, blank=True, verbose_name='Класс')
     phone     = models.CharField(max_length=20, verbose_name='Телефон')
     email     = models.EmailField(blank=True, verbose_name='Email')
-    message   = models.TextField(blank=True, verbose_name='Примечание')
+    message   = models.TextField(blank=True, verbose_name='Примечание',
+                                  help_text='Причина обращения, жалобы, пожелания')
 
     # --- Поля для обследования дошкольника ---
     child_name      = models.CharField(max_length=200, blank=True, verbose_name='ФИО ребёнка')

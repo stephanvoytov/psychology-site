@@ -62,16 +62,14 @@ def book(request, slot_id):
             slot.is_available = False
             slot.save()
             apt_type = appointment.appointment_type
-            try:
-                send_appointment_notification(appointment)
-            except Exception as e:
-                logger.error('Ошибка отправки email: %s', e, exc_info=True)
+            send_appointment_notification(appointment)
 
             # Store in session for success page
             apt_data = {
                 'id': appointment.id,
                 'psychologist': psychologist.name,
                 'psychologist_cabinet': psychologist.cabinet,
+                'psychologist_phone': psychologist.phone or '',
                 'date': str(slot.date),
                 'time': str(slot.time),
                 'appointment_type': apt_type.name if apt_type else '',
@@ -127,10 +125,7 @@ def cancel_appointment_direct(request):
                     'slot__psychologist', 'appointment_type'
                 ).get(id=app_id, slot__date__gte=timezone.now().date())
                 slot = app.slot
-                try:
-                    send_cancellation_notification(app)
-                except Exception as e:
-                    logger.error('Ошибка отправки уведомления об отмене: %s', e, exc_info=True)
+                send_cancellation_notification(app)
                 app.delete()
                 slot.is_available = True
                 slot.save()
@@ -146,7 +141,30 @@ def cancel_appointment_direct(request):
 
 
 def contacts(request):
-    psychologists = Psychologist.objects.all()
+    """Контакты психологов с fallback-данными, если БД недоступна."""
+    try:
+        psychologists = list(Psychologist.objects.all())
+        if not psychologists:
+            raise Psychologist.DoesNotExist
+    except Exception:
+        psychologists = [
+            {
+                'id': 2,
+                'name': 'Ганьева Алина Маратовна',
+                'grades': '1-11 классы',
+                'cabinet': '201',
+                'phone': '+7 (999) 111-22-33',
+                'photo': 'images/psychologist/ganieva.jpg',
+            },
+            {
+                'id': 3,
+                'name': 'Ворожеикина Екатерина Алексеевна',
+                'grades': '5-11 классы',
+                'cabinet': '205',
+                'phone': '+7 (999) 444-55-66',
+                'photo': 'images/psychologist/vorozheikina.jpg',
+            },
+        ]
     return render(request, 'booking/contacts.html', {'psychologists': psychologists})
 
 

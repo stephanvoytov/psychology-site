@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth.models import Group, User
 from django.shortcuts import render, redirect
 from django.urls import path, reverse
 from django.contrib import messages
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from django.utils.html import format_html
 
@@ -10,9 +11,25 @@ from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .slot_generator import SlotGeneratorForm
 
 
+# Скрываем ненужные разделы — психологу/секретарю не надо управлять пользователями
+admin.site.unregister(Group)
+admin.site.unregister(User)
+
+
 @admin.register(Psychologist)
 class PsychologistAdmin(admin.ModelAdmin):
-    list_display = ('name', 'grades', 'cabinet', 'phone')
+    list_display = ('name', 'grades', 'cabinet', 'phone', 'email', 'photo_preview')
+    list_filter = ('grades',)
+    search_fields = ('name',)
+
+    def photo_preview(self, obj):
+        if obj.photo:
+            return format_html(
+                '<img src="/static/{}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">',
+                obj.photo
+            )
+        return '—'
+    photo_preview.short_description = 'Фото'
 
 
 @admin.register(AppointmentType)
@@ -23,11 +40,14 @@ class AppointmentTypeAdmin(admin.ModelAdmin):
 
 @admin.register(TimeSlot)
 class TimeSlotAdmin(admin.ModelAdmin):
+    actions = None
+    change_list_template = 'admin/booking/timeslot/change_list.html'
     list_display  = ('psychologist', 'date', 'time', 'is_available', 'get_who_booked', 'get_appointment_type')
     list_filter   = ('psychologist', 'is_available', 'date')
     list_editable = ('is_available',)
     ordering      = ('date', 'time')
     date_hierarchy = 'date'
+    list_select_related = ('psychologist',)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -109,23 +129,96 @@ class TimeSlotAdmin(admin.ModelAdmin):
 
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
-    list_display  = ('get_name', 'get_who', 'grade', 'phone', 'appointment_type', 'slot', 'created_at')
-    list_filter   = ('appointment_type', 'who', 'slot__psychologist', 'slot__date')
-    search_fields = ('full_name', 'parent_name', 'child_name', 'phone')
-    readonly_fields = ('created_at',)
+    actions = None
+    list_display  = ('get_name', 'get_phone', 'message_short', 'appointment_type', 'get_psychologist', 'get_date', 'get_time')
+    list_filter   = ('appointment_type', 'slot__psychologist', 'slot__date')
+    search_fields = ('full_name', 'parent_name', 'child_name', 'phone', 'parent_phone', 'message')
+    readonly_fields = ('slot', 'created_at',)
+    date_hierarchy = 'slot__date'
+    ordering = ('-slot__date', '-slot__time')
+    list_select_related = ('slot', 'slot__psychologist', 'appointment_type')
+
+    fieldsets = (
+        (None, {
+            'fields': ('appointment_type', 'slot')
+        }),
+        ('Консультация', {
+            'classes': ('wide',),
+            'fields': ('full_name', 'who', 'grade', 'phone', 'email', 'message'),
+        }),
+        ('Обследование дошкольника', {
+            'classes': ('wide',),
+            'fields': ('child_name', 'child_birthdate', 'kindergarten', 'address', 'parent_name', 'parent_phone'),
+        }),
+        ('Служебное', {
+            'classes': ('collapse',),
+            'fields': ('created_at',),
+        }),
+    )
 
     def get_name(self, obj):
-        if obj.parent_name:
-            return f'{obj.parent_name} (ребёнок: {obj.child_name})'
-        return obj.full_name or '—'
-    get_name.short_description = 'ФИО'
+        name = obj.full_name or obj.parent_name or obj.child_name or '—'
+        if obj.child_name and obj.parent_name:
+            return f'{obj.parent_name} → {obj.child_name}'
+        if obj.child_name:
+            return f'{obj.child_name} (ребёнок)'
+        return name
+    get_name.short_description = 'ФИО / Ребёнок'
+    get_name.admin_order_field = 'full_name'
 
-    def get_who(self, obj):
-        if obj.who:
-            return obj.get_who_display()
-        return 'Родитель дошкольника'
-    get_who.short_description = 'Кто записывается'
+    def get_phone(self, obj):
+        return obj.phone or obj.parent_phone or '—'
+    get_phone.short_description = 'Телефон'
+    get_phone.admin_order_field = 'phone'
+
+    def message_short(self, obj):
+        if not obj.message:
+            return '—'
+        return format_html(
+            '<span title="{}">{}…</span>',
+            obj.message.replace('"', '&quot;'),
+            obj.message[:50]
+        )
+    message_short.short_description = 'Примечание'
+
+    def get_psychologist(self, obj):
+        return obj.slot.psychologist.name if obj.slot and obj.slot.psychologist else '—'
+    get_psychologist.short_description = 'Психолог'
+    get_psychologist.admin_order_field = 'slot__psychologist'
+
+    def get_date(self, obj):
+        return obj.slot.date if obj.slot else '—'
+    get_date.short_description = 'Дата'
+    get_date.admin_order_field = 'slot__date'
+
+    def get_time(self, obj):
+        return obj.slot.time.strftime('%H:%M') if obj.slot and obj.slot.time else '—'
+    get_time.short_description = 'Время'
+    get_time.admin_order_field = 'slot__time'
 
 admin.site.site_header = 'Лицей №23 — Кабинет психолога'
 admin.site.site_title  = 'Психолог Лицей №23'
 admin.site.index_title = 'Управление сайтом'
+
+
+# ── Добавляем статистику на главную админки ──
+from django.contrib.admin import AdminSite
+_admin_index = AdminSite.index
+
+def _patched_admin_index(self, request, extra_context=None):
+    extra_context = extra_context or {}
+
+    # Статистика прямо в контекст шаблона — без JS
+    today = date.today()
+    week_end = today + timedelta(days=6)
+    extra_context['stats'] = {
+        'today': Appointment.objects.filter(slot__date=today).count(),
+        'week': Appointment.objects.filter(
+            slot__date__gte=today, slot__date__lte=week_end
+        ).count(),
+        'free': TimeSlot.objects.filter(is_available=True).count(),
+    }
+
+    return _admin_index(self, request, extra_context=extra_context)
+
+AdminSite.index = _patched_admin_index

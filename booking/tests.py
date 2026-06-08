@@ -8,6 +8,7 @@ from django.test import TestCase, Client, override_settings
 from django.urls import reverse
 from django.core import mail
 from django.utils import timezone
+from django.contrib.auth.models import User, Group
 
 from .models import Psychologist, AppointmentType, TimeSlot, Appointment
 from .forms import AppointmentForm
@@ -626,10 +627,10 @@ class BookViewTest(TestCase):
         })
         self.assertEqual(response.status_code, 404)
 
-    @patch('booking.views.send_appointment_notification')
-    def test_email_failure_does_not_block_booking(self, mock_notify):
+    @patch('django.core.mail.send_mail')
+    def test_email_failure_does_not_block_booking(self, mock_send):
         """If email sending fails, the booking is still created."""
-        mock_notify.side_effect = Exception('SMTP error')
+        mock_send.side_effect = Exception('SMTP error')
         response = self.client.post(self.url, {
             'appointment_type': self.apt_type.id,
             'full_name': 'Тестов Тест',
@@ -828,3 +829,93 @@ class TimeSlotAdminCreateSlotsTest(TestCase):
         created, skipped = self.admin._create_slots(data)
         # Only 10:00 fits (10:30 is not < 10:30)
         self.assertEqual(created, 1)
+
+
+# =============================================================================
+# Admin UI tests (для не-технических пользователей)
+# =============================================================================
+
+class AdminGeneralTest(TestCase):
+    """Общие проверки админки — удобство для не-технических пользователей."""
+
+    def setUp(self):
+        self.client = Client()
+        # Создаём суперпользователя для доступа в админку
+        from django.contrib.auth.models import User
+        User.objects.create_superuser('admin', 'admin@school.ru', 'testpass123')
+
+    def _login(self):
+        self.client.login(username='admin', password='testpass123')
+
+    def test_admin_index_200(self):
+        """Главная админки открывается."""
+        self._login()
+        response = self.client.get(reverse('admin:index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_index_requires_login(self):
+        """Без логина — редирект на логин."""
+        response = self.client.get(reverse('admin:index'))
+        self.assertNotEqual(response.status_code, 200)
+
+    def test_admin_index_shows_stats(self):
+        """На главной отображается статистика (сегодня, неделя, своб. слоты)."""
+        self._login()
+        response = self.client.get(reverse('admin:index'))
+        self.assertContains(response, 'Записей на сегодня')
+        self.assertContains(response, 'Записей на неделю')
+        self.assertContains(response, 'Свободных слотов')
+
+    def test_admin_index_no_users_groups(self):
+        """Не-технический пользователь НЕ видит «Пользователи» и «Группы»."""
+        self._login()
+        response = self.client.get(reverse('admin:index'))
+        self.assertNotContains(response, 'Пользователи')
+        self.assertNotContains(response, 'Группы')
+        self.assertNotContains(response, 'Users')
+        self.assertNotContains(response, 'Groups')
+
+    def test_admin_models_unregistered(self):
+        """User и Group отсутствуют в реестре админки."""
+        from django.contrib import admin
+        self.assertNotIn(User, admin.site._registry)
+        self.assertNotIn(Group, admin.site._registry)
+
+    def test_psychologist_admin_has_filter(self):
+        """У психологов есть фильтр по классам."""
+        from booking.admin import PsychologistAdmin
+        self.assertIn('grades', PsychologistAdmin.list_filter)
+
+
+class AdminAppointmentActionsTest(TestCase):
+    """У записей НЕТ опасного действия «Удалить»."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        User.objects.create_superuser('admin', 'admin@school.ru', 'testpass123')
+
+    def test_appointment_actions_none(self):
+        from booking.admin import AppointmentAdmin
+        self.assertIsNone(AppointmentAdmin.actions,
+                          'AppointmentAdmin.actions должен быть None (нет «Удалить»)')
+
+
+class AdminTimeSlotActionsTest(TestCase):
+    """У слотов НЕТ опасного действия «Удалить»."""
+
+    def test_timeslot_actions_none(self):
+        from booking.admin import TimeSlotAdmin
+        self.assertIsNone(TimeSlotAdmin.actions,
+                          'TimeSlotAdmin.actions должен быть None (нет «Удалить»)')
+
+
+class AdminAppointmentFormTest(TestCase):
+    """Поле «слот» в форме редактирования Appointment — readonly."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        User.objects.create_superuser('admin', 'admin@school.ru', 'testpass123')
+
+    def test_slot_in_readonly_fields(self):
+        from booking.admin import AppointmentAdmin
+        self.assertIn('slot', AppointmentAdmin.readonly_fields)

@@ -1,0 +1,220 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+    }
+
+    /* ── Карточка модели ── */
+    .dash-card {
+        background: var(--body-bg, #fff);
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .dash-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .dash-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        background: var(--darkened-bg, #f8f9fa);
+        border-bottom: 1px solid var(--border-color, #dee2e6);
+    }
+    .dash-card-icon {
+        font-size: 1.6rem;
+        line-height: 1;
+    }
+    .dash-card-title {
+        flex: 1;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--body-fg, #333);
+    }
+    .dash-card-count {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: var(--primary, #2b7a4b);
+    }
+    .dash-card-body {
+        padding: 14px 20px;
+    }
+    .dash-card-desc {
+        font-size: 0.87rem;
+        color: var(--body-quiet-color, #666);
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+    .dash-card-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .dash-card-actions a {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.15s;
+    }
+    .dash-link-primary {
+        background: var(--button-bg, #2b7a4b);
+        color: #fff;
+    }
+    .dash-link-primary:hover {
+        background: var(--button-hover-bg, #1f5e38);
+    }
+    .dash-link-secondary {
+        background: var(--darkened-bg, #e9ecef);
+        color: var(--body-fg, #333);
+    }
+    .dash-link-secondary:hover {
+        background: var(--border-color, #ced4da);
+    }
+
+    .dash-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    /* ── Статистика ── */
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 8px;
+    }
+    .stat-box {
+        background: var(--message-success-bg, #d4edda);
+        border-radius: 10px;
+        padding: 16px;
+        text-align: center;
+    }
+    .stat-box.warning {
+        background: var(--message-warning-bg, #fff3cd);
+    }
+    .stat-box-number {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--body-fg, #333);
+    }
+    .stat-box-label {
+        font-size: 0.78rem;
+        color: var(--body-quiet-color, #666);
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 640px) {
+        .dash-grid, .dash-stats { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrap">
+
+    <!-- Заголовок -->
+    <div style="text-align:center;margin-bottom:8px;">
+        <h1 style="font-size:1.5rem;color:var(--body-fg);margin:0;">🧠 Кабинет психолога</h1>
+        <p style="color:var(--body-quiet-color);margin:4px 0 0;font-size:0.9rem;">
+            Лицей №23 — здесь можно управлять записями и расписанием
+        </p>
+    </div>
+
+    <!-- Статистика -->
+    <div class="dash-stats">
+        <div class="stat-box">
+            <div class="stat-box-number">{{ stats.today }}</div>
+            <div class="stat-box-label">Записей на сегодня</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-box-number">{{ stats.week }}</div>
+            <div class="stat-box-label">Записей на неделю</div>
+        </div>
+        <div class="stat-box warning">
+            <div class="stat-box-number">{{ stats.free }}</div>
+            <div class="stat-box-label">Свободных слотов</div>
+        </div>
+    </div>
+
+    <!-- Карточки разделов -->
+    <div class="dash-grid">
+        {% for app in app_list %}
+        {% for model in app.models %}
+        {% if model.name != "Пользователи" and model.name != "Группы" and model.name != "Users" and model.name != "Groups" %}
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <span class="dash-card-icon">
+                    {% if model.name == "Записи" %}📋
+                    {% elif model.name == "Временные слоты" or model.name == "Слоты" %}🗓️
+                    {% elif model.name == "Психологи" %}👩‍🏫
+                    {% elif model.name == "Типы приёма" %}🏷️
+                    {% else %}📄{% endif %}
+                </span>
+                <span class="dash-card-title">{{ model.name }}</span>
+                <span class="dash-card-count">{{ model.count }}</span>
+            </div>
+            <div class="dash-card-body">
+                <div class="dash-card-desc">
+                    {% if model.name == "Записи" %}
+                    Просмотр и управление записями на приём. Можно посмотреть кто, к кому и когда записался.
+                    {% elif model.name == "Временные слоты" or model.name == "Слоты" %}
+                    Расписание свободного времени. Можно открыть/закрыть слоты и сгенерировать новые.
+                    {% elif model.name == "Психологи" %}
+                    Список психологов школы, их контакты и фотографии.
+                    {% elif model.name == "Типы приёма" %}
+                    Виды консультаций: обычная или обследование дошкольника.
+                    {% else %}
+                    Управление разделом.
+                    {% endif %}
+                </div>
+                <div class="dash-card-actions">
+                    <a href="{{ model.admin_url }}" class="dash-link-primary">📂 Открыть</a>
+                    {% if model.add_url %}
+                    <a href="{{ model.add_url }}" class="dash-link-secondary">➕ Добавить</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </div>
+
+    <!-- Быстрые действия -->
+    <div style="margin-top:28px;text-align:center;">
+        <a href="{% url 'admin:booking_timeslot_generate' %}"
+           style="display:inline-flex;align-items:center;gap:8px;
+                  background:var(--button-bg,#2b7a4b);color:#fff;text-decoration:none;
+                  padding:12px 28px;border-radius:10px;font-weight:700;font-size:1rem;
+                  transition:all 0.2s;">
+            🗓️ Сгенерировать расписание
+        </a>
+        <a href="{% url 'home' %}"
+           style="display:inline-flex;align-items:center;gap:8px;
+                  background:var(--darkened-bg,#e9ecef);color:var(--body-fg,#333);text-decoration:none;
+                  padding:12px 28px;border-radius:10px;font-weight:600;font-size:0.95rem;
+                  margin-left:12px;transition:all 0.15s;">
+            ← На сайт
+        </a>
+    </div>
+</div>
+{% endblock %}

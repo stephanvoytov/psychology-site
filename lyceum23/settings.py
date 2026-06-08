@@ -63,6 +63,11 @@ DATABASES = {
     )
 }
 
+from django.contrib.messages import constants as message_constants
+MESSAGE_TAGS = {
+    message_constants.ERROR: 'danger',
+}
+
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Kaliningrad'
 USE_I18N = True
@@ -94,7 +99,10 @@ NOTIFICATION_BCC_LIST = ['voytov.st.vi@gmail.com']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

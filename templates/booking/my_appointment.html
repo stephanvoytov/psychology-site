@@ -1,151 +1,257 @@
 {% extends 'booking/base.html' %}
 {% load static %}
-
 {% block title %}Моя запись | Психолог Лицея №23{% endblock %}
 
 {% block content %}
-<h1>Моя запись</h1>
 
-<div id="no-appointment" style="display: none;">
-    <div class="card" style="text-align: center; padding: 3rem 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
-        <p style="color: var(--text-soft); font-size: 1.1rem;">
-            У вас нет активных записей.
-        </p>
-        <a href="{% url 'schedule' %}" class="btn btn-primary" style="margin-top: 1.5rem;">Записаться</a>
-    </div>
-</div>
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
 
-<div id="appointment-card" style="display: none;">
-    <div class="card" style="padding: 2rem;">
-        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-            <div style="font-size: 2.5rem;">📋</div>
-            <div>
-                <div style="font-size: 0.85rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.05em;">Ваша запись</div>
-                <div id="app-display" style="font-size: 1.2rem; font-weight: 700; color: var(--green);"></div>
+        <h1 class="h3 mb-4">Моя запись</h1>
+
+        <!-- Пустое состояние — нет записи -->
+        <div id="no-appointment" class="card border text-center py-5 d-none">
+            <div class="card-body">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                <h2 class="h5 mb-2">У вас нет активной записи</h2>
+                <p class="text-body-secondary mb-3">
+                    Вы можете записаться на приём к психологу.
+                </p>
+                <a href="{% url 'schedule' %}" class="btn btn-accent">Записаться на приём</a>
             </div>
         </div>
 
-        <div id="app-details" style="display: grid; gap: 0.75rem; margin-bottom: 1.5rem;"></div>
+        <!-- Карточка записи -->
+        <div id="appointment-card" class="card border d-none">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                    <div id="app-date-badge" class="date-badge"></div>
+                    <div>
+                        <div id="app-day" class="fw-bold"></div>
+                        <div id="app-datetime" class="text-body-secondary small"></div>
+                    </div>
+                </div>
 
-        <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #856404;">
-            ⚠️ Данные о записи хранятся в вашем браузере. Если вы почистите кэш или
-            зайдёте с другого устройства — запись здесь не появится.
-            Запишите номер телефона, который вы указали при записи.
-        </div>
+                <dl class="row small mb-3">
+                    <dt class="col-sm-5 text-body-secondary">Психолог</dt>
+                    <dd class="col-sm-7" id="app-psychologist"></dd>
 
-        <div id="cancel-section">
-            <div id="cancel-urgent" style="display: none; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 10px; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #721c24;">
-                ❗ Запись на ближайшее время. Для отмены позвоните по телефону
-                <strong>+7 (999) 123-45-67</strong> или напишите на почту
-                <strong>psychologist@school.ru</strong>.
+                    <dt class="col-sm-5 text-body-secondary" id="psych-phone-label" style="display:none;">Телефон психолога</dt>
+                    <dd class="col-sm-7" id="app-psych-phone" style="display:none;"></dd>
+
+                    <dt class="col-sm-5 text-body-secondary">Тип приёма</dt>
+                    <dd class="col-sm-7" id="app-type"></dd>
+
+                    <dt class="col-sm-5 text-body-secondary" id="child-label" style="display:none;">Ребёнок</dt>
+                    <dd class="col-sm-7" id="app-child" style="display:none;"></dd>
+
+                    <dt class="col-sm-5 text-body-secondary" id="parent-label" style="display:none;">Родитель</dt>
+                    <dd class="col-sm-7" id="app-parent" style="display:none;"></dd>
+
+                    <dt class="col-sm-5 text-body-secondary" id="phone-label">Телефон</dt>
+                    <dd class="col-sm-7" id="app-phone"></dd>
+                </dl>
+
+                <!-- Блок отмены -->
+                <div id="cancel-section">
+                    <!-- Если до записи менее 24 часов -->
+                    <div id="cancel-too-late" class="alert alert-warning py-2 small d-none" role="alert">
+                        ⏰ До записи осталось меньше суток. Пожалуйста, позвоните психологу, чтобы отменить визит.
+                    </div>
+
+                    <!-- Если можно отменить онлайн -->
+                    <form id="cancel-form" method="post" action="{% url 'cancel_appointment_direct' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="app_id" id="cancel-app-id" value="">
+                    </form>
+                    <button type="button" id="cancel-btn" class="btn btn-outline-danger btn-sm d-none"
+                            data-bs-toggle="modal" data-bs-target="#cancelModal">
+                        Отменить запись
+                    </button>
+                </div>
             </div>
-            <form id="cancel-form" method="post" action="{% url 'cancel_appointment_direct' %}"
-                  onsubmit="return confirm('Вы уверены, что хотите отменить запись?');">
-                {% csrf_token %}
-                <input type="hidden" name="app_id" id="cancel-app-id" value="">
-                <button type="submit" id="cancel-btn" class="btn btn-outline">Отменить запись</button>
-            </form>
         </div>
     </div>
 </div>
 
+<!-- Модальное окно подтверждения отмены -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="cancelModalLabel">Отмена записи</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите отменить запись?</p>
+                <p class="text-body-secondary small mb-0">Это действие нельзя отменить.</p>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Нет, оставить</button>
+                <button type="button" id="confirm-cancel" class="btn btn-danger" disabled>
+                    Да, отменить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
 <script>
-(function() {
-    // Если запись отменена — проверяем какие записи ещё остались в БД
-    // (удаляем из localStorage те, что уже отменены — они не покажутся,
-    // потому что не будут найдены в БД, но чтоб не мозолили глаза)
+(function () {
+    'use strict';
+
+    var STORAGE_KEY = 'psychologist_appointment';
+
+    // Если отмена — чистим localStorage
     if (window.location.search.indexOf('cancelled=1') !== -1) {
-        try {
-            var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
-            // Удаляем первую будущую запись (ту, что только что отменили)
-            var today = new Date();
-            today.setHours(0, 0, 0, 0);
-            for (var i = 0; i < list.length; i++) {
-                var d = new Date(list[i].date);
-                if (d >= today) {
-                    list.splice(i, 1);
-                    break;
-                }
-            }
-            localStorage.setItem('psychology_appointments', JSON.stringify(list));
-        } catch(e) {}
+        try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     }
 
-    var noApp = document.getElementById('no-appointment');
+    var noAppt = document.getElementById('no-appointment');
     var card = document.getElementById('appointment-card');
-    var display = document.getElementById('app-display');
-    var details = document.getElementById('app-details');
-    var cancelUrgent = document.getElementById('cancel-urgent');
+    var cancelBtn = document.getElementById('cancel-btn');
+    var cancelForm = document.getElementById('cancel-form');
+    var cancelTooLate = document.getElementById('cancel-too-late');
+    var cancelAppId = document.getElementById('cancel-app-id');
 
+    // Элементы с данными
+    var badge = document.getElementById('app-date-badge');
+    var dayEl = document.getElementById('app-day');
+    var datetimeEl = document.getElementById('app-datetime');
+    var psychEl = document.getElementById('app-psychologist');
+    var typeEl = document.getElementById('app-type');
+    var childEl = document.getElementById('app-child');
+    var childLabel = document.getElementById('child-label');
+    var parentEl = document.getElementById('app-parent');
+    var parentLabel = document.getElementById('parent-label');
+    var phoneEl = document.getElementById('app-phone');
+    var phoneLabel = document.getElementById('phone-label');
+
+    // Модалка отмены
+    var cancelModalEl = document.getElementById('cancelModal');
+    var cancelModal = new bootstrap.Modal(cancelModalEl);
+    var confirmCancel = document.getElementById('confirm-cancel');
+
+    // Загружаем данные
+    var data = null;
     try {
-        var list = JSON.parse(localStorage.getItem('psychology_appointments') || '[]');
-        if (list.length === 0) { noApp.style.display = 'block'; return; }
-
-        // Находим ближайшую будущую запись
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var upcoming = null;
-        for (var i = 0; i < list.length; i++) {
-            var d = new Date(list[i].date);
-            if (d >= today) {
-                if (!upcoming || d < new Date(upcoming.date)) {
-                    upcoming = list[i];
-                }
-            }
-        }
-        if (!upcoming) { noApp.style.display = 'block'; return; }
-
-        card.style.display = 'block';
-        display.textContent = upcoming.psychologist ? 'К «' + upcoming.psychologist + '»' : '';
-
-        var months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-                      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-        var days = ['воскресенье', 'понедельник', 'вторник', 'среда',
-                    'четверг', 'пятница', 'суббота'];
-        var dt = new Date(upcoming.date);
-        var dateStr = days[dt.getDay()] + ', ' + dt.getDate() + ' ' + months[dt.getMonth()] + ' ' + dt.getFullYear();
-
-        var rows = [
-            { icon: '📅', label: 'Дата', value: dateStr },
-            { icon: '⏰', label: 'Время', value: upcoming.time },
-        ];
-        if (upcoming.psychologist) {
-            rows.push({ icon: '🧑‍🏫', label: 'Психолог', value: upcoming.psychologist });
-        }
-        if (upcoming.appointment_type) {
-            rows.push({ icon: '📋', label: 'Тип приёма', value: upcoming.appointment_type });
-        }
-        if (upcoming.cabinet) {
-            rows.push({ icon: '🚪', label: 'Кабинет', value: upcoming.cabinet });
-        }
-
-        details.innerHTML = rows.map(function(r) {
-            return '<div style="display:flex;gap:0.75rem;padding:0.5rem 0;border-bottom:1px solid var(--border);">' +
-                '<span style="min-width:28px;">' + r.icon + '</span>' +
-                '<span style="min-width:80px;color:var(--text-soft);font-weight:600;">' + r.label + '</span>' +
-                '<span style="font-weight:700;">' + r.value + '</span>' +
-                '</div>';
-        }).join('');
-
-        // Подставляем ID записи в форму отмены
-        var appIdInput = document.getElementById('cancel-app-id');
-        if (appIdInput && upcoming.app_id) {
-            appIdInput.value = upcoming.app_id;
-        }
-
-        // Проверка: если запись в ближайшие 24 часа — звонить для отмены
-        var appointmentDate = new Date(upcoming.date + 'T' + (upcoming.time || '00:00'));
-        var now = new Date();
-        var diffHours = (appointmentDate - now) / (1000 * 60 * 60);
-        if (diffHours < 24) {
-            cancelUrgent.style.display = 'block';
-            var cancelForm = document.getElementById('cancel-form');
-            if (cancelForm) cancelForm.style.display = 'none';
-        }
-    } catch(e) {
-        noApp.style.display = 'block';
+        data = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    } catch (e) {
+        data = null;
     }
+
+    if (data && data.id) {
+        // Показываем карточку записи
+        noAppt.classList.add('d-none');
+        card.classList.remove('d-none');
+
+        // Разбираем дату
+        var dateParts = (data.date || '').split('-');
+        var timeParts = (data.time || '00:00').split(':');
+        var dateObj = dateParts.length === 3
+            ? new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2], +timeParts[0], +timeParts[1])
+            : new Date();
+
+        var dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        var monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+                          'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+
+        badge.textContent = String(dateObj.getDate());
+
+        dayEl.textContent = dayNames[dateObj.getDay()] + ', ' +
+            dateObj.getHours().toString().padStart(2, '0') + ':' +
+            dateObj.getMinutes().toString().padStart(2, '0');
+
+        datetimeEl.textContent = dateObj.getDate() + ' ' +
+            monthNames[dateObj.getMonth()] + ' ' +
+            dateObj.getFullYear() + ' г.';
+
+        psychEl.textContent = data.psychologist || '';
+
+        if (data.psychologist_phone) {
+            document.getElementById('app-psych-phone').textContent = data.psychologist_phone;
+            document.getElementById('app-psych-phone').style.display = '';
+            document.getElementById('psych-phone-label').style.display = '';
+        }
+
+        typeEl.textContent = data.appointment_type || '';
+
+        // Ребёнок
+        if (data.child_name) {
+            childEl.textContent = data.child_name;
+            childEl.style.display = '';
+            childLabel.style.display = '';
+        } else {
+            childEl.style.display = 'none';
+            childLabel.style.display = 'none';
+        }
+
+        // Родитель
+        var parentName = data.parent_name || data.full_name || '';
+        if (parentName) {
+            parentEl.textContent = parentName;
+            parentEl.style.display = '';
+            parentLabel.style.display = '';
+        } else {
+            parentEl.style.display = 'none';
+            parentLabel.style.display = 'none';
+        }
+
+        // Телефон
+        var phone = data.phone || data.parent_phone || '';
+        if (phone) {
+            phoneEl.textContent = phone;
+            phoneEl.style.display = '';
+            phoneLabel.style.display = '';
+        } else {
+            phoneEl.style.display = 'none';
+            phoneLabel.style.display = 'none';
+        }
+
+        // ID для отмены
+        cancelAppId.value = data.id || '';
+
+        // Проверка 24 часа
+        var now = new Date();
+        var hoursUntil = (dateObj - now) / (1000 * 60 * 60);
+
+        if (hoursUntil < 24) {
+            cancelTooLate.classList.remove('d-none');
+            cancelBtn.classList.add('d-none');
+        } else {
+            cancelTooLate.classList.add('d-none');
+            cancelBtn.classList.remove('d-none');
+        }
+    } else {
+        // Показываем пустое состояние
+        noAppt.classList.remove('d-none');
+        card.classList.add('d-none');
+    }
+
+    // Модалка отмены — включаем кнопку при открытии
+    cancelBtn.addEventListener('click', function () {
+        // Даём Bootstrap время открыть модалку, затем включаем кнопку
+        setTimeout(function () {
+            confirmCancel.disabled = false;
+        }, 100);
+    });
+
+    // При закрытии модалки сбрасываем кнопку
+    cancelModalEl.addEventListener('hidden.bs.modal', function () {
+        confirmCancel.disabled = true;
+        confirmCancel.innerHTML = 'Да, отменить';
+    });
+
+    // Подтверждение отмены
+    confirmCancel.addEventListener('click', function () {
+        confirmCancel.disabled = true;
+        confirmCancel.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Отмена...';
+        cancelForm.submit();
+    });
+
 })();
 </script>
 {% endblock %}

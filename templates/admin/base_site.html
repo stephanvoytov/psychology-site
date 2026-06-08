@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
+        <span style="font-size:1.5rem;">🧠</span>
+        {{ site_header|default:_('Django administration') }}
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_custom.css' %}">
+{% endblock %}
+
+{% block welcome-msg %}
+{% endblock %}
+
+{% block userlinks %}
+    <a href="{% url 'home' %}" style="padding:4px 10px;border:1px solid var(--primary);border-radius:4px;text-decoration:none;font-size:11px;">← На сайт</a>
+    /
+    {{ block.super }}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

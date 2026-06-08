@@ -1,13 +1,11 @@
 {% extends "admin/change_list.html" %}
+{% load i18n %}
 
 {% block object-tools-items %}
-    {# Кнопка генератора — добавляется перед стандартной кнопкой «Добавить» #}
-    <li>
-        <a href="generate_slots/"
-           class="addlink"
-           style="background: #4a7c6f; padding: 8px 18px; border-radius: 8px; font-weight: 700; white-space: nowrap;">
-            📅 Сгенерировать расписание
-        </a>
-    </li>
-    {{ block.super }}
+<li>
+    <a href="{% url 'admin:booking_timeslot_generate' %}" class="addlink" style="background:#2b7a4b;">
+        🗓️ Сгенерировать расписание
+    </a>
+</li>
+{{ block.super }}
 {% endblock %}
