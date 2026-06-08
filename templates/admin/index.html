@@ -169,40 +169,57 @@
 
     <!-- Статус email-уведомлений -->
     <div class="dash-card" style="margin: 20px 0;">
-        <div class="dash-card-header">
+        <div class="dash-card-header" style="border-bottom: 2px solid {% if settings.DEBUG %}var(--border-color,#dee2e6){% elif email_info.has_key %}#28a745{% else %}#dc3545{% endif %};">
             <span class="dash-card-icon">📧</span>
-            <span class="dash-card-title">Email-уведомления</span>
+            <span class="dash-card-title">Уведомления на email</span>
             <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
-                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.has_key %}✅ Настроено{% else %}⚠️ Не настроено{% endif %}
+                {% if settings.DEBUG %}
+                    🔧 Отладка
+                {% elif email_info.has_key %}
+                    ✅ Готово к отправке
+                {% else %}
+                    ⚠️ Не настроены
+                {% endif %}
             </span>
         </div>
-        <div class="dash-card-body">
-            <div style="font-size:0.9rem;padding:6px 0;">
-                Отправитель: <strong>{{ email_info.sender }}</strong>
-            </div>
-            <div style="margin-top:6px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
-                {% if settings.DEBUG %}
-                    ⚡ Режим отладки — вывод в консоль.
+        <div class="dash-card-body" style="padding-bottom:8px;">
+
+            {% if not settings.DEBUG %}
+            <div style="font-size:0.85rem;margin-bottom:10px;">
+                {% if email_info.has_key %}
+                    <span style="color:#28a745;">✓</span> SMTP подключён, пароль задан.
+                    Письма уходят через VPS → Яндекс.
+                {% else %}
+                    <span style="color:#dc3545;">✗</span> SMTP не настроен — добавьте <code>YA_PASSWORD</code>
+                    в переменные окружения.
                 {% endif %}
-                Уведомления приходят психологу на email.
+                <span style="color:var(--body-quiet-color,#666);font-size:0.8rem;display:block;margin-top:2px;">
+                    Отправитель: {{ email_info.sender }}
+                </span>
             </div>
+            {% endif %}
 
             <!-- Статус email у психологов -->
-            <div style="margin-top:14px;border-top:1px solid var(--border-color,#dee2e6);padding-top:12px;">
-                <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;color:var(--body-fg,#333);">
-                    👩‍🏫 Email психологов
+            <div style="border-top:1px solid var(--border-color,#dee2e6);padding-top:8px;">
+                <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;color:var(--body-fg,#333);">
+                    Кому приходят уведомления
                 </div>
                 {% for p in psych_email_status %}
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:0.85rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:0.85rem;">
                     <span style="color:var(--body-fg,#333);">{{ p.name }}</span>
-                    {% if p.has_email %}
-                        <span style="color:#28a745;">✅ {{ p.email }}</span>
+                    {% if p.has_email and email_info.has_key and not settings.DEBUG %}
+                        <span style="color:#28a745;">✅ будет уведомление</span>
+                    {% elif p.has_email and settings.DEBUG %}
+                        <span style="color:#ffc107;">⚠️ в консоль (отладка)</span>
+                    {% elif p.has_email and not email_info.has_key %}
+                        <span style="color:#ffc107;">⚠️ email есть, но SMTP не настроен</span>
                     {% else %}
-                        <span style="color:#dc3545;">❌ не указан</span>
+                        <span style="color:#dc3545;">❌ не будет — укажите email</span>
                     {% endif %}
                 </div>
                 {% endfor %}
             </div>
+
         </div>
     </div>
 
