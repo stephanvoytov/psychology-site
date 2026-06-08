@@ -83,21 +83,14 @@ window.addEventListener('load', function() {
           showEmail: true,
           isNameRequired: true,
           isEmailRequired: true,
-          buttonLabel: 'Связаться с разработчиком',
+          enableScreenshot: true,
+          triggerLabel: 'Связаться с разработчиком',
           formTitle: 'Обратная связь',
-          formSubtitle: 'Нашли баг? Есть предложение? Напишите мне.',
           submitButtonLabel: 'Отправить',
           cancelButtonLabel: 'Закрыть',
           messagePlaceholder: 'Опишите проблему или идею…',
-          addScreenshot: true,
         }),
       ],
-      beforeSend(event) {
-        // Добавляем URL страницы, где возникла проблема
-        event.tags = event.tags || {};
-        event.tags.page = window.location.pathname;
-        return event;
-      },
     });
     Sentry.getFeedback().createWidget();
   } catch(e) {
