@@ -18,7 +18,7 @@ admin.site.unregister(User)
 
 @admin.register(Psychologist)
 class PsychologistAdmin(admin.ModelAdmin):
-    list_display = ('name', 'grades', 'cabinet', 'phone', 'email', 'photo_preview')
+    list_display = ('name', 'grades', 'cabinet', 'phone', 'email_warning', 'photo_preview')
     list_filter = ('grades',)
     search_fields = ('name',)
 
@@ -30,6 +30,24 @@ class PsychologistAdmin(admin.ModelAdmin):
             )
         return '—'
     photo_preview.short_description = 'Фото'
+
+    def email_warning(self, obj):
+        if obj.email:
+            return obj.email
+        return format_html(
+            '<span style="color:#dc3545;">⚠️ не указан</span>'
+        )
+    email_warning.short_description = 'Email'
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        obj = kwargs.get('obj')
+        if obj and not obj.email:
+            messages.warning(
+                request,
+                '⚠️ У психолога не указан email — уведомления о новых записях '
+                'и отменах приходить НЕ БУДУТ. Добавьте email в поле ниже.'
+            )
+        return super().render_change_form(request, context, *args, **kwargs)
 
 
 @admin.register(AppointmentType)
