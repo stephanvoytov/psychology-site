@@ -1,5 +1,7 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import Appointment, AppointmentType
+from .phone_utils import normalize_phone, format_phone
 
 
 class AppointmentForm(forms.ModelForm):
@@ -38,6 +40,21 @@ class AppointmentForm(forms.ModelForm):
 
         self.fields['phone'].required = False
         self.fields['appointment_type'].required = False
+
+    def _validate_phone(self, value, field_name):
+        if not value:
+            return ''
+        normalized = normalize_phone(value)
+        if not normalized:
+            raise ValidationError('Введите корректный номер телефона (например, +7 (916) 123-45-67)')
+        # Если нормализация удалась — форматируем для отображения
+        return format_phone(normalized)
+
+    def clean_phone(self):
+        return self._validate_phone(self.cleaned_data.get('phone'), 'phone')
+
+    def clean_parent_phone(self):
+        return self._validate_phone(self.cleaned_data.get('parent_phone'), 'parent_phone')
 
     def clean(self):
         cleaned = super().clean()

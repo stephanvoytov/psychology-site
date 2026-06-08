@@ -103,6 +103,12 @@ class Appointment(models.Model):
         verbose_name_plural = 'Записи'
         ordering = ['slot__date', 'slot__time']
 
+    def save(self, *args, **kwargs):
+        from .phone_utils import normalize_phone
+        self.phone = normalize_phone(self.phone)
+        self.parent_phone = normalize_phone(self.parent_phone)
+        super().save(*args, **kwargs)
+
     def __str__(self):
         name = self.child_name or self.full_name
         return f'{name} → {self.slot.psychologist} | {self.appointment_type}'

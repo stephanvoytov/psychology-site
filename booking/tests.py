@@ -422,8 +422,13 @@ class SendAppointmentNotificationTest(TestCase):
         )
         send_appointment_notification(appointment)
         _, kwargs = mock_send_mail.call_args
-        self.assertIn('ФИО ребёнка: Петров Иван', kwargs['message'])
-        self.assertIn('Детский сад: ДС №15', kwargs['message'])
+        # HTML-версия письма
+        self.assertIn('Петров Иван', kwargs['html_message'])
+        self.assertIn('ДС №15', kwargs['html_message'])
+        # Plain-text версия (strip_tags)
+        self.assertIn('Петров Иван', kwargs['message'])
+        # Номер нормализован моделью при save
+        self.assertIn('+79993334455', kwargs['message'])
 
     @patch('booking.email_utils.send_mail')
     def test_no_email_if_psychologist_has_no_email(self, mock_send_mail):
@@ -921,3 +926,80 @@ class AdminAppointmentFormTest(TestCase):
     def test_slot_in_readonly_fields(self):
         from booking.admin import AppointmentAdmin
         self.assertIn('slot', AppointmentAdmin.readonly_fields)
+
+
+# =============================================================================
+# Phone utils
+# =============================================================================
+
+from .phone_utils import normalize_phone, format_phone
+
+
+class NormalizePhoneTest(TestCase):
+    """Тесты нормализации номеров."""
+
+    def test_full_format(self):
+        self.assertEqual(normalize_phone('+7 (916) 123-45-67'), '+79161234567')
+
+    def test_eight_format(self):
+        self.assertEqual(normalize_phone('8 (916) 123-45-67'), '+79161234567')
+
+    def test_ten_digits(self):
+        self.assertEqual(normalize_phone('9161234567'), '+79161234567')
+
+    def test_eleven_digits_with_8(self):
+        self.assertEqual(normalize_phone('89161234567'), '+79161234567')
+
+    def test_eleven_digits_with_7(self):
+        self.assertEqual(normalize_phone('79161234567'), '+79161234567')
+
+    def test_dashes(self):
+        self.assertEqual(normalize_phone('+7-916-123-45-67'), '+79161234567')
+
+    def test_spaces(self):
+        self.assertEqual(normalize_phone('  +7 916  123 45 67  '), '+79161234567')
+
+    def test_parentheses(self):
+        self.assertEqual(normalize_phone('8(916)1234567'), '+79161234567')
+
+    def test_empty_string(self):
+        self.assertEqual(normalize_phone(''), '')
+
+    def test_none(self):
+        self.assertEqual(normalize_phone(None), '')
+
+    def test_short_number(self):
+        # Слишком короткий — не парсится
+        self.assertEqual(normalize_phone('12345'), '')
+
+    def test_too_long(self):
+        self.assertEqual(normalize_phone('+7 (916) 123-45-67 extra'), '+79161234567')
+
+    def test_non_russian_code(self):
+        # Номер начинается не с 7/8 — невалидный
+        self.assertEqual(normalize_phone('+1 (555) 123-45-67'), '')
+
+
+class FormatPhoneTest(TestCase):
+    """Тесты форматирования номеров для отображения."""
+
+    def test_normalized(self):
+        self.assertEqual(format_phone('+79161234567'), '+7 (916) 123-45-67')
+
+    def test_full_input(self):
+        self.assertEqual(format_phone('+7 (916) 123-45-67'), '+7 (916) 123-45-67')
+
+    def test_eight_input(self):
+        self.assertEqual(format_phone('8 (916) 123-45-67'), '+7 (916) 123-45-67')
+
+    def test_ten_digits(self):
+        self.assertEqual(format_phone('9161234567'), '+7 (916) 123-45-67')
+
+    def test_dirty_input(self):
+        self.assertEqual(format_phone('8-916-123-45-67'), '+7 (916) 123-45-67')
+
+    def test_empty(self):
+        self.assertEqual(format_phone(''), '')
+
+    def test_none(self):
+        self.assertEqual(format_phone(None), '')

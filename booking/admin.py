@@ -8,6 +8,7 @@ from django.contrib import messages
 from datetime import datetime, timedelta, date
 
 from django.utils.html import format_html
+from django.db.models import Count
 
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .slot_generator import SlotGeneratorForm
@@ -252,6 +253,60 @@ def _patched_admin_index(self, request, extra_context=None):
         for p in psychologists
     ]
     extra_context['any_has_email'] = any(p['has_email'] for p in extra_context['psych_email_status'])
+
+    # ── Дубликаты записей ──
+    raw_duplicates = []
+
+    phones = (Appointment.objects.values('phone')
+              .annotate(cnt=Count('id'))
+              .filter(cnt__gt=1, phone__gt=''))
+    for p in phones:
+        raw_duplicates.append({
+            'field': 'phone',
+            'value': p['phone'],
+            'count': p['cnt'],
+            'apps': Appointment.objects.filter(phone=p['phone'])
+                     .select_related('slot__psychologist', 'appointment_type'),
+        })
+
+    parent_phones = (Appointment.objects.values('parent_phone')
+                     .annotate(cnt=Count('id'))
+                     .filter(cnt__gt=1, parent_phone__gt=''))
+    for p in parent_phones:
+        raw_duplicates.append({
+            'field': 'parent_phone',
+            'value': p['parent_phone'],
+            'count': p['cnt'],
+            'apps': Appointment.objects.filter(parent_phone=p['parent_phone'])
+                     .select_related('slot__psychologist', 'appointment_type'),
+        })
+
+    child_names = (Appointment.objects.values('child_name')
+                   .annotate(cnt=Count('id'))
+                   .filter(cnt__gt=1, child_name__gt=''))
+    for c in child_names:
+        raw_duplicates.append({
+            'field': 'child_name',
+            'value': c['child_name'],
+            'count': c['cnt'],
+            'apps': Appointment.objects.filter(child_name=c['child_name'])
+                     .select_related('slot__psychologist', 'appointment_type'),
+        })
+
+    parent_names = (Appointment.objects.values('parent_name')
+                    .annotate(cnt=Count('id'))
+                    .filter(cnt__gt=1, parent_name__gt=''))
+    for pn in parent_names:
+        raw_duplicates.append({
+            'field': 'parent_name',
+            'value': pn['parent_name'],
+            'count': pn['cnt'],
+            'apps': Appointment.objects.filter(parent_name=pn['parent_name'])
+                     .select_related('slot__psychologist', 'appointment_type'),
+        })
+
+    extra_context['duplicates'] = raw_duplicates
+    extra_context['today'] = today
 
     # Проверка SMTP — без пароля не проверяем
     if not settings.DEBUG and settings.EMAIL_HOST_PASSWORD:

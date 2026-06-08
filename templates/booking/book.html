@@ -218,6 +218,22 @@
     var consGroup   = document.getElementById('fields-consultation');
     var preGroup    = document.getElementById('fields-preschool');
 
+    // ---------- маска телефона ----------
+    function maskPhone(input) {
+        var val = input.value.replace(/\D/g, '');
+        var formatted = '+7';
+        if (val.length > 1) formatted += ' (' + val.substring(1, 4);
+        if (val.length >= 5) formatted += ') ' + val.substring(4, 7);
+        if (val.length >= 8) formatted += '-' + val.substring(7, 9);
+        if (val.length >= 10) formatted += '-' + val.substring(9, 11);
+        input.value = formatted;
+    }
+
+    document.querySelectorAll('input[name="phone"], input[name="parent_phone"]').forEach(function (el) {
+        el.addEventListener('input', function () { maskPhone(this); });
+        el.addEventListener('focus', function () { if (!this.value) this.value = '+7'; });
+    });
+
     var consFields  = ['full_name','who','phone','email','grade','message'];
     var consReq     = ['full_name','who','phone'];
     var preFields   = ['child_name','child_birthdate','kindergarten','address','parent_name','parent_phone'];

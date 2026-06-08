@@ -130,6 +130,43 @@
         font-size: 0.9rem;
     }
 
+    /* ── Дубликаты ── */
+    .dup-card {
+        background: var(--body-bg, #fff); border-radius: 10px; overflow: hidden;
+        margin: 16px 0; border-left: 4px solid #dc3545;
+    }
+    .dup-header {
+        display: flex; align-items: center; gap: 10px;
+        padding: 14px 18px; border-bottom: 1px solid var(--hairline-color, #eee);
+    }
+    .dup-header .icon { font-size: 1.3rem; }
+    .dup-header .title { flex: 1; font-weight: 700; font-size: 0.95rem; color: var(--body-fg, #333); }
+    .dup-header .badge {
+        background: var(--error-fg, #dc3545); color: var(--primary-fg, #fff);
+        padding: 2px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
+    }
+    .dup-body { padding: 4px 18px 10px; }
+    .group { padding: 8px 0; border-top: 1px solid var(--hairline-color, #f0f0f0); }
+    .group:first-child { border-top: none; }
+    .group-label {
+        font-weight: 600; font-size: 0.88rem; color: var(--body-fg, #333);
+        margin-bottom: 3px; display: flex; align-items: center; gap: 6px;
+    }
+    .group-label .val { color: var(--error-fg, #c62828); }
+    .group-label .cnt { font-weight: 400; font-size: 0.8rem; color: var(--body-quiet-color, #888); }
+    .group-item { padding: 2px 0 2px 22px; font-size: 0.85rem; color: var(--body-quiet-color, #555); line-height: 1.5; }
+    .group-item .bullet { color: var(--hairline-color, #bbb); margin-right: 6px; }
+    .group-item a { color: var(--link-fg, #1a4a2e); text-decoration: none; font-weight: 500; }
+    .group-item a:hover { text-decoration: underline; }
+    .group-item .meta { color: var(--body-quiet-color, #999); font-size: 0.8rem; }
+    .group-item .tag {
+        display: inline-block; font-size: 0.72rem; padding: 1px 8px; border-radius: 4px;
+        background: var(--message-success-bg, #e8f5e9); color: #2e7d50; margin-left: 4px;
+    }
+    .group-item .tag-pink {
+        background: var(--message-error-bg, #fce4ec); color: var(--error-fg, #c62828);
+    }
+
     @media (max-width: 640px) {
         .dash-grid, .dash-stats { grid-template-columns: 1fr; }
         #content { padding: 6px; }
@@ -149,6 +186,47 @@
             Панель управления
         </h1>
     </div>
+
+    <!-- ⚠️ Дубликаты -->
+    {% if duplicates %}
+    <div class="dup-card">
+      <div class="dup-header">
+        <span class="icon">⚠️</span>
+        <span class="title">Возможные дубликаты записей</span>
+        <span class="badge">{{ duplicates|length }} совпадения</span>
+      </div>
+      <div class="dup-body">
+        {% for d in duplicates %}
+        <div class="group">
+          <div class="group-label">
+            {% if d.field == 'phone' or d.field == 'parent_phone' %}
+              <span>📞</span>
+            {% elif d.field == 'child_name' %}
+              <span>👶</span>
+            {% elif d.field == 'parent_name' %}
+              <span>👤</span>
+            {% endif %}
+            <span class="val">{{ d.value }}</span>
+            <span class="cnt">— {{ d.count }} записи</span>
+          </div>
+          {% for a in d.apps %}
+          <div class="group-item">
+            <span class="bullet">•</span>
+            {{ a.slot.date|date:"d.m.Y" }} {{ a.slot.time|time:"H:i" }} —
+            <a href="{% url 'admin:booking_appointment_change' a.id %}">{{ a.slot.psychologist.name }}</a>
+            <span class="meta">{% if a.appointment_type %}{{ a.appointment_type.name }}{% else %}—{% endif %}</span>
+            {% if a.slot.date == today %}
+              <span class="tag tag-pink">сегодня</span>
+            {% elif a.slot.date > today %}
+              <span class="tag">через {{ a.slot.date|timeuntil:today|cut:","|cut:" " }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
 
     <!-- Статистика -->
     <div class="dash-stats">
