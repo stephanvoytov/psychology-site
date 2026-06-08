@@ -111,16 +111,68 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'stepanvoytov@yandex.ru')
 EMAIL_HOST_PASSWORD = os.getenv('YA_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'stepanvoytov@yandex.ru')
 
+# ── Мониторинг ошибок (Sentry) ──────────────────────────────────────
+SENTRY_DSN = os.environ.get('SENTRY_DSN')
+if not DEBUG and SENTRY_DSN:
+    import sentry_sdk
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        send_default_pii=False,              # Не отправляем личные данные
+        traces_sample_rate=0.1,              # 10% транзакций для performance
+        profiles_sample_rate=0.1,
+        environment='production' if not DEBUG else 'development',
+    )
+
+# ── Логирование ─────────────────────────────────────────────────────
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} [{levelname}] {name}: {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'maxBytes': 1024 * 1024 * 5,   # 5 MB
+            'backupCount': 3,
+            'formatter': 'verbose',
+            'delay': True,  # Файл создаётся только когда есть WARNING+
+        },
+    },
+    'loggers': {
+        'booking': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'ERROR',     # Только ошибки 5xx
+            'propagate': False,
         },
     },
     'root': {
         'handlers': ['console'],
-        'level': os.environ.get('LOG_LEVEL', 'INFO'),
+        'level': 'WARNING',
     },
 }

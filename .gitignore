@@ -17,3 +17,5 @@ staticfiles/
 dist/
 build/
 .tmp/
+logs/
+!.gitkeep

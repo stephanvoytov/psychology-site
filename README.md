@@ -46,41 +46,6 @@
 
 ---
 
-## Быстрый запуск
-
-```bash
-git clone https://github.com/stephanvoytov/psychology-site.git
-cd psychology-site
-python -m venv .venv
-.venv\Scripts\activate     # Windows
-pip install -r requirements.txt
-```
-
-Создайте `.env` в корне проекта:
-
-```env
-SECRET_KEY=ваш-секретный-ключ
-DEBUG=True
-EMAIL_HOST=smtp.yandex.ru
-EMAIL_PORT=465
-EMAIL_USE_SSL=True
-EMAIL_HOST_USER=ваш-email@yandex.ru
-EMAIL_HOST_PASSWORD=пароль
-DEFAULT_FROM_EMAIL=ваш-email@yandex.ru
-NOTIFICATION_BCC_LIST=admin@school.ru
-```
-
-```bash
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py seed_data    # демо-данные (8 записей)
-python manage.py runserver
-```
-
-Админка: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-
----
-
 ## Тесты
 
 ```bash
