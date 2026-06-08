@@ -186,21 +186,6 @@
                     <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">Отправитель</td>
                     <td style="padding:6px 12px;">{{ email_info.sender }}</td>
                 </tr>
-                <tr>
-                    <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">SMTP-сервер</td>
-                    <td style="padding:6px 12px;">
-                        {% if settings.DEBUG %}
-                            <span style="color:var(--body-quiet-color,#666);">— (консоль)</span>
-                        {% elif email_info.smtp_ok is None %}
-                            <span style="color:var(--body-quiet-color,#666);">⏳ проверка…</span>
-                        {% elif email_info.smtp_ok %}
-                            <span style="color:#28a745;">🟢 smtp.yandex.ru:587 доступен</span>
-                        {% else %}
-                            <span style="color:#dc3545;">🔴 smtp.yandex.ru:587 недоступен</span>
-                        {% endif %}
-                    </td>
-                </tr>
-
             </table>
             <div style="margin-top:10px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
                 {% if settings.DEBUG %}
