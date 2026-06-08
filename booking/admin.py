@@ -1,4 +1,6 @@
 import os
+import socket
+import logging
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.conf import settings
@@ -241,10 +243,20 @@ def _patched_admin_index(self, request, extra_context=None):
 
     # Информация о настройках email
     pw = os.environ.get('YA_PASSWORD')
+    smtp_ok = None
+    if not settings.DEBUG:
+        try:
+            sock = socket.create_connection(('smtp.yandex.ru', 587), timeout=3)
+            banner = sock.recv(1024)
+            smtp_ok = banner.startswith(b'220')
+            sock.close()
+        except Exception as exc:
+            logging.getLogger('booking').warning('SMTP health check failed: %s', exc)
+            smtp_ok = False
     extra_context['email_info'] = {
         'backend': '📧 SMTP (Yandex)' if not settings.DEBUG else '🔧 Консоль (только лог)',
         'sender': settings.DEFAULT_FROM_EMAIL,
-        'smtp_configured': bool(pw) or settings.DEBUG,
+        'smtp_ok': smtp_ok,
     }
 
     extra_context['settings'] = settings
