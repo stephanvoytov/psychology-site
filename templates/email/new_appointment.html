@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f2f5;font-family:system-ui,-apple-system,sans-serif;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:24px 12px;">
+<tr><td align="center">
+<table role="presentation" width="520" cellpadding="0" cellspacing="0" style="max-width:100%;">
+
+<!-- Header -->
+<tr><td style="background:#1a4a2e;border-radius:10px 10px 0 0;padding:24px 28px 18px;text-align:center;">
+  <div style="font-size:2rem;line-height:1;margin-bottom:6px;">🧠</div>
+  <div style="color:#fff;font-size:1.1rem;font-weight:700;">Новая запись на приём</div>
+</td></tr>
+
+<!-- Body -->
+<tr><td style="background:#fff;padding:24px 28px;border-left:1px solid #e0e0e0;border-right:1px solid #e0e0e0;">
+
+  <p style="margin:0 0 16px;color:#555;font-size:0.9rem;line-height:1.5;">
+    Поступила новая заявка. Данные клиента:
+  </p>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:0.88rem;color:#333;">
+    <tr><td width="140" style="padding:5px 0;color:#888;vertical-align:top;">Психолог</td>
+        <td style="padding:5px 0;font-weight:600;">{{ psychologist_name }}</td></tr>
+    <tr><td width="140" style="padding:5px 0;color:#888;vertical-align:top;border-top:1px solid #eee;">Дата и время</td>
+        <td style="padding:5px 0;font-weight:600;border-top:1px solid #eee;">{{ date }} в {{ time }}
+          {% if days_until <= 2 %}
+          <span style="display:inline-block;margin-left:6px;padding:1px 10px;border-radius:20px;font-size:0.8rem;font-weight:600;background:#fff3cd;color:#856404;">⬤ До приёма: {{ days_until }} дн.</span>
+          {% else %}
+          <span style="display:inline-block;margin-left:6px;padding:1px 10px;border-radius:20px;font-size:0.8rem;font-weight:600;background:#e8f5e9;color:#2e7d50;">⬤ До приёма: {{ days_until }} дн.</span>
+          {% endif %}
+        </td></tr>
+    <tr><td width="140" style="padding:5px 0;color:#888;vertical-align:top;border-top:1px solid #eee;">Тип обращения</td>
+        <td style="padding:5px 0;font-weight:600;border-top:1px solid #eee;">{{ appointment_type }}</td></tr>
+  </table>
+
+  {% if is_preschool %}
+  <div style="margin-top:16px;padding:16px;background:#f8faf8;border-radius:8px;font-size:0.88rem;color:#333;">
+    <div style="font-weight:600;margin-bottom:8px;color:#1a4a2e;">👶 Данные ребёнка</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:0.88rem;">
+      <tr><td width="140" style="padding:3px 0;color:#888;">ФИО ребёнка</td><td style="padding:3px 0;font-weight:600;">{{ child_name }}</td></tr>
+      <tr><td width="140" style="padding:3px 0;color:#888;">Дата рождения</td><td style="padding:3px 0;">{{ child_birthdate }}</td></tr>
+      <tr><td width="140" style="padding:3px 0;color:#888;">Детский сад</td><td style="padding:3px 0;">{{ kindergarten }}</td></tr>
+      <tr><td width="140" style="padding:3px 0;color:#888;">Адрес</td><td style="padding:3px 0;">{{ address }}</td></tr>
+      <tr><td width="140" style="padding:3px 0;color:#888;">ФИО родителя</td><td style="padding:3px 0;font-weight:600;">{{ parent_name }}</td></tr>
+      <tr><td width="140" style="padding:3px 0;color:#888;">Телефон</td><td style="padding:3px 0;"><a href="tel:{{ parent_phone }}" style="color:#1a4a2e;text-decoration:none;">{{ parent_phone }}</a></td></tr>
+    </table>
+  </div>
+  {% else %}
+  <div style="margin-top:16px;padding:16px;background:#f8faf8;border-radius:8px;font-size:0.88rem;color:#333;">
+    <div style="font-weight:600;margin-bottom:8px;color:#1a4a2e;">👤 Данные клиента</div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:0.88rem;">
+      <tr><td width="140" style="padding:3px 0;color:#888;">ФИО</td><td style="padding:3px 0;font-weight:600;">{{ full_name }}</td></tr>
+      {% if who %}<tr><td width="140" style="padding:3px 0;color:#888;">Кто записался</td><td style="padding:3px 0;">{{ who }}</td></tr>{% endif %}
+      {% if grade %}<tr><td width="140" style="padding:3px 0;color:#888;">Класс</td><td style="padding:3px 0;">{{ grade }}</td></tr>{% endif %}
+      <tr><td width="140" style="padding:3px 0;color:#888;">Телефон</td><td style="padding:3px 0;"><a href="tel:{{ phone }}" style="color:#1a4a2e;text-decoration:none;">{{ phone }}</a></td></tr>
+      {% if email %}<tr><td width="140" style="padding:3px 0;color:#888;">Email</td><td style="padding:3px 0;">{{ email }}</td></tr>{% endif %}
+      {% if message %}<tr><td width="140" style="padding:3px 0;color:#888;vertical-align:top;">Примечание</td><td style="padding:3px 0;">{{ message }}</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+
+  <div style="margin-top:20px;padding:14px;background:#e8f5e9;border-radius:8px;text-align:center;font-size:0.85rem;color:#2e7d50;">
+    ✅ Запись подтверждена
+  </div>
+</td></tr>
+
+<!-- Footer -->
+<tr><td style="background:#1a4a2e;border-radius:0 0 10px 10px;padding:16px 28px;text-align:center;">
+  <div style="color:#b0d4b8;font-size:0.78rem;">
+    Лицей №23 · Кабинет психолога<br>
+    <span style="opacity:0.7;">Это письмо отправлено автоматически, отвечать на него не нужно.</span>
+  </div>
+</td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>
