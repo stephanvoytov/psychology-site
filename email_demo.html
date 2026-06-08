@@ -4,84 +4,138 @@
   <meta charset="UTF-8">
   <title>Email — демо</title>
   <style>
-    body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-    h2 { margin: 0 0 10px; font-size: 1.2rem; }
-    .grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 700px; margin-bottom: 30px; }
+    body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .cards { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
 
     .card {
-      background: #fff; border-radius: 8px; width: 320px;
+      background: #fff; border-radius: 8px; width: 380px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.12); overflow: hidden;
     }
     .card-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; font-weight: 600;
+      padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; font-weight: 600;
     }
-    .card-body { padding: 10px 14px 8px; }
+    .card-body { padding: 12px 16px; }
 
-    .badge { font-size: 0.75rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; }
+    .dot {
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; margin-right: 4px; vertical-align: middle;
+    }
+    .dot-green { background: #28a745; }
+    .dot-red { background: #dc3545; }
+    .dot-gray { background: #999; }
+
+    .badge {
+      font-size: 0.78rem; font-weight: 600; padding: 2px 10px;
+      border-radius: 20px; white-space: nowrap;
+    }
     .badge-ok { background: #d4edda; color: #155724; }
     .badge-err { background: #f8d7da; color: #721c24; }
     .badge-debug { background: #e2e3e5; color: #383d41; }
 
-    .warning { font-size:0.8rem;color:#dc3545;margin-bottom:8px;padding:6px 10px;background:#fff0f0;border-radius:4px; }
-    .section-title { font-size: 0.8rem; font-weight: 600; margin: 6px 0 4px; color: #333; }
-    .row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 0.82rem; }
+    .sender { font-size: 0.8rem; color: #666; margin: 2px 0 2px; }
+    .hint { font-size: 0.8rem; color: #666; margin: 0 0 8px; }
+    .hint-err { font-size: 0.8rem; color: #dc3545; margin: 0 0 8px; }
 
-    .page {
-      background: #fff; border-radius: 8px; width: 400px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12); padding: 24px; text-align: center;
-    }
-    .page .icon { font-size: 3rem; margin-bottom: 10px; }
-    .page h3 { margin: 0 0 6px; font-size: 1.1rem; }
-    .page .desc { font-size: 0.9rem; color: #555; margin-bottom: 20px; }
-    .page .btn { background: #28a745; color: #fff; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; }
-    .page .back { display: block; margin-top: 10px; color: #666; font-size: 0.85rem; }
-    .state-label { font-size: 0.7rem; color: #999; margin-top: 4px; text-align: center; }
+    .section-title { font-size: 0.82rem; font-weight: 600; margin: 10px 0 6px; color: #333; border-top: 1px solid #eee; padding-top: 8px; }
+
+    .row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; font-size: 0.85rem; }
+    .row a { color: #dc3545; text-decoration: none; font-size: 0.8rem; }
+    .row a:hover { text-decoration: underline; }
+    .row .email-ok { color: #28a745; font-size: 0.8rem; }
   </style>
 </head>
 <body>
 
-  <h2>📧 Карточка в админке</h2>
+  <div class="cards">
 
-  <div class="grid">
-
-    <!-- DEBUG -->
+    <!-- 1: SMTP работает + у кого-то email есть -->
     <div class="card">
-      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-debug">🔧 Отладка</span></div>
+      <div class="card-header">
+        <span>📧 Email-уведомления</span>
+        <span class="badge badge-ok"><span class="dot dot-green"></span>Настроено</span>
+      </div>
       <div class="card-body">
-        <div class="section-title">Психологи</div>
-        <div class="row"><span>Ганиева М.В.</span><span style="color:#999;">❌ не будет</span></div>
-        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
-        <div class="state-label">DEBUG=True</div>
+        <div class="sender">Отправитель: stepanvoytov@yandex.ru</div>
+        <div class="hint">Уведомления приходят психологу на email.</div>
+        <div class="section-title">👩‍🏫 Email психологов</div>
+        <div class="row">
+          <span>Ворожейкина Ирина Вячеславовна</span>
+          <span class="email-ok">vorozheikina@school.ru</span>
+        </div>
+        <div class="row">
+          <span>Ганиева Маргарита Викторовна</span>
+          <a href="#">✎ указать email</a>
+        </div>
       </div>
     </div>
 
-    <!-- Работают -->
+    <!-- 2: SMTP работает + ни у кого email нет -->
     <div class="card">
-      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-ok">✅ Работают</span></div>
+      <div class="card-header">
+        <span>📧 Email-уведомления</span>
+        <span class="badge badge-ok"><span class="dot dot-green"></span>Настроено</span>
+      </div>
       <div class="card-body">
-        <div class="section-title">Психологи</div>
-        <div class="row"><span>Ганиева М.В.</span><span style="color:#28a745;">✅ будет</span></div>
-        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
-        <div class="state-label">всё ок</div>
+        <div class="sender">Отправитель: stepanvoytov@yandex.ru</div>
+        <div class="hint-err">⚠️ Уведомления никому не приходят — у психологов не указан email.</div>
+        <div class="section-title">👩‍🏫 Email психологов</div>
+        <div class="row">
+          <span>Ворожейкина Ирина Вячеславовна</span>
+          <a href="#">✎ указать email</a>
+        </div>
+        <div class="row">
+          <span>Ганиева Маргарита Викторовна</span>
+          <a href="#">✎ указать email</a>
+        </div>
       </div>
     </div>
 
-    <!-- Не работают -->
+    <!-- 3: SMTP не работает -->
     <div class="card">
-      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-err">❌ Не работают</span></div>
+      <div class="card-header">
+        <span>📧 Email-уведомления</span>
+        <span class="badge badge-err"><span class="dot dot-red"></span>Настроено</span>
+      </div>
       <div class="card-body">
-        <div class="warning">⚠️ Уведомления не работают</div>
-        <div class="section-title">Психологи</div>
-        <div class="row"><span>Ганиева М.В.</span><span style="color:#999;">❌ не будет</span></div>
-        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
-        <div class="state-label">нет пароля / SMTP недоступен</div>
+        <div class="sender">Отправитель: stepanvoytov@yandex.ru</div>
+        <div class="hint-err">⚠️ SMTP недоступен, письма не уходят.</div>
+        <div class="section-title">👩‍🏫 Email психологов</div>
+        <div class="row">
+          <span>Ворожейкина Ирина Вячеславовна</span>
+          <a href="#">✎ указать email</a>
+        </div>
+        <div class="row">
+          <span>Ганиева Маргарита Викторовна</span>
+          <span class="email-ok">ganieva@school.ru</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4: DEBUG -->
+    <div class="card">
+      <div class="card-header">
+        <span>📧 Email-уведомления</span>
+        <span class="badge badge-debug"><span class="dot dot-gray"></span>Отладка</span>
+      </div>
+      <div class="card-body">
+        <div class="sender">Отправитель: stepanvoytov@yandex.ru</div>
+        <div class="hint">⚡ Режим отладки — письма в консоль.</div>
+        <div class="section-title">👩‍🏫 Email психологов</div>
+        <div class="row">
+          <span>Ворожейкина Ирина Вячеславовна</span>
+          <a href="#">✎ указать email</a>
+        </div>
+        <div class="row">
+          <span>Ганиева Маргарита Викторовна</span>
+          <span class="email-ok">ganieva@school.ru</span>
+        </div>
       </div>
     </div>
 
   </div>
 
-  <div style="color:#888;font-size:0.75rem;margin-top:10px;">email_demo.html</div>
+  <div style="color:#888;font-size:0.75rem;">email_demo.html</div>
 
 </body>
 </html>

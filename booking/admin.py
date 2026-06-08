@@ -246,10 +246,12 @@ def _patched_admin_index(self, request, extra_context=None):
         {
             'name': p.name,
             'has_email': bool(p.email),
-            'email': p.email or '—',
+            'email': p.email or '',
+            'edit_url': reverse('admin:booking_psychologist_change', args=[p.pk]),
         }
         for p in psychologists
     ]
+    extra_context['any_has_email'] = any(p['has_email'] for p in extra_context['psych_email_status'])
 
     # Проверка SMTP (таймаут 2с — не блокирует страницу)
     if not settings.DEBUG:

@@ -168,54 +168,46 @@
     </div>
 
     <!-- Статус email-уведомлений -->
-    <!-- Разработчику: статус SMTP проверяется в booking/admin.py -->
     <div class="dash-card" style="margin: 20px 0;">
-        <div class="dash-card-header" style="border-bottom: 2px solid var(--border-color,#dee2e6);">
+        <div class="dash-card-header" style="border-bottom: 1px solid var(--border-color,#dee2e6);">
             <span class="dash-card-icon">📧</span>
-            <span class="dash-card-title">Уведомления на email</span>
+            <span class="dash-card-title">Email-уведомления</span>
             <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
                 {% if settings.DEBUG %}
-                    🔧 Отладка
-                {% elif email_info.smtp_result == 'ok' %}
-                    ✅ Работают
-                {% elif email_info.smtp_result == 'no_password' %}
-                    ❌ Не работают
-                {% elif email_info.smtp_result %}
-                    ❌ Не работают
+                    <span class="badge badge-debug" style="background:#e2e3e5;color:#383d41;padding:2px 10px;border-radius:20px;">
+                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#999;margin-right:4px;vertical-align:middle;"></span>Отладка
+                    </span>
                 {% else %}
-                    ❌ Не работают
+                    <span class="badge badge-{% if email_info.smtp_result == 'ok' %}ok{% else %}err{% endif %}" style="padding:2px 10px;border-radius:20px;{% if email_info.smtp_result == 'ok' %}background:#d4edda;color:#155724{% else %}background:#f8d7da;color:#721c24{% endif %};">
+                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;{% if email_info.smtp_result == 'ok' %}background:#28a745{% else %}background:#dc3545{% endif %};"></span>Настроено
+                    </span>
                 {% endif %}
             </span>
         </div>
-        <div class="dash-card-body" style="padding-bottom:8px;">
+        <div class="dash-card-body" style="padding:12px 16px;">
+            <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:2px 0 2px;">Отправитель: {{ email_info.sender }}</div>
 
-            {% if not settings.DEBUG and email_info.smtp_result and email_info.smtp_result != 'ok' %}
-            <div style="font-size:0.8rem;color:#dc3545;margin-bottom:8px;padding:6px 10px;background:#fff0f0;border-radius:4px;">
-                ⚠️ Уведомления не работают
-            </div>
+            {% if settings.DEBUG %}
+                <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:0 0 8px;">⚡ Режим отладки — письма в консоль.</div>
+            {% elif email_info.smtp_result != 'ok' %}
+                <div style="font-size:0.8rem;color:#dc3545;margin:0 0 8px;">⚠️ SMTP недоступен, письма не уходят.</div>
+            {% elif not any_has_email %}
+                <div style="font-size:0.8rem;color:#dc3545;margin:0 0 8px;">⚠️ Уведомления никому не приходят — у психологов не указан email.</div>
+            {% else %}
+                <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:0 0 8px;">Уведомления приходят психологу на email.</div>
             {% endif %}
 
-            <!-- Список психологов -->
-            <div style="border-top:none;padding-top:0;">
-                <div style="font-size:0.82rem;font-weight:600;margin-bottom:6px;color:var(--body-fg,#333);">
-                    Психологи
-                </div>
-                {% for p in psych_email_status %}
-                <div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:0.85rem;">
-                    <span style="color:var(--body-fg,#333);">{{ p.name }}</span>
-                    {% if p.has_email and not settings.DEBUG and email_info.smtp_result == 'ok' %}
-                        <span style="color:#28a745;">✅ будет</span>
-                    {% elif p.has_email and not settings.DEBUG and email_info.smtp_result != 'ok' %}
-                        <span style="color:#999;">❌ не будет</span>
-                    {% elif p.has_email and settings.DEBUG %}
-                        <span style="color:#999;">❌ не будет</span>
-                    {% else %}
-                        <span style="color:#dc3545;">❌ не будет</span>
-                    {% endif %}
-                </div>
-                {% endfor %}
+            <div style="font-size:0.82rem;font-weight:600;margin:10px 0 6px;color:var(--body-fg,#333);border-top:1px solid var(--border-color,#dee2e6);padding-top:8px;">👩‍🏫 Email психологов</div>
+            {% for p in psych_email_status %}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:0.85rem;">
+                <span style="color:var(--body-fg,#333);">{{ p.name }}</span>
+                {% if p.has_email %}
+                    <span style="color:#28a745;font-size:0.8rem;">{{ p.email }}</span>
+                {% else %}
+                    <a href="{{ p.edit_url }}" style="color:#dc3545;text-decoration:none;font-size:0.8rem;">✎ указать email</a>
+                {% endif %}
             </div>
-
+            {% endfor %}
         </div>
     </div>
 
