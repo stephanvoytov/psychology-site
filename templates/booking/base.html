@@ -22,6 +22,10 @@
             Sentry.lazyLoadIntegration("feedbackIntegration")
                 .then(function (feedbackIntegration) {
                     Sentry.addIntegration(feedbackIntegration({
+                        colorScheme: 'system',
+                        showName: true,
+                        showEmail: true,
+                        enableScreenshot: true,
                         triggerLabel: 'Сообщить о проблеме',
                         formTitle: 'Обратная связь',
                         nameLabel: 'Ваше имя (необязательно)',
@@ -32,13 +36,18 @@
                         messagePlaceholder: 'Опишите проблему...',
                         submitButtonLabel: 'Отправить',
                         cancelButtonLabel: 'Отмена',
-                        showName: true,
-                        showEmail: true,
                         isRequiredLabel: '(обязательно)',
+                        addScreenshotButtonLabel: 'Прикрепить скриншот',
+                        removeScreenshotButtonLabel: 'Убрать скриншот',
                         successMessageText: 'Спасибо! Мы разберёмся.',
-                        onReady: function () {
-                            document.body.appendChild(this.widget);
-                        }
+                        themeLight: {
+                            accentBackground: '#2b7a4b',
+                            accentForeground: '#ffffff',
+                        },
+                        themeDark: {
+                            accentBackground: '#4caf70',
+                            accentForeground: '#ffffff',
+                        },
                     }));
                 })
                 .catch(function () {});
