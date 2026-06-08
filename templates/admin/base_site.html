@@ -61,7 +61,7 @@
 {% block nav-global %}{% endblock %}
 
 {% block extrabody %}
-{% if not debug and SENTRY_DSN %}
+{% if SENTRY_DSN %}
 <script
   src="https://browser.sentry-cdn.com/8.52.1/bundle.min.js"
   crossorigin="anonymous"
