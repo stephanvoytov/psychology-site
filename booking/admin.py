@@ -255,16 +255,17 @@ def _patched_admin_index(self, request, extra_context=None):
 
     # Проверка SMTP — без пароля не проверяем
     if not settings.DEBUG and settings.EMAIL_HOST_PASSWORD:
-        smtp_result = _check_smtp()
+        smtp_result, smtp_error = _check_smtp()
     elif settings.DEBUG:
-        smtp_result = 'debug'
+        smtp_result, smtp_error = 'debug', ''
     else:
-        smtp_result = 'no_password'
+        smtp_result, smtp_error = 'no_password', ''
 
     extra_context['email_info'] = {
         'sender': settings.DEFAULT_FROM_EMAIL,
         'has_key': bool(settings.EMAIL_HOST_PASSWORD),
         'smtp_result': smtp_result,
+        'smtp_error': smtp_error,
     }
 
     extra_context['settings'] = settings

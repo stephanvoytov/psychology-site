@@ -29,10 +29,13 @@ def _check_smtp():
         server.quit()
         return 'ok', None
     except smtplib.SMTPAuthenticationError as e:
+        logger.warning('SMTP auth failed: %s', e)
         return 'auth_failed', str(e)
     except smtplib.SMTPException as e:
+        logger.warning('SMTP error: %s', e)
         return 'smtp_error', str(e)
     except OSError as e:
+        logger.warning('SMTP connection error: %s', e)
         return 'connection_error', str(e)
 
 

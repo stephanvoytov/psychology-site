@@ -208,6 +208,8 @@
             <div>Отправитель: {{ email_info.sender }}</div>
             {% if settings.DEBUG %}
                 <div style="margin-top:2px;">⚡ Письма в консоль</div>
+            {% elif email_info.has_key and email_info.smtp_result != 'ok' %}
+                <div style="margin-top:2px;color:var(--error-fg);">⚠️ {{ email_info.smtp_error }}</div>
             {% elif email_info.smtp_result == 'ok' and not any_has_email %}
                 <div style="margin-top:2px;color:var(--error-fg);">⚠️ У психологов не указан email</div>
             {% endif %}
