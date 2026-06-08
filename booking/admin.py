@@ -254,59 +254,41 @@ def _patched_admin_index(self, request, extra_context=None):
     ]
     extra_context['any_has_email'] = any(p['has_email'] for p in extra_context['psych_email_status'])
 
-    # ── Дубликаты записей ──
-    raw_duplicates = []
+    # ── Дубликаты записей (только будущие, без дублей групп) ──
+    today_local = today
+    future_appts = Appointment.objects.filter(slot__date__gte=today_local)
 
-    phones = (Appointment.objects.values('phone')
-              .annotate(cnt=Count('id'))
-              .filter(cnt__gt=1, phone__gt=''))
-    for p in phones:
-        raw_duplicates.append({
-            'field': 'phone',
-            'value': p['phone'],
-            'count': p['cnt'],
-            'apps': Appointment.objects.filter(phone=p['phone'])
-                     .select_related('slot__psychologist', 'appointment_type'),
-        })
+    def find_duplicates(field_name):
+        """Вернуть список (значение_поля, кол-во, QuerySet записей) с slot__date__gte=today."""
+        rows = (future_appts.values(field_name)
+                .annotate(cnt=Count('id'))
+                .filter(cnt__gt=1)
+                .exclude(**{f'{field_name}__exact': ''}))
+        for r in rows:
+            yield (
+                r[field_name],
+                r['cnt'],
+                future_appts.filter(**{field_name: r[field_name]})
+                    .select_related('slot__psychologist', 'appointment_type'),
+            )
 
-    parent_phones = (Appointment.objects.values('parent_phone')
-                     .annotate(cnt=Count('id'))
-                     .filter(cnt__gt=1, parent_phone__gt=''))
-    for p in parent_phones:
-        raw_duplicates.append({
-            'field': 'parent_phone',
-            'value': p['parent_phone'],
-            'count': p['cnt'],
-            'apps': Appointment.objects.filter(parent_phone=p['parent_phone'])
-                     .select_related('slot__psychologist', 'appointment_type'),
-        })
+    raw = []
+    seen_sets = set()
 
-    child_names = (Appointment.objects.values('child_name')
-                   .annotate(cnt=Count('id'))
-                   .filter(cnt__gt=1, child_name__gt=''))
-    for c in child_names:
-        raw_duplicates.append({
-            'field': 'child_name',
-            'value': c['child_name'],
-            'count': c['cnt'],
-            'apps': Appointment.objects.filter(child_name=c['child_name'])
-                     .select_related('slot__psychologist', 'appointment_type'),
-        })
+    for field in ('phone', 'parent_phone', 'child_name', 'parent_name'):
+        for value, count, apps in find_duplicates(field):
+            app_ids = frozenset(apps.values_list('id', flat=True))
+            if app_ids not in seen_sets:
+                seen_sets.add(app_ids)
+                raw.append({
+                    'field': field,
+                    'value': value,
+                    'count': count,
+                    'apps': apps,
+                })
 
-    parent_names = (Appointment.objects.values('parent_name')
-                    .annotate(cnt=Count('id'))
-                    .filter(cnt__gt=1, parent_name__gt=''))
-    for pn in parent_names:
-        raw_duplicates.append({
-            'field': 'parent_name',
-            'value': pn['parent_name'],
-            'count': pn['cnt'],
-            'apps': Appointment.objects.filter(parent_name=pn['parent_name'])
-                     .select_related('slot__psychologist', 'appointment_type'),
-        })
-
-    extra_context['duplicates'] = raw_duplicates
-    extra_context['today'] = today
+    extra_context['duplicates'] = raw
+    extra_context['today'] = today_local
 
     # Проверка SMTP — без пароля не проверяем
     if not settings.DEBUG and settings.EMAIL_HOST_PASSWORD:
