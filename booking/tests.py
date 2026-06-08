@@ -372,6 +372,7 @@ class AppointmentFormTest(TestCase):
 # 3. EMAIL UTILS TESTS
 # =============================================================================
 
+@override_settings(DEBUG=True)
 class SendAppointmentNotificationTest(TestCase):
     def setUp(self):
         self.psychologist = create_psychologist()

@@ -1,6 +1,4 @@
 import os
-import socket
-import logging
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
 from django.conf import settings
@@ -241,18 +239,8 @@ def _patched_admin_index(self, request, extra_context=None):
         'free': TimeSlot.objects.filter(is_available=True).count(),
     }
 
-    # Информация о настройках email
-    pw = os.environ.get('YA_PASSWORD')
-    smtp_ok = None
-    if not settings.DEBUG:
-        try:
-            sock = socket.create_connection(('smtp.yandex.ru', 587), timeout=3)
-            banner = sock.recv(1024)
-            smtp_ok = banner.startswith(b'220')
-            sock.close()
-        except Exception as exc:
-            logging.getLogger('booking').warning('SMTP health check failed: %s', exc)
-            smtp_ok = False
+    # Информация о настройках email (NotiSend HTTP API)
+    has_key = bool(os.environ.get('NOTISEND_API_KEY'))
 
     # Статус email у каждого психолога
     psychologists = Psychologist.objects.all()
@@ -266,9 +254,9 @@ def _patched_admin_index(self, request, extra_context=None):
     ]
 
     extra_context['email_info'] = {
-        'backend': '📧 SMTP (Yandex)' if not settings.DEBUG else '🔧 Консоль (только лог)',
+        'backend': '📧 NotiSend (HTTP API)' if not settings.DEBUG else '🔧 Консоль (только лог)',
         'sender': settings.DEFAULT_FROM_EMAIL,
-        'smtp_ok': smtp_ok,
+        'has_key': has_key,
     }
 
     extra_context['settings'] = settings

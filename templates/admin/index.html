@@ -173,7 +173,7 @@
             <span class="dash-card-icon">📧</span>
             <span class="dash-card-title">Email-уведомления</span>
             <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
-                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.smtp_ok %}✅ Работает{% elif email_info.smtp_ok is None %}⏳…{% else %}⚠️ Сервер недоступен{% endif %}
+                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.has_key %}✅ Ключ задан{% else %}⚠️ Ключ не задан{% endif %}
             </span>
         </div>
         <div class="dash-card-body">
@@ -186,26 +186,12 @@
                     <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">Отправитель</td>
                     <td style="padding:6px 12px;">{{ email_info.sender }}</td>
                 </tr>
-                <tr>
-                    <td style="padding:6px 12px;color:var(--body-quiet-color,#666);white-space:nowrap;">SMTP-сервер</td>
-                    <td style="padding:6px 12px;">
-                        {% if settings.DEBUG %}
-                            <span style="color:var(--body-quiet-color,#666);">— (консоль)</span>
-                        {% elif email_info.smtp_ok is None %}
-                            <span style="color:var(--body-quiet-color,#666);">⏳ проверка…</span>
-                        {% elif email_info.smtp_ok %}
-                            <span style="color:#28a745;">🟢 smtp.yandex.ru:587 доступен</span>
-                        {% else %}
-                            <span style="color:#dc3545;">🔴 smtp.yandex.ru:587 недоступен</span>
-                        {% endif %}
-                    </td>
-                </tr>
             </table>
             <div style="margin-top:10px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
                 {% if settings.DEBUG %}
                     ⚡ Режим отладки — письма выводятся в консоль, реальная отправка отключена.
                 {% else %}
-                    🔐 Письма отправляются через Yandex SMTP (587/TLS).
+                    🔐 Письма отправляются через NotiSend HTTP API (HTTPS 443).
                 {% endif %}
                 Уведомления приходят психологу на email.
             </div>
