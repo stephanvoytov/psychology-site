@@ -11,3 +11,4 @@ services:
         value: false
       - key: ALLOWED_HOSTS
         value: .onrender.com
+      # SENTRY_DSN задаётся вручную в дашборде Render → Environment
