@@ -6,7 +6,7 @@ class Psychologist(models.Model):
     grades  = models.CharField(max_length=100, verbose_name='Классы/категория')
     cabinet = models.CharField(max_length=50, blank=True, verbose_name='Кабинет')
     phone   = models.CharField(max_length=20, blank=True, verbose_name='Телефон')
-    photo = models.ImageField(upload_to='psychologists/', blank=True, verbose_name='Фото')
+    photo = models.CharField(max_length=200, blank=True, verbose_name='Фото (путь к файлу)')
     email = models.EmailField(blank=True, verbose_name='Email для уведомлений')
 
     class Meta:
