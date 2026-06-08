@@ -3,7 +3,7 @@
 
 {% block content_title %}
 <h1 style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-  <span>{% if show_archive %}Архив слотов{% else %}Текущие слоты{% endif %}</span>
+  <span>{% if show_archive %}Архив записей{% else %}Текущие записи{% endif %}</span>
   {% if show_archive %}
     <a href="." style="
       background: var(--primary, #79aec8);
@@ -13,7 +13,7 @@
       border-radius: 4px;
       font-size: 12px;
       text-decoration: none;
-    ">← Текущие слоты</a>
+    ">← Текущие записи</a>
   {% else %}
     <a href="?show_archive=1" style="
       background: transparent;
@@ -30,10 +30,5 @@
 {% endblock %}
 
 {% block object-tools-items %}
-<li>
-    <a href="{% url 'admin:booking_timeslot_generate' %}" class="addlink" style="background:#2b7a4b;">
-        🗓️ Сгенерировать расписание
-    </a>
-</li>
 {{ block.super }}
 {% endblock %}

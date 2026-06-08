@@ -20,6 +20,22 @@ admin.site.unregister(Group)
 admin.site.unregister(User)
 
 
+class ArchiveFilter(admin.SimpleListFilter):
+    """Потребляет show_archive из GET, чтобы Django не пытался применить
+    его как фильтр queryset'a. Реальная фильтрация — в get_queryset."""
+    parameter_name = 'show_archive'
+    title = 'Архив'
+
+    def lookups(self, request, model_admin):
+        return ()
+
+    def choices(self, changelist):
+        return []
+
+    def queryset(self, request, queryset):
+        return queryset
+
+
 @admin.register(Psychologist)
 class PsychologistAdmin(admin.ModelAdmin):
     list_display = ('name', 'grades', 'cabinet', 'phone', 'email_warning', 'photo_preview')
@@ -65,11 +81,24 @@ class TimeSlotAdmin(admin.ModelAdmin):
     actions = None
     change_list_template = 'admin/booking/timeslot/change_list.html'
     list_display  = ('psychologist', 'date', 'time', 'is_available', 'get_who_booked', 'get_appointment_type')
-    list_filter   = ('psychologist', 'is_available', 'date')
+    list_filter   = ('psychologist', 'is_available', 'date', ArchiveFilter)
     list_editable = ('is_available',)
-    ordering      = ('date', 'time')
+    ordering      = ('-date', '-time')
     date_hierarchy = 'date'
     list_select_related = ('psychologist',)
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.GET.get('show_archive'):
+            qs = qs.filter(date__lt=date.today())
+        else:
+            qs = qs.filter(date__gte=date.today())
+        return qs
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_archive'] = bool(request.GET.get('show_archive'))
+        return super().changelist_view(request, extra_context=extra_context)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -152,13 +181,27 @@ class TimeSlotAdmin(admin.ModelAdmin):
 @admin.register(Appointment)
 class AppointmentAdmin(admin.ModelAdmin):
     actions = None
+    change_list_template = 'admin/booking/appointment/change_list.html'
     list_display  = ('get_name', 'get_phone', 'message_short', 'appointment_type', 'get_psychologist', 'get_date', 'get_time')
-    list_filter   = ('appointment_type', 'slot__psychologist', 'slot__date')
+    list_filter   = (ArchiveFilter, 'appointment_type', 'slot__psychologist', 'slot__date')
     search_fields = ('full_name', 'parent_name', 'child_name', 'phone', 'parent_phone', 'message')
     readonly_fields = ('slot', 'created_at',)
     date_hierarchy = 'slot__date'
     ordering = ('-slot__date', '-slot__time')
     list_select_related = ('slot', 'slot__psychologist', 'appointment_type')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.GET.get('show_archive'):
+            qs = qs.filter(slot__date__lt=date.today())
+        else:
+            qs = qs.filter(slot__date__gte=date.today())
+        return qs
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_archive'] = bool(request.GET.get('show_archive'))
+        return super().changelist_view(request, extra_context=extra_context)
 
     fieldsets = (
         (None, {

@@ -106,6 +106,54 @@ class Command(BaseCommand):
                 f'  [OK] {slot.psychologist.name} | {slot.date} {slot.time} | {app_type.name}'
             )
 
+        # ── Архивные записи (прошлые даты) ──
+        try:
+            psych = Psychologist.objects.get(id=2)  # Ганьева
+        except Psychologist.DoesNotExist:
+            psych = None
+
+        archive_created = 0
+        if psych:
+            archive_data = [
+                (datetime.date(2026, 5, 12), datetime.time(10, 0), type_consult, {
+                    'full_name': 'Архипова Мария Сергеевна',
+                    'who': 'parent', 'grade': '2А',
+                    'phone': '+7 (911) 111-11-11',
+                    'message': 'Проблемы с поведением',
+                }),
+                (datetime.date(2026, 5, 12), datetime.time(11, 0), type_consult, {
+                    'full_name': 'Громов Денис Павлович',
+                    'who': 'teacher', 'grade': '8Б',
+                    'phone': '+7 (922) 222-22-22',
+                    'message': 'Конфликт в классе',
+                }),
+                (datetime.date(2026, 5, 15), datetime.time(14, 0), type_preschool, {
+                    'child_name': 'Фёдоров Миша',
+                    'child_birthdate': datetime.date(2020, 7, 20),
+                    'kindergarten': 'Детский сад №3',
+                    'address': 'ул. Мира, д. 15',
+                    'parent_name': 'Фёдорова Анна Петровна',
+                    'parent_phone': '+7 (933) 333-33-33',
+                    'phone': '+7 (933) 333-33-33',
+                    'message': 'Диагностика перед школой',
+                }),
+            ]
+            for date_val, time_val, app_type, fields in archive_data:
+                slot, _ = TimeSlot.objects.get_or_create(
+                    psychologist=psych,
+                    date=date_val,
+                    time=time_val,
+                    defaults={'is_available': True},
+                )
+                if hasattr(slot, 'appointment'):
+                    continue
+                Appointment.objects.create(slot=slot, appointment_type=app_type, **fields)
+                slot.is_available = False
+                slot.save()
+                archive_created += 1
+
         remaining = TimeSlot.objects.filter(is_available=True).count()
         self.stdout.write(self.style.SUCCESS(f'\nСоздано записей: {created_count}'))
+        if archive_created:
+            self.stdout.write(self.style.SUCCESS(f'Создано архивных записей: {archive_created}'))
         self.stdout.write(f'Осталось свободных слотов: {remaining}')
