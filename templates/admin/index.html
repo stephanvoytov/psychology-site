@@ -209,6 +209,23 @@
                 {% endif %}
                 Уведомления приходят психологу на email.
             </div>
+
+            <!-- Статус email у психологов -->
+            <div style="margin-top:14px;border-top:1px solid var(--border-color,#dee2e6);padding-top:12px;">
+                <div style="font-size:0.85rem;font-weight:700;margin-bottom:8px;color:var(--body-fg,#333);">
+                    👩‍🏫 Email психологов
+                </div>
+                {% for p in psych_email_status %}
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:0.85rem;">
+                    <span style="color:var(--body-fg,#333);">{{ p.name }}</span>
+                    {% if p.has_email %}
+                        <span style="color:#28a745;">✅ {{ p.email }}</span>
+                    {% else %}
+                        <span style="color:#dc3545;">❌ не указан</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 

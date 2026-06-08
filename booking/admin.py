@@ -253,6 +253,18 @@ def _patched_admin_index(self, request, extra_context=None):
         except Exception as exc:
             logging.getLogger('booking').warning('SMTP health check failed: %s', exc)
             smtp_ok = False
+
+    # Статус email у каждого психолога
+    psychologists = Psychologist.objects.all()
+    extra_context['psych_email_status'] = [
+        {
+            'name': p.name,
+            'has_email': bool(p.email),
+            'email': p.email or '—',
+        }
+        for p in psychologists
+    ]
+
     extra_context['email_info'] = {
         'backend': '📧 SMTP (Yandex)' if not settings.DEBUG else '🔧 Консоль (только лог)',
         'sender': settings.DEFAULT_FROM_EMAIL,
