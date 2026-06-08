@@ -173,19 +173,7 @@
             <span class="dash-card-icon">📧</span>
             <span class="dash-card-title">Email-уведомления</span>
             <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
-                {% if settings.DEBUG %}
-                    🔧 Отладка
-                {% elif email_info.smtp_status == 'ok' %}
-                    ✅ Работает
-                {% elif email_info.smtp_status == 'auth_failed' %}
-                    ❌ Ошибка авторизации
-                {% elif email_info.smtp_status == 'no_password' %}
-                    ⚠️ Пароль не задан
-                {% elif email_info.smtp_status %}
-                    ❌ SMTP недоступен
-                {% else %}
-                    ⚠️ Не настроено
-                {% endif %}
+                {% if settings.DEBUG %}🔧 Отладка{% elif email_info.has_key %}✅ Настроено{% else %}⚠️ Не настроено{% endif %}
             </span>
         </div>
         <div class="dash-card-body">
@@ -195,21 +183,8 @@
             <div style="margin-top:6px;font-size:0.8rem;color:var(--body-quiet-color,#666);">
                 {% if settings.DEBUG %}
                     ⚡ Режим отладки — вывод в консоль.
-                {% elif email_info.smtp_status == 'ok' %}
-                    ✅ SMTP работает, письма будут доставлены.
-                {% elif email_info.smtp_status == 'auth_failed' %}
-                    ❌ SMTP-сервер отвергает пароль. Проверьте YA_PASSWORD.
-                {% elif email_info.smtp_status == 'no_password' %}
-                    ⚠️ Пароль не задан (YA_PASSWORD). Письма не уйдут.
-                {% elif email_info.smtp_status == 'timeout' %}
-                    ❌ SMTP-реле не отвечает (таймаут).
-                {% elif email_info.smtp_status == 'refused' %}
-                    ❌ SMTP-реле отклоняет подключение (порт закрыт?).
-                {% elif email_info.smtp_status == 'connection_error' %}
-                    ❌ SMTP-реле недоступно.
-                {% elif email_info.smtp_status %}
-                    ❌ Ошибка SMTP: {{ email_info.smtp_status }}
                 {% endif %}
+                Уведомления приходят психологу на email.
             </div>
 
             <!-- Статус email у психологов -->

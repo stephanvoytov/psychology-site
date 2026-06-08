@@ -22,7 +22,7 @@ def _check_smtp():
         return 'no_password'
 
     try:
-        server = smtplib.SMTP(host, port, timeout=5)
+        server = smtplib.SMTP(host, port, timeout=3)
         server.ehlo_or_helo_if_needed()
         server.starttls()
         server.ehlo_or_helo_if_needed()
@@ -30,14 +30,11 @@ def _check_smtp():
         server.quit()
         return 'ok'
     except smtplib.SMTPAuthenticationError:
-        logger.warning('SMTP health: AUTH failed — неверный пароль')
+        logger.warning('SMTP health: AUTH failed')
         return 'auth_failed'
-    except smtplib.SMTPException as e:
-        logger.warning('SMTP health: %s', e)
-        return 'smtp_error'
-    except OSError as e:
-        logger.warning('SMTP health: %s', e)
-        return 'connection_error'
+    except (smtplib.SMTPException, OSError) as e:
+        logger.debug('SMTP health: %s', e)
+        return 'error'
 
 
 def health_check(request):
