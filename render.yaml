@@ -3,8 +3,10 @@ services:
     name: lyceum23-psychologist
     runtime: python
     buildCommand: ./build.sh
-    startCommand: gunicorn lyceum23.wsgi:application --bind 0.0.0.0:$PORT
+    startCommand: ./start.sh
     envVars:
+      - key: UV_VERSION
+        value: "0.11.19"
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
