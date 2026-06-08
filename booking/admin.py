@@ -11,7 +11,7 @@ from django.utils.html import format_html
 
 from .models import TimeSlot, Appointment, Psychologist, AppointmentType
 from .slot_generator import SlotGeneratorForm
-
+from lyceum23.views import _check_smtp
 
 
 # Скрываем ненужные разделы — психологу/секретарю не надо управлять пользователями
@@ -251,9 +251,16 @@ def _patched_admin_index(self, request, extra_context=None):
         for p in psychologists
     ]
 
+    # Проверка SMTP (таймаут 2с — не блокирует страницу)
+    if not settings.DEBUG:
+        smtp_result = _check_smtp()
+    else:
+        smtp_result = 'debug'
+
     extra_context['email_info'] = {
         'sender': settings.DEFAULT_FROM_EMAIL,
         'has_key': bool(settings.EMAIL_HOST_PASSWORD),
+        'smtp_result': smtp_result,
     }
 
     extra_context['settings'] = settings

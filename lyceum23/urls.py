@@ -13,6 +13,7 @@ def robots_txt(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin/check-email/', views.email_check_view, name='email_check'),
     path('health/', views.health_check, name='health_check'),
     path('robots.txt', robots_txt),
     path('', include('booking.urls')),

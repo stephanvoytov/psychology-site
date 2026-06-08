@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Email — демо</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #f0f2f5; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+    h2 { margin: 0 0 10px; font-size: 1.2rem; }
+    .grid { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 700px; margin-bottom: 30px; }
+
+    .card {
+      background: #fff; border-radius: 8px; width: 320px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12); overflow: hidden;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 0.9rem; font-weight: 600;
+    }
+    .card-body { padding: 10px 14px 8px; }
+
+    .badge { font-size: 0.75rem; font-weight: 600; padding: 2px 10px; border-radius: 20px; }
+    .badge-ok { background: #d4edda; color: #155724; }
+    .badge-err { background: #f8d7da; color: #721c24; }
+    .badge-debug { background: #e2e3e5; color: #383d41; }
+
+    .warning { font-size:0.8rem;color:#dc3545;margin-bottom:8px;padding:6px 10px;background:#fff0f0;border-radius:4px; }
+    .section-title { font-size: 0.8rem; font-weight: 600; margin: 6px 0 4px; color: #333; }
+    .row { display: flex; justify-content: space-between; padding: 2px 0; font-size: 0.82rem; }
+
+    .page {
+      background: #fff; border-radius: 8px; width: 400px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12); padding: 24px; text-align: center;
+    }
+    .page .icon { font-size: 3rem; margin-bottom: 10px; }
+    .page h3 { margin: 0 0 6px; font-size: 1.1rem; }
+    .page .desc { font-size: 0.9rem; color: #555; margin-bottom: 20px; }
+    .page .btn { background: #28a745; color: #fff; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: 600; display: inline-block; }
+    .page .back { display: block; margin-top: 10px; color: #666; font-size: 0.85rem; }
+    .state-label { font-size: 0.7rem; color: #999; margin-top: 4px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <h2>📧 Карточка в админке</h2>
+
+  <div class="grid">
+
+    <!-- DEBUG -->
+    <div class="card">
+      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-debug">🔧 Отладка</span></div>
+      <div class="card-body">
+        <div class="section-title">Психологи</div>
+        <div class="row"><span>Ганиева М.В.</span><span style="color:#999;">❌ не будет</span></div>
+        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
+        <div class="state-label">DEBUG=True</div>
+      </div>
+    </div>
+
+    <!-- Работают -->
+    <div class="card">
+      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-ok">✅ Работают</span></div>
+      <div class="card-body">
+        <div class="section-title">Психологи</div>
+        <div class="row"><span>Ганиева М.В.</span><span style="color:#28a745;">✅ будет</span></div>
+        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
+        <div class="state-label">всё ок</div>
+      </div>
+    </div>
+
+    <!-- Не работают -->
+    <div class="card">
+      <div class="card-header"><span>📧 Уведомления</span><span class="badge badge-err">❌ Не работают</span></div>
+      <div class="card-body">
+        <div class="warning">⚠️ Уведомления не работают</div>
+        <div class="section-title">Психологи</div>
+        <div class="row"><span>Ганиева М.В.</span><span style="color:#999;">❌ не будет</span></div>
+        <div class="row"><span>Ворожейкина И.В.</span><span style="color:#dc3545;">❌ не будет</span></div>
+        <div class="state-label">нет пароля / SMTP недоступен</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="color:#888;font-size:0.75rem;margin-top:10px;">email_demo.html</div>
+
+</body>
+</html>
