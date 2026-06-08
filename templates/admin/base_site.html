@@ -59,3 +59,49 @@
 {% endblock %}
 
 {% block nav-global %}{% endblock %}
+
+{% if not debug and SENTRY_DSN %}
+<script
+  src="https://browser.sentry-cdn.com/8.52.1/bundle.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://browser.sentry-cdn.com/8.52.1/feedback.min.js"
+  crossorigin="anonymous"
+></script>
+<script>
+window.addEventListener('load', function() {
+  try {
+    Sentry.init({
+      dsn: '{{ SENTRY_DSN }}',
+      integrations: [
+        Sentry.feedbackIntegration({
+          colorScheme: 'system',
+          autoInject: false,
+          showName: true,
+          showEmail: true,
+          isNameRequired: true,
+          isEmailRequired: true,
+          buttonLabel: 'Связаться с разработчиком',
+          formTitle: 'Обратная связь',
+          formSubtitle: 'Нашли баг? Есть предложение? Напишите мне.',
+          submitButtonLabel: 'Отправить',
+          cancelButtonLabel: 'Закрыть',
+          messagePlaceholder: 'Опишите проблему или идею…',
+          addScreenshot: true,
+        }),
+      ],
+      beforeSend(event) {
+        // Добавляем URL страницы, где возникла проблема
+        event.tags = event.tags || {};
+        event.tags.page = window.location.pathname;
+        return event;
+      },
+    });
+    Sentry.getFeedback().createWidget();
+  } catch(e) {
+    console.warn('Sentry feedback not available:', e);
+  }
+});
+</script>
+{% endif %}
