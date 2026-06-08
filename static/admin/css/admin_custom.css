@@ -1,5 +1,5 @@
 /* ===== Кастомные стили для админки Django ===== */
-/* Переопределяем CSS-переменные Django */
+/* ===== Mobile-first — админка на телефоне ===== */
 
 :root {
     --primary: #2b7a4b;
@@ -38,7 +38,8 @@
     --delete-button-hover-bg: #c82333;
 }
 
-/* Скругления */
+/* ===== Скругления и тени ===== */
+
 #header {
     border-radius: 0 0 12px 12px;
     margin-bottom: 20px;
@@ -62,10 +63,6 @@
     width: 100%;
 }
 
-.dashboard .module table td {
-    white-space: nowrap;
-}
-
 .object-tools a:link, .object-tools a:visited {
     border-radius: 6px;
 }
@@ -75,7 +72,6 @@
     transition: background 0.15s;
 }
 
-/* Карточки на главной админки */
 .dashboard .module {
     margin-bottom: 20px;
 }
@@ -84,19 +80,17 @@
     border-radius: 0 0 10px 10px;
 }
 
-/* Аватар пользователя */
 #user-tools {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
-/* Ховер на строках таблицы */
 #changelist table tbody tr:hover {
     background: #e8f5e9;
 }
 
-/* Красивые фильтры */
 #changelist-filter {
     border-radius: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -111,7 +105,8 @@
     font-weight: 700;
 }
 
-/* Формы */
+/* ===== Формы ===== */
+
 .aligned label {
     color: var(--body-quiet-color);
     font-weight: 600;
@@ -124,7 +119,6 @@
     padding: 12px 0;
 }
 
-/* Кнопка "На сайт" */
 a.site-link {
     padding: 4px 10px;
     border: 1px solid rgba(255,255,255,0.5);
@@ -137,4 +131,304 @@ a.site-link {
 
 a.site-link:hover {
     background: rgba(255,255,255,0.15);
+}
+
+/* ================================================================ */
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+/* ================================================================ */
+
+@media (max-width: 768px) {
+
+    /* ── Шапка ── */
+    #header {
+        padding: 8px 12px;
+        border-radius: 0;
+        margin-bottom: 10px;
+    }
+
+    #branding h1 {
+        font-size: 1rem;
+    }
+
+    #user-tools {
+        font-size: 0.8rem;
+        gap: 4px;
+        justify-content: flex-end;
+    }
+
+    #user-tools a {
+        padding: 6px 8px !important;
+    }
+
+    /* ── Заголовки страниц ── */
+    #content h1 {
+        font-size: 1.2rem;
+    }
+
+    /* ── Хлебные крошки ── */
+    div.breadcrumbs {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        border-radius: 0;
+    }
+
+    /* ── Таблицы — скролл по горизонтали ── */
+    #changelist {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #changelist table {
+        min-width: 640px;  /* принудительная ширина для скролла */
+    }
+
+    #changelist table th,
+    #changelist table td {
+        padding: 6px 8px;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    /* ── Пагинация ── */
+    .paginator {
+        font-size: 0.8rem;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .paginator a, .paginator .this-page {
+        padding: 4px 10px;
+        margin: 2px;
+    }
+
+    /* ── Фильтр — колонка слева ── */
+    #changelist-filter {
+        float: none;
+        width: 100%;
+        margin: 0 0 12px;
+    }
+
+    #changelist-filter h2 {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+    }
+
+    #changelist-filter h2::after {
+        content: ' ▾';
+        font-size: 0.7rem;
+    }
+
+    #changelist-filter ul {
+        padding: 8px 12px;
+    }
+
+    /* ── Панель инструментов (поиск) ── */
+    #toolbar {
+        padding: 8px 0;
+    }
+
+    #toolbar form input[type=text] {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 6px;
+        box-sizing: border-box;
+    }
+
+    #toolbar form input[type=submit] {
+        width: 100%;
+    }
+
+    /* ── Object tools (кнопки над таблицей) ── */
+    .object-tools {
+        float: none;
+        text-align: left;
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+
+    .object-tools li {
+        display: inline-block;
+        margin: 2px 0;
+    }
+
+    .object-tools a {
+        padding: 8px 14px !important;
+        font-size: 0.85rem;
+    }
+
+    /* ── Формы (добавить/редактировать) ── */
+    .aligned label {
+        float: none;
+        width: 100%;
+        padding: 0 0 4px;
+    }
+
+    .aligned .form-row {
+        padding: 8px 0;
+    }
+
+    .aligned .form-row > div {
+        margin-left: 0;
+    }
+
+    .aligned input[type=text],
+    .aligned input[type=email],
+    .aligned input[type=password],
+    .aligned textarea,
+    .aligned select {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .aligned .vDateField,
+    .aligned .vTimeField {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    /* ── Submit row ── */
+    .submit-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .submit-row input {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .submit-row input.deletelink {
+        margin-top: 6px !important;
+    }
+
+    /* ── Селект с двух сторон (filter_horizontal) ── */
+    .selector {
+        width: 100% !important;
+    }
+
+    .selector select {
+        width: 100% !important;
+    }
+
+    .selector-available, .selector-chosen {
+        width: 100% !important;
+        float: none;
+        margin-bottom: 10px;
+    }
+
+    .selector .selector-available h2,
+    .selector .selector-chosen h2 {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+
+    /* ── Календарь / часы в инлайн ── */
+    .calendarbox, .clockbox {
+        position: fixed !important;
+        top: 10% !important;
+        left: 5% !important;
+        width: 90% !important;
+        max-width: 320px;
+        z-index: 1100;
+    }
+
+    /* ── Дата-иерархия ── */
+    .date-hierarchy {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        padding: 6px 0;
+        font-size: 0.85rem;
+    }
+
+    .date-hierarchy ul {
+        display: flex;
+        gap: 4px;
+    }
+
+    .date-hierarchy a {
+        padding: 4px 8px;
+        white-space: nowrap;
+    }
+
+    /* ── inline-группы (TabularInline) ── */
+    .inline-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .inline-group table {
+        min-width: 500px;
+    }
+
+    /* ── Сообщения ── */
+    .messagelist li {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    /* ── Список действий (actions) ── */
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px 0;
+    }
+
+    .actions select {
+        width: 100% !important;
+    }
+
+    .actions .button {
+        width: 100% !important;
+    }
+
+    /* ── Помеченные строки в списке ── */
+    .action-checkbox-column {
+        min-width: 30px;
+    }
+}
+
+/* ── Очень маленькие экраны (< 480px) ── */
+@media (max-width: 480px) {
+    #header {
+        padding: 6px 10px;
+    }
+
+    #branding h1 {
+        font-size: 0.9rem;
+    }
+
+    #user-tools {
+        font-size: 0.72rem;
+    }
+
+    #content h1 {
+        font-size: 1rem;
+    }
+
+    .module h2, .module caption {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+}
+
+/* ── Touch-устройства: большие tap-цели ── */
+@media (hover: none) and (pointer: coarse) {
+    #changelist table td a,
+    .object-tools a,
+    .button,
+    input[type=submit],
+    input[type=button] {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }

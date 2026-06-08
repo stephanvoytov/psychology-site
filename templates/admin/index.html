@@ -124,6 +124,18 @@
 
     @media (max-width: 640px) {
         .dash-grid, .dash-stats { grid-template-columns: 1fr; }
+        #content { padding: 6px; }
+        .dash-card { margin-bottom: 0; }
+        .dash-card-header { padding: 12px 14px; }
+        .dash-card-body { padding: 10px 14px; }
+        .stat-box { padding: 10px; }
+        .stat-box-number { font-size: 1.3rem; }
+        .dash-card-actions a { flex:1; justify-content:center; }
+    }
+    @media (max-width: 480px) {
+        .dash-card-header { flex-wrap:wrap; }
+        .dash-card-title { font-size:0.9rem; }
+        .dash-card-count { font-size:1rem; }
     }
 </style>
 {% endblock %}

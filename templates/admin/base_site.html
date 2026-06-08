@@ -5,9 +5,9 @@
 
 {% block branding %}
 <h1 id="site-name">
-    <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
-        <span style="font-size:1.5rem;">🧠</span>
-        {{ site_header|default:_('Django administration') }}
+    <a href="{% url 'admin:index' %}" style="display:flex;align-items:center;gap:6px;text-decoration:none;">
+        <span style="font-size:1.3rem;line-height:1;">🧠</span>
+        <span style="font-size:clamp(0.85rem,4vw,1.1rem);white-space:nowrap;">{{ site_header|default:_('Django administration') }}</span>
     </a>
 </h1>
 {% endblock %}
@@ -21,8 +21,10 @@
 {% endblock %}
 
 {% block userlinks %}
-    <a href="{% url 'home' %}" style="padding:4px 10px;border:1px solid var(--primary);border-radius:4px;text-decoration:none;font-size:11px;">← На сайт</a>
-    /
+    <a href="{% url 'home' %}"
+       style="padding:5px 10px;border:1px solid rgba(255,255,255,0.4);border-radius:6px;text-decoration:none;font-size:clamp(0.65rem,2.5vw,0.8rem);white-space:nowrap;">
+       ← На сайт
+    </a>
     {{ block.super }}
 {% endblock %}
 
