@@ -104,8 +104,12 @@ if DEBUG:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# NotiSend — отправка через HTTP API (не SMTP, работает на Render)
-NOTISEND_API_KEY = os.getenv('NOTISEND_API_KEY')
+# SMTP через VPS relay (порт 2587 не блокируется Render)
+EMAIL_HOST = os.getenv('EMAIL_HOST', '103.71.21.98')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '2587'))
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'stepanvoytov@yandex.ru')
+EMAIL_HOST_PASSWORD = os.getenv('YA_PASSWORD', '')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'stepanvoytov@yandex.ru')
 
 # ── Мониторинг ошибок (Sentry) ──────────────────────────────────────

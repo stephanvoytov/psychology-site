@@ -1,63 +1,27 @@
-import json
 import logging
 import threading
-import urllib.request
 from django.conf import settings
 from django.core.mail import send_mail
 
 logger = logging.getLogger(__name__)
 
-NOTISEND_API_URL = 'https://api.notisend.ru/v1/email/messages'
-
-
-def _send_via_notisend(subject, message, recipient_list):
-    """Отправка письма через HTTP API NotiSend (Bearer-токен)."""
-    api_token = settings.NOTISEND_API_KEY
-    if not api_token:
-        logger.error('NOTISEND_API_KEY не задан — письмо не отправлено')
-        return
-
-    for email in recipient_list:
-        payload = json.dumps({
-            'from_email': settings.DEFAULT_FROM_EMAIL,
-            'from_name': 'Психолог Лицей №23',
-            'to': email,
-            'subject': subject,
-            'text': message,
-        }).encode()
-
-        req = urllib.request.Request(
-            NOTISEND_API_URL,
-            data=payload,
-            headers={
-                'Authorization': f'Bearer {api_token}',
-                'Content-Type': 'application/json',
-            },
-            method='POST',
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                result = resp.read().decode()
-                logger.info('NotiSend: письмо отправлено %s — %s', email, result)
-        except Exception as e:
-            logger.error('NotiSend: ошибка отправки на %s: %s', email, e, exc_info=True)
-
 
 def _send_mail_async(subject, message, recipient_list):
-    """Отправка в отдельном потоке — не блокирует ответ пользователю."""
-    if settings.DEBUG:
-        try:
-            send_mail(
-                subject=subject,
-                message=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=recipient_list,
-                fail_silently=False,
-            )
-        except Exception as e:
-            logger.error('Ошибка отправки email (console): %s', e, exc_info=True)
-    else:
-        _send_via_notisend(subject, message, recipient_list)
+    """Отправка в отдельном потоке — не блокирует ответ пользователю.
+
+    В DEBUG=True — console backend (печать в консоль).
+    В production — SMTP через VPS relay (103.71.21.98:2587) → Яндекс.
+    """
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=recipient_list,
+            fail_silently=False,
+        )
+    except Exception as e:
+        logger.error('Ошибка отправки email: %s', e, exc_info=True)
 
 
 def send_appointment_notification(appointment):

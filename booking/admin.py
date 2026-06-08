@@ -239,9 +239,6 @@ def _patched_admin_index(self, request, extra_context=None):
         'free': TimeSlot.objects.filter(is_available=True).count(),
     }
 
-    # Информация о настройках email (NotiSend HTTP API)
-    has_key = bool(os.environ.get('NOTISEND_API_KEY'))
-
     # Статус email у каждого психолога
     psychologists = Psychologist.objects.all()
     extra_context['psych_email_status'] = [
@@ -254,9 +251,9 @@ def _patched_admin_index(self, request, extra_context=None):
     ]
 
     extra_context['email_info'] = {
-        'backend': '📧 NotiSend (HTTP API)' if not settings.DEBUG else '🔧 Консоль (только лог)',
+        'backend': '📧 SMTP (VPS relay)' if not settings.DEBUG else '🔧 Консоль (только лог)',
         'sender': settings.DEFAULT_FROM_EMAIL,
-        'has_key': has_key,
+        'has_key': bool(settings.EMAIL_HOST_PASSWORD),
     }
 
     extra_context['settings'] = settings
