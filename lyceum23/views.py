@@ -1,4 +1,4 @@
-import socket
+import smtplib
 import logging
 from django.http import JsonResponse
 from django.db import connection, OperationalError
@@ -8,39 +8,36 @@ logger = logging.getLogger(__name__)
 
 
 def _check_smtp():
-    """Проверка доступности SMTP-реле.
+    """Проверка SMTP: relay + AUTH (пароль).
 
-    Подключается к SMTP-серверу и проверяет, что он отдаёт 220 (готов к
-    работе). Таймаут 5 секунд — не блокируем health endpoint.
+    Подключается через STARTTLS, логинится в Яндекс — но письмо НЕ
+    отправляет. Таймаут 5 секунд.
     """
     host = settings.EMAIL_HOST
     port = settings.EMAIL_PORT
+    user = settings.EMAIL_HOST_USER
+    password = settings.EMAIL_HOST_PASSWORD
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.settimeout(5)
+    if not password:
+        return 'no_password'
+
     try:
-        sock.connect((host, port))
-        banner = sock.recv(1024).decode('utf-8', errors='ignore')
-        if banner.startswith('220'):
-            sock.sendall(b'QUIT\r\n')
-            return 'ok'
-        else:
-            logger.warning('SMTP health: unexpected banner: %s', banner.strip())
-            return 'unexpected_banner'
-    except socket.timeout:
-        logger.warning('SMTP health: connection timeout to %s:%s', host, port)
-        return 'timeout'
-    except ConnectionRefusedError:
-        logger.warning('SMTP health: connection refused to %s:%s', host, port)
-        return 'refused'
-    except socket.gaierror:
-        logger.warning('SMTP health: DNS resolution failed for %s', host)
-        return 'dns_error'
-    except Exception as e:
-        logger.warning('SMTP health: %s: %s', type(e).__name__, e)
-        return 'error'
-    finally:
-        sock.close()
+        server = smtplib.SMTP(host, port, timeout=5)
+        server.ehlo_or_helo_if_needed()
+        server.starttls()
+        server.ehlo_or_helo_if_needed()
+        server.login(user, password)
+        server.quit()
+        return 'ok'
+    except smtplib.SMTPAuthenticationError:
+        logger.warning('SMTP health: AUTH failed — неверный пароль')
+        return 'auth_failed'
+    except smtplib.SMTPException as e:
+        logger.warning('SMTP health: %s', e)
+        return 'smtp_error'
+    except OSError as e:
+        logger.warning('SMTP health: %s', e)
+        return 'connection_error'
 
 
 def health_check(request):
