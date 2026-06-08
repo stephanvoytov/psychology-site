@@ -3,33 +3,62 @@
 
 {% block title %}Проверка email{% endblock %}
 
-{% block content %}
-<div style="max-width:500px;margin:20px auto;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.12);padding:24px;text-align:center;">
+{% block extrastyle %}
+{{ block.super }}
+<style>
+.email-wrap {
+    max-width: 500px;
+    margin: 20px auto;
+    background: var(--body-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+}
+.email-icon { font-size: 3rem; margin-bottom: 10px; }
+.email-title { margin: 0 0 6px; font-size: 1.1rem; color: var(--body-fg); }
+.email-sender { font-size: 0.9rem; color: var(--body-quiet-color); margin-bottom: 20px; }
+.email-btn {
+    display: inline-block;
+    background: var(--button-bg);
+    color: var(--primary-fg);
+    padding: 8px 20px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.email-back {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--body-quiet-color);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
 
-  <div style="font-size:3rem;margin-bottom:10px;">
+{% block content %}
+<div class="email-wrap">
+  <div class="email-icon">
     {% if result == 'ok' %}✅
     {% else %}⚠️
     {% endif %}
   </div>
 
-  <h2 style="margin:0 0 6px;font-size:1.1rem;">
+  <h2 class="email-title">
     {% if result == 'ok' %}Всё работает
     {% else %}Уведомления не работают
     {% endif %}
   </h2>
 
-  <div style="font-size:0.9rem;color:#555;margin-bottom:20px;">
+  <div class="email-sender">
     Отправитель: {{ sender }}
   </div>
 
-  <a href="{% url 'email_check' %}"
-     style="background:#28a745;color:#fff;padding:8px 20px;border-radius:4px;text-decoration:none;font-weight:600;display:inline-block;">
+  <a href="{% url 'email_check' %}" class="email-btn">
     🔄 Проверить ещё раз
   </a>
   <br>
-  <a href="{% url 'admin:index' %}" style="display:inline-block;margin-top:10px;color:#666;font-size:0.85rem;">
-    ← Назад в админку
-  </a>
-
+  <a href="{% url 'admin:index' %}" class="email-back">← На главную</a>
 </div>
 {% endblock %}

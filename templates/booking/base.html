@@ -1,9 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="ru" data-bs-theme="light">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+    // Flash prevention — ДО загрузки CSS
+    (function(){var m=localStorage.getItem('psychologist-theme');var d;if(m==='dark')d=true;else if(m==='light')d=false;else d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-bs-theme',d?'dark':'light');})();
+    </script>
     <title>{% block title %}Психолог Лицея №23{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">

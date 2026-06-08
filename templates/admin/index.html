@@ -13,129 +13,129 @@
     .dash-card {
         background: var(--body-bg, #fff);
         border: 1px solid var(--border-color, #dee2e6);
-        border-radius: 12px;
+        border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-        transition: box-shadow 0.2s, transform 0.15s;
-    }
-    .dash-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-        transform: translateY(-2px);
     }
 
     .dash-card-header {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 16px 20px;
+        gap: 10px;
+        padding: 14px 18px;
         background: var(--darkened-bg, #f8f9fa);
         border-bottom: 1px solid var(--border-color, #dee2e6);
     }
+
     .dash-card-icon {
-        font-size: 1.6rem;
+        font-size: 1.4rem;
         line-height: 1;
     }
+
     .dash-card-title {
         flex: 1;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 700;
         color: var(--body-fg, #333);
     }
+
     .dash-card-count {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 800;
         color: var(--primary, #2b7a4b);
     }
+
     .dash-card-body {
-        padding: 14px 20px;
+        padding: 12px 18px;
     }
+
     .dash-card-desc {
-        font-size: 0.87rem;
+        font-size: 0.85rem;
         color: var(--body-quiet-color, #666);
         margin-bottom: 10px;
         line-height: 1.4;
     }
+
     .dash-card-actions {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
     }
-    .dash-card-actions a {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 6px 14px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 600;
-        transition: background 0.15s;
-    }
-    .dash-link-primary {
-        background: var(--button-bg, #2b7a4b);
-        color: #fff;
-    }
-    .dash-link-primary:hover {
-        background: var(--button-hover-bg, #1f5e38);
-    }
-    .dash-link-secondary {
-        background: var(--darkened-bg, #e9ecef);
-        color: var(--body-fg, #333);
-    }
-    .dash-link-secondary:hover {
-        background: var(--border-color, #ced4da);
-    }
+    /* Button styles in admin_custom.css — both filled green */
 
     .dash-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        margin-top: 20px;
+        gap: 16px;
+        margin-top: 16px;
     }
 
-    /* ── Статистика ── */
+    /* ── Статистика: нейтральные блоки ── */
     .dash-stats {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 16px;
         margin-bottom: 8px;
     }
+
     .stat-box {
-        background: var(--message-success-bg, #d4edda);
+        background: var(--darkened-bg);
         border-radius: 10px;
-        padding: 16px;
+        padding: 20px 16px 16px;
         text-align: center;
     }
-    .stat-box.warning {
-        background: var(--message-warning-bg, #fff3cd);
-    }
+
     .stat-box-number {
-        font-size: 1.6rem;
-        font-weight: 800;
-        color: var(--body-fg, #333);
+        font-size: 2.8rem;
+        font-weight: 900;
+        line-height: 1;
+        color: var(--primary);
     }
+
     .stat-box-label {
         font-size: 0.78rem;
-        color: var(--body-quiet-color, #666);
-        margin-top: 2px;
+        color: var(--body-quiet-color);
+        margin-top: 6px;
         text-transform: uppercase;
-        letter-spacing: 0.03em;
+        letter-spacing: 0.04em;
+        font-weight: 600;
+    }
+
+    /* ── Zero-state ── */
+    .welcome-banner {
+        text-align: center;
+        padding: 28px 20px;
+        background: var(--darkened-bg, #f8f9fa);
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+    .welcome-banner h2 {
+        font-size: 1.3rem;
+        margin: 0 0 6px;
+        color: var(--body-fg, #333);
+    }
+    .welcome-banner p {
+        color: var(--body-quiet-color, #666);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+    .welcome-banner .btn-primary {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 10px 28px;
+        background: var(--button-bg);
+        color: var(--primary-fg);
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
     }
 
     @media (max-width: 640px) {
         .dash-grid, .dash-stats { grid-template-columns: 1fr; }
         #content { padding: 6px; }
-        .dash-card { margin-bottom: 0; }
-        .dash-card-header { padding: 12px 14px; }
-        .dash-card-body { padding: 10px 14px; }
-        .stat-box { padding: 10px; }
-        .stat-box-number { font-size: 1.3rem; }
-        .dash-card-actions a { flex:1; justify-content:center; }
-    }
-    @media (max-width: 480px) {
-        .dash-card-header { flex-wrap:wrap; }
-        .dash-card-title { font-size:0.9rem; }
-        .dash-card-count { font-size:1rem; }
+        .stat-box { padding: 14px 12px 12px; }
+        .stat-box-number { font-size: 2rem; }
+        .dash-card-actions a { flex: 1; justify-content: center; }
     }
 </style>
 {% endblock %}
@@ -144,67 +144,74 @@
 <div class="dashboard-wrap">
 
     <!-- Заголовок -->
-    <div style="text-align:center;margin-bottom:8px;">
-        <h1 style="font-size:1.5rem;color:var(--body-fg);margin:0;">🧠 Кабинет психолога</h1>
-        <p style="color:var(--body-quiet-color);margin:4px 0 0;font-size:0.9rem;">
-            Лицей №23 — здесь можно управлять записями и расписанием
-        </p>
+    <div style="text-align:center;margin-bottom:4px;">
+        <h1 style="font-size:1.2rem;color:var(--body-quiet-color);margin:0;font-weight:600;">
+            Панель управления
+        </h1>
     </div>
 
     <!-- Статистика -->
     <div class="dash-stats">
         <div class="stat-box">
-            <div class="stat-box-number">{{ stats.today }}</div>
+            <div class="stat-box-number">
+                {{ stats.today }}
+            </div>
             <div class="stat-box-label">Записей на сегодня</div>
         </div>
         <div class="stat-box">
             <div class="stat-box-number">{{ stats.week }}</div>
             <div class="stat-box-label">Записей на неделю</div>
         </div>
-        <div class="stat-box warning">
+        <div class="stat-box">
             <div class="stat-box-number">{{ stats.free }}</div>
             <div class="stat-box-label">Свободных слотов</div>
         </div>
     </div>
 
-    <!-- Статус email-уведомлений -->
-    <div class="dash-card" style="margin: 20px 0;">
-        <div class="dash-card-header" style="border-bottom: 1px solid var(--border-color,#dee2e6);">
+    <!-- Zero-state -->
+    {% if stats.today == 0 and stats.week == 0 %}
+    <div class="welcome-banner">
+        <h2>👋 Добро пожаловать!</h2>
+        <p>Записей пока нет. Создайте расписание, чтобы ученики могли записаться.</p>
+        <a href="{% url 'admin:booking_timeslot_generate' %}" class="btn-primary">
+            🗓️ Создать расписание
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Email -->
+    <div class="dash-card" style="margin: 16px 0;">
+        <div class="dash-card-header">
             <span class="dash-card-icon">📧</span>
-            <span class="dash-card-title">Email-уведомления</span>
-            <span class="dash-card-count" style="font-size:0.8rem;font-weight:600;">
+            <span class="dash-card-title">Email</span>
+            <span>
                 {% if settings.DEBUG %}
-                    <span class="badge badge-debug" style="background:#e2e3e5;color:#383d41;padding:2px 10px;border-radius:20px;">
-                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#999;margin-right:4px;vertical-align:middle;"></span>Отладка
+                    <span style="background:var(--close-button-bg,#6c757d);color:var(--primary-fg,#fff);padding:2px 10px;border-radius:20px;font-size:0.72rem;">
+                        ● Отладка
                     </span>
                 {% else %}
-                    <span class="badge badge-{% if email_info.smtp_result == 'ok' %}ok{% else %}err{% endif %}" style="padding:2px 10px;border-radius:20px;{% if email_info.smtp_result == 'ok' %}background:#d4edda;color:#155724{% else %}background:#f8d7da;color:#721c24{% endif %};">
-                        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;{% if email_info.smtp_result == 'ok' %}background:#28a745{% else %}background:#dc3545{% endif %};"></span>Настроено
+                    <span style="padding:2px 10px;border-radius:20px;font-size:0.72rem;{% if email_info.smtp_result == 'ok' %}background:var(--message-success-bg);color:var(--body-fg){% else %}background:var(--message-error-bg);color:var(--error-fg){% endif %};">
+                        ● {% if email_info.smtp_result == 'ok' %}Работает{% else %}Не настроен{% endif %}
                     </span>
                 {% endif %}
             </span>
         </div>
-        <div class="dash-card-body" style="padding:12px 16px;">
-            <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:2px 0 2px;">Отправитель: {{ email_info.sender }}</div>
-
+        <div style="padding:8px 18px;font-size:0.82rem;color:var(--body-quiet-color,#666);">
+            <div>Отправитель: {{ email_info.sender }}</div>
             {% if settings.DEBUG %}
-                <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:0 0 8px;">⚡ Режим отладки — письма в консоль.</div>
+                <div style="margin-top:2px;">⚡ Письма в консоль</div>
             {% elif email_info.smtp_result != 'ok' %}
-                <div style="font-size:0.8rem;color:#dc3545;margin:0 0 8px;">⚠️ SMTP недоступен, письма не уходят.</div>
+                <div style="margin-top:2px;color:var(--error-fg);">⚠️ SMTP недоступен</div>
             {% elif not any_has_email %}
-                <div style="font-size:0.8rem;color:#dc3545;margin:0 0 8px;">⚠️ Уведомления никому не приходят — у психологов не указан email.</div>
-            {% else %}
-                <div style="font-size:0.8rem;color:var(--body-quiet-color,#666);margin:0 0 8px;">Уведомления приходят психологу на email.</div>
+                <div style="margin-top:2px;color:var(--error-fg);">⚠️ У психологов не указан email</div>
             {% endif %}
-
-            <div style="font-size:0.82rem;font-weight:600;margin:10px 0 6px;color:var(--body-fg,#333);border-top:1px solid var(--border-color,#dee2e6);padding-top:8px;">👩‍🏫 Email психологов</div>
             {% for p in psych_email_status %}
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:0.85rem;">
-                <span style="color:var(--body-fg,#333);">{{ p.name }}</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid var(--hairline-color,#dee2e6);margin-top:6px;">
+                <span style="color:var(--body-fg,#333);font-weight:600;">{{ p.name }}</span>
                 {% if p.has_email %}
-                    <span style="color:#28a745;font-size:0.8rem;">{{ p.email }}</span>
+                    <span style="color:var(--body-fg,#333);font-size:0.85rem;">📧 {{ p.email }}</span>
                 {% else %}
-                    <a href="{{ p.edit_url }}" style="color:#dc3545;text-decoration:none;font-size:0.8rem;">✎ указать email</a>
+                    <a href="{{ p.edit_url }}" style="color:var(--error-fg,red);text-decoration:none;font-weight:600;">✎ указать email</a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -231,21 +238,21 @@
             <div class="dash-card-body">
                 <div class="dash-card-desc">
                     {% if model.name == "Записи" %}
-                    Просмотр и управление записями на приём. Можно посмотреть кто, к кому и когда записался.
+                    Просмотр и управление записями
                     {% elif model.name == "Временные слоты" or model.name == "Слоты" %}
-                    Расписание свободного времени. Можно открыть/закрыть слоты и сгенерировать новые.
+                    Расписание свободного времени
                     {% elif model.name == "Психологи" %}
-                    Список психологов школы, их контакты и фотографии.
+                    Список и контакты психологов
                     {% elif model.name == "Типы приёма" %}
-                    Виды консультаций: обычная или обследование дошкольника.
+                    Виды консультаций
                     {% else %}
-                    Управление разделом.
+                    Управление разделом
                     {% endif %}
                 </div>
                 <div class="dash-card-actions">
-                    <a href="{{ model.admin_url }}" class="dash-link-primary">📂 Открыть</a>
+                    <a href="{{ model.admin_url }}">📂 Открыть</a>
                     {% if model.add_url %}
-                    <a href="{{ model.add_url }}" class="dash-link-secondary">➕ Добавить</a>
+                    <a href="{{ model.add_url }}">➕ Добавить</a>
                     {% endif %}
                 </div>
             </div>
@@ -256,19 +263,18 @@
     </div>
 
     <!-- Быстрые действия -->
-    <div style="margin-top:28px;text-align:center;">
+    <div style="margin-top:24px;text-align:center;">
         <a href="{% url 'admin:booking_timeslot_generate' %}"
            style="display:inline-flex;align-items:center;gap:8px;
-                  background:var(--button-bg,#2b7a4b);color:#fff;text-decoration:none;
-                  padding:12px 28px;border-radius:10px;font-weight:700;font-size:1rem;
-                  transition:all 0.2s;">
+                  background:var(--button-bg);color:var(--primary-fg);text-decoration:none;
+                  padding:10px 24px;border-radius:8px;font-weight:700;font-size:0.9rem;">
             🗓️ Сгенерировать расписание
         </a>
         <a href="{% url 'home' %}"
            style="display:inline-flex;align-items:center;gap:8px;
-                  background:var(--darkened-bg,#e9ecef);color:var(--body-fg,#333);text-decoration:none;
-                  padding:12px 28px;border-radius:10px;font-weight:600;font-size:0.95rem;
-                  margin-left:12px;transition:all 0.15s;">
+                  background:var(--darkened-bg);color:var(--body-fg);text-decoration:none;
+                  padding:10px 24px;border-radius:8px;font-weight:600;font-size:0.9rem;
+                  margin-left:10px;">
             ← На сайт
         </a>
     </div>

@@ -12,6 +12,36 @@
 </h1>
 {% endblock %}
 
+{% block extrahead %}
+{{ block.super }}
+<script>
+(function(){
+    var t = document.documentElement;
+    var KEY = 'psychologist-theme';
+
+    // Применяем сохранённую тему ДО загрузки CSS
+    (function init(){
+        var m = localStorage.getItem(KEY);
+        var isDark;
+        if (m === 'dark') isDark = true;
+        else if (m === 'light') isDark = false;
+        else isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        t.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        t.setAttribute('data-bs-theme', isDark ? 'dark' : 'light');
+    })();
+
+    // Слушаем изменение data-theme от Django встроенного переключателя → пишем в localStorage
+    var obs = new MutationObserver(function(){
+        var theme = t.getAttribute('data-theme');
+        if (theme === 'dark' || theme === 'light') {
+            localStorage.setItem(KEY, theme);
+        }
+    });
+    obs.observe(t, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>
+{% endblock %}
+
 {% block extrastyle %}
 {{ block.super }}
 <link rel="stylesheet" type="text/css" href="{% static 'admin/css/admin_custom.css' %}">

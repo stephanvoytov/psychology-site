@@ -1,7 +1,8 @@
 /* ===== Кастомные стили для админки Django ===== */
 /* ===== Mobile-first — админка на телефоне ===== */
 
-:root {
+/* ── СВЕТЛАЯ ТЕМА ── (как в документации Django) */
+html[data-theme="light"], :root {
     --primary: #2b7a4b;
     --secondary: #1f5e38;
     --accent: #4caf70;
@@ -12,22 +13,22 @@
     --body-loud-color: #000;
     --header-color: #fff;
     --header-branding-color: #fff;
-    --header-bg: #2b7a4b;
+    --header-bg: #1a4a2e;
     --header-link-color: #d4edda;
     --breadcrumbs-fg: #d4edda;
-    --breadcrumbs-bg: #1f5e38;
+    --breadcrumbs-bg: #1a4a2e;
     --link-fg: #2b7a4b;
     --link-hover-color: #1f5e38;
     --link-selected-fg: #4caf70;
     --hairline-color: #dee2e6;
     --border-color: #ced4da;
     --error-fg: #dc3545;
-    --message-success-bg: #d4edda;
-    --message-warning-bg: #fff3cd;
-    --message-error-bg: #f8d7da;
+    --message-success-bg: #e8f5e9;
+    --message-warning-bg: #fff8e1;
+    --message-error-bg: #fce4ec;
     --darkened-bg: #e9ecef;
-    --selected-bg: #d4edda;
-    --selected-row: #d4edda;
+    --selected-bg: #c8e6c9;
+    --selected-row: #c8e6c9;
     --button-bg: #2b7a4b;
     --button-hover-bg: #1f5e38;
     --default-button-bg: #2b7a4b;
@@ -38,11 +39,70 @@
     --delete-button-hover-bg: #c82333;
 }
 
-/* ===== Скругления и тени ===== */
+/* ── ТЁМНАЯ ТЕМА ── (как в документации Django) */
+html[data-theme="dark"], [data-bs-theme="dark"] {
+    --primary: #4fd17a;
+    --secondary: #3cba6c;
+    --accent: #4caf70;
+    --primary-fg: #fff;
+    --body-fg: #ddd;
+    --body-bg: #1a1a1a;
+    --body-quiet-color: #aaa;
+    --body-loud-color: #fff;
+    --header-color: #fff;
+    --header-branding-color: #fff;
+    --header-bg: #0d331d;
+    --header-link-color: #c8e6c9;
+    --breadcrumbs-fg: #c8e6c9;
+    --breadcrumbs-bg: #0a2614;
+    --link-fg: #4fd17a;
+    --link-hover-color: #6fdf9a;
+    --link-selected-fg: #6fdf9a;
+    --hairline-color: #333;
+    --border-color: #3a3a3a;
+    --error-fg: #ff6b6b;
+    --message-success-bg: #0f3d22;
+    --message-warning-bg: #3d2e1a;
+    --message-error-bg: #3d1a1a;
+    --darkened-bg: #2a2a2a;
+    --selected-bg: #0f3d22;
+    --selected-row: #0f3d22;
+    --button-bg: #2e7d50;
+    --button-hover-bg: #3cba6c;
+    --default-button-bg: #2e7d50;
+    --default-button-hover-bg: #3cba6c;
+    --close-button-bg: #555;
+    --close-button-hover-bg: #666;
+    --delete-button-bg: #a13030;
+    --delete-button-hover-bg: #c04040;
+}
 
+/* ── Кнопки дашборда: ОДИНАКОВЫЙ СТИЛЬ ── */
+/* Обе кнопки — зелёные залитые */
+.dash-card-actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: background 0.15s;
+    background: var(--button-bg);
+    color: var(--primary-fg, #fff);
+    border: none;
+}
+.dash-card-actions a:hover {
+    background: var(--button-hover-bg);
+    color: var(--primary-fg);
+}
+
+/* ── Скругления и тени ── */
 #header {
     border-radius: 0 0 12px 12px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .module {
@@ -88,7 +148,7 @@
 }
 
 #changelist table tbody tr:hover {
-    background: #e8f5e9;
+    background: var(--selected-row);
 }
 
 #changelist-filter {
@@ -125,7 +185,7 @@ a.site-link {
     border-radius: 4px;
     text-decoration: none;
     font-size: 11px;
-    color: #fff;
+    color: var(--header-color);
     transition: background 0.15s;
 }
 
@@ -138,8 +198,6 @@ a.site-link:hover {
 /* ================================================================ */
 
 @media (max-width: 768px) {
-
-    /* ── Шапка ── */
     #header {
         padding: 8px 12px;
         border-radius: 0;
@@ -160,26 +218,23 @@ a.site-link:hover {
         padding: 6px 8px !important;
     }
 
-    /* ── Заголовки страниц ── */
     #content h1 {
         font-size: 1.2rem;
     }
 
-    /* ── Хлебные крошки ── */
     div.breadcrumbs {
         font-size: 0.8rem;
         padding: 6px 12px;
         border-radius: 0;
     }
 
-    /* ── Таблицы — скролл по горизонтали ── */
     #changelist {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
 
     #changelist table {
-        min-width: 640px;  /* принудительная ширина для скролла */
+        min-width: 640px;
     }
 
     #changelist table th,
@@ -189,7 +244,6 @@ a.site-link:hover {
         white-space: nowrap;
     }
 
-    /* ── Пагинация ── */
     .paginator {
         font-size: 0.8rem;
         padding: 8px;
@@ -201,7 +255,6 @@ a.site-link:hover {
         margin: 2px;
     }
 
-    /* ── Фильтр — колонка слева ── */
     #changelist-filter {
         float: none;
         width: 100%;
@@ -215,7 +268,7 @@ a.site-link:hover {
     }
 
     #changelist-filter h2::after {
-        content: ' ▾';
+        content: ' \u25BE';
         font-size: 0.7rem;
     }
 
@@ -223,7 +276,6 @@ a.site-link:hover {
         padding: 8px 12px;
     }
 
-    /* ── Панель инструментов (поиск) ── */
     #toolbar {
         padding: 8px 0;
     }
@@ -239,7 +291,6 @@ a.site-link:hover {
         width: 100%;
     }
 
-    /* ── Object tools (кнопки над таблицей) ── */
     .object-tools {
         float: none;
         text-align: left;
@@ -257,7 +308,6 @@ a.site-link:hover {
         font-size: 0.85rem;
     }
 
-    /* ── Формы (добавить/редактировать) ── */
     .aligned label {
         float: none;
         width: 100%;
@@ -289,7 +339,6 @@ a.site-link:hover {
         box-sizing: border-box;
     }
 
-    /* ── Submit row ── */
     .submit-row {
         display: flex;
         flex-direction: column;
@@ -306,7 +355,6 @@ a.site-link:hover {
         margin-top: 6px !important;
     }
 
-    /* ── Селект с двух сторон (filter_horizontal) ── */
     .selector {
         width: 100% !important;
     }
@@ -327,7 +375,6 @@ a.site-link:hover {
         padding: 6px;
     }
 
-    /* ── Календарь / часы в инлайн ── */
     .calendarbox, .clockbox {
         position: fixed !important;
         top: 10% !important;
@@ -337,7 +384,6 @@ a.site-link:hover {
         z-index: 1100;
     }
 
-    /* ── Дата-иерархия ── */
     .date-hierarchy {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -356,7 +402,6 @@ a.site-link:hover {
         white-space: nowrap;
     }
 
-    /* ── inline-группы (TabularInline) ── */
     .inline-group {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -366,14 +411,12 @@ a.site-link:hover {
         min-width: 500px;
     }
 
-    /* ── Сообщения ── */
     .messagelist li {
         padding: 8px 12px;
         font-size: 0.85rem;
         border-radius: 8px;
     }
 
-    /* ── Список действий (actions) ── */
     .actions {
         display: flex;
         flex-direction: column;
@@ -389,13 +432,11 @@ a.site-link:hover {
         width: 100% !important;
     }
 
-    /* ── Помеченные строки в списке ── */
     .action-checkbox-column {
         min-width: 30px;
     }
 }
 
-/* ── Очень маленькие экраны (< 480px) ── */
 @media (max-width: 480px) {
     #header {
         padding: 6px 10px;
@@ -419,7 +460,6 @@ a.site-link:hover {
     }
 }
 
-/* ── Touch-устройства: большие tap-цели ── */
 @media (hover: none) and (pointer: coarse) {
     #changelist table td a,
     .object-tools a,

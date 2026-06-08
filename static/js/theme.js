@@ -1,51 +1,59 @@
 /**
- * Dark theme toggle using Bootstrap 5.3 data-bs-theme attribute.
- * Persists choice in localStorage, respects prefers-color-scheme.
+ * Theme toggle — 3 режима: ☀️ светлая → 🌗 авто → 🌙 тёмная
+ * Сохраняет в localStorage('psychologist-theme')
+ * Flash prevention — inline-скрипт в <head>
  */
 (function () {
     'use strict';
 
     const html = document.documentElement;
     const toggleBtn = document.getElementById('theme-toggle');
-    const STORAGE_KEY = 'psychologist-theme';
+    const KEY = 'psychologist-theme';
+    const MODES = ['light', 'auto', 'dark'];
+    const ICONS = { light: '☀️', auto: '🌗', dark: '🌙' };
+    const LABELS = { light: 'Светлая тема', auto: 'Авто', dark: 'Тёмная тема' };
 
-    function getPreferredTheme() {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored === 'dark' || stored === 'light') {
-            return stored;
-        }
+    function getStored() {
+        return localStorage.getItem(KEY) || 'auto';
+    }
+
+    function resolveTheme(mode) {
+        if (mode === 'dark') return 'dark';
+        if (mode === 'light') return 'light';
+        // auto — системные настройки
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
-    function setTheme(theme) {
-        html.setAttribute('data-bs-theme', theme);
+    function setTheme(mode) {
+        const bs = resolveTheme(mode);
+        html.setAttribute('data-bs-theme', bs);
         if (toggleBtn) {
-            toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-            toggleBtn.setAttribute('aria-label',
-                theme === 'dark' ? 'Переключить на светлую тему' : 'Переключить на тёмную тему');
+            toggleBtn.textContent = ICONS[mode] || '🌗';
+            toggleBtn.title = LABELS[mode] || 'Auto';
+            toggleBtn.setAttribute('aria-label', LABELS[mode] || 'Auto');
         }
+        localStorage.setItem(KEY, mode);
     }
 
-    function toggleTheme() {
-        const current = html.getAttribute('data-bs-theme') || 'light';
-        const next = current === 'dark' ? 'light' : 'dark';
-        localStorage.setItem(STORAGE_KEY, next);
-        setTheme(next);
-    }
+    // Инициализация
+    setTheme(getStored());
 
-    // Apply saved theme immediately
-    setTheme(getPreferredTheme());
-
-    // Listen for OS theme changes if no stored preference
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', function () {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-            setTheme(mediaQuery.matches ? 'dark' : 'light');
+    // Слушаем изменение системной темы (для auto)
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', function () {
+        const stored = localStorage.getItem(KEY);
+        if (!stored || stored === 'auto') {
+            setTheme('auto');
         }
     });
 
-    // Toggle on click
+    // Клик — циклический перебор
     if (toggleBtn) {
-        toggleBtn.addEventListener('click', toggleTheme);
+        toggleBtn.addEventListener('click', function () {
+            const current = getStored();
+            const idx = MODES.indexOf(current);
+            const next = MODES[(idx + 1) % MODES.length];
+            setTheme(next);
+        });
     }
 })();
