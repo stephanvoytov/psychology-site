@@ -281,7 +281,7 @@ def _patched_admin_index(self, request, extra_context=None):
         'week': Appointment.objects.filter(
             slot__date__gte=today, slot__date__lte=week_end
         ).count(),
-        'free': TimeSlot.objects.filter(is_available=True).count(),
+        'free': TimeSlot.objects.filter(is_available=True, date__gte=date.today()).count(),
     }
 
     # Статус email у каждого психолога
