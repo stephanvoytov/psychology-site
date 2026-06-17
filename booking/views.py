@@ -13,7 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
-    return render(request, 'booking/home.html')
+    preschool_psych = Psychologist.objects.filter(
+        appointment_types__form_type='preschool_exam'
+    ).first()
+    return render(request, 'booking/home.html', {
+        'preschool_psych_id': preschool_psych.id if preschool_psych else None,
+    })
 
 
 def choose_psychologist(request):

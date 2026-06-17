@@ -15,9 +15,11 @@
                     <p class="card-text text-body-secondary small">
                         Выявление психологических особенностей ребенка, своевременная профилактика и эффективное решение проблем, возникающих в процессе обучения, общения и психическом состоянии.
                     </p>
-                    <a href="{% url 'psychologist_schedule' 2 %}" class="btn btn-accent">
+                    {% if preschool_psych_id %}
+                    <a href="{% url 'psychologist_schedule' preschool_psych_id %}" class="btn btn-accent">
                         Записаться на приём &rarr;
                     </a>
+                    {% endif %}
                 </div>
                 <img src="{% static 'images/sobesedovanie.png' %}"
                      alt="Обследование дошкольников"
